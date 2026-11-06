@@ -1,9 +1,9 @@
 {
-  "version": "1.5.1",
-  "notes": "修复：填了地址直接点更新不生效；失败提示更明显；下载超时缩短到 60 秒",
-  "package": "xiaoxi-ai-live-1.5.1.zip",
-  "size": 3849165,
-  "sha256": "303d568fe4cf69b8a56b506f46d13ca60e3e1d733934ecc82855e5bb53aea621",
-  "publishedAt": "2026-11-06T12:34:36.798Z",
+  "version": "1.5.2",
+  "notes": "修复：自动清除老版本里误带的直播间号（含自动连接）",
+  "package": "xiaoxi-ai-live-1.5.2.zip",
+  "size": 3849381,
+  "sha256": "ecbb29b383291ed3307983df8fc59eef7c94d91a27529d13d1873925b48e606d",
+  "publishedAt": "2026-11-06T12:40:25.285Z",
   "minAppVersion": "1.0.0"
 }
