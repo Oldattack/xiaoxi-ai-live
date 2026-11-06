@@ -51,7 +51,7 @@
     "quietTo": "",
     "endpoint": "",
     "apiKeyEnv": "",
-    "appId": "1234567",
+    "appId": "",
     "token": "",
     "apiKey": "",
     "baseUrl": "http://127.0.0.1:9799/tts",
@@ -117,7 +117,7 @@
   },
   "douyin": {
     "webRid": "",
-    "autoConnect": true
+    "autoConnect": false
   },
   "song": {
     "enabled": true,
@@ -132,8 +132,8 @@
     "sources": {}
   },
   "update": {
-    "enabled": false,
-    "manifestUrl": "",
+    "enabled": true,
+    "manifestUrl": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/updates/manifest.json",
     "checkOnStart": true,
     "intervalMinutes": 60,
     "autoApply": false
