@@ -945,6 +945,9 @@ async function loadVersion() {
     if (UPDATE && UPDATE.hasUpdate) {
       $('updState').textContent = '发现新版本 ' + UPDATE.latest;
       $('updState').style.color = '#0f7a55';
+    } else if (UPDATE && UPDATE.ok && UPDATE.latest && cmpVer(UPDATE.latest, r.version) < 0) {
+      $('updState').textContent = '更新源版本 ' + UPDATE.latest + ' 比当前还旧，检查地址';
+      $('updState').style.color = '#c0392b';
     }
   } catch (e) { }
 }
@@ -956,6 +959,12 @@ if (advLink) advLink.onclick = function () {
   var inp = document.getElementById('manifestUrl');
   if (inp) inp.focus();
 };
+function cmpVer(a, b) {
+  function p(v) { return String(v || '0').split(/[.\-+]/).slice(0, 3).map(function (n) { return parseInt(n, 10) || 0; }); }
+  var x = p(a), y = p(b);
+  for (var i = 0; i < 3; i++) { if (x[i] > y[i]) return 1; if (x[i] < y[i]) return -1; }
+  return 0;
+}
 $('updCheck').onclick = async function () {
   var url = $('manifestUrl').value.trim();
   if (!url) { toast('先填更新地址'); return; }
@@ -964,7 +973,16 @@ $('updCheck').onclick = async function () {
     var r = await api('/api/update/check', { manifestUrl: url });
     if (!r.ok) { $('updState').textContent = '检查失败：' + (r.reason || ''); toast('检查失败'); }
     else if (r.hasUpdate) { $('updState').textContent = '有新版本 ' + r.latest; toast('发现 ' + r.latest); }
-    else { $('updState').textContent = '已经是最新版（' + r.current + '）'; toast('已是最新版'); }
+    else if (cmpVer(r.latest, r.current) < 0) {
+      $('updState').textContent = '更新源是 ' + r.latest + '，比当前 ' + r.current + ' 还旧 —— 地址填错了或缓存没刷新';
+      $('updState').style.color = '#c0392b';
+      toast('更新源版本比当前还旧，检查地址');
+      var row = document.getElementById('updAddrRow');
+      if (row) row.style.display = '';
+      var adv = document.getElementById('updAdvanced');
+      if (adv) adv.style.display = 'none';
+    }
+    else { $('updState').textContent = '已经是最新版（' + r.current + '）'; $('updState').style.color = ''; toast('已是最新版'); }
   } catch (e) { $('updState').textContent = '检查失败'; }
   this.disabled = false;
 };

@@ -1,9 +1,9 @@
 {
-  "version": "1.5.5",
-  "notes": "运行状态页去掉开发者话术：更新地址默认收起，改为手动设置",
-  "package": "xiaoxi-ai-live-1.5.5.zip",
-  "size": 3854424,
-  "sha256": "7432486f1a70451adbaa67a6cf3d94c6023b4c38c0fd17929cab10c997ae1e68",
-  "publishedAt": "2026-11-06T12:57:39.774Z",
+  "version": "1.5.6",
+  "notes": "更新检查：失败自动重试；更新源版本比当前还旧时明确报警（防 CDN 缓存旧清单）",
+  "package": "xiaoxi-ai-live-1.5.6.zip",
+  "size": 3854763,
+  "sha256": "f26258756e5a9e79663b3b902e368705a10956c4bd9f0a033adaf4223965c6b8",
+  "publishedAt": "2026-11-06T13:01:55.275Z",
   "minAppVersion": "1.0.0"
 }

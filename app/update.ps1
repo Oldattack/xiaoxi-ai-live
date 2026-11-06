@@ -24,7 +24,7 @@ $verFile = Join-Path $root 'VERSION'
 $local = if (Test-Path $verFile) { (Get-Content $verFile -Raw).Trim() } else { '0.0.0' }
 Write-Host "  当前版本  $local"
 
-# 1) 找可用的清理单地址
+# 1) 逐个镜像取清单，取“版本最高”的那个（避免 CDN 缓存旧版本）
 $manifest = $null
 $base = $null
 foreach ($u in $mirrors) {
@@ -33,14 +33,18 @@ foreach ($u in $mirrors) {
     $r = Invoke-WebRequest -Uri $u -UseBasicParsing -TimeoutSec 20 -Headers @{ 'cache-control' = 'no-cache' }
     $m = $r.Content | ConvertFrom-Json
     if ($m.version -and $m.package) {
-      $manifest = $m
-      $base = $u.Substring(0, $u.LastIndexOf('/') + 1)
-      Write-Host "  [OK] 连上了，线上版本 $($m.version)" -ForegroundColor Green
-      break
+      Write-Host "      返回版本 $($m.version)"
+      if (-not $manifest -or ((Ver $m.version) -gt (Ver $manifest.version))) {
+        $manifest = $m
+        $base = $u.Substring(0, $u.LastIndexOf('/') + 1)
+      }
     }
   } catch {
     Write-Host "  [!!] 失败：$($_.Exception.Message)" -ForegroundColor DarkYellow
   }
+}
+if ($manifest) {
+  Write-Host "  [OK] 采用版本 $($manifest.version)" -ForegroundColor Green
 }
 
 if (-not $manifest) {
