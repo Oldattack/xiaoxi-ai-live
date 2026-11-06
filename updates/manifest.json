@@ -1,9 +1,9 @@
 {
-  "version": "1.5.9",
-  "notes": "修复：装插件后 DSH 打不开；新增 修复DSH.cmd",
-  "package": "xiaoxi-ai-live-1.5.9.zip",
-  "size": 3858237,
-  "sha256": "9ca78bc3d833f8fa3d48a179370fe7f66ae18ef2cfa6f4c16f10d879c623ad65",
-  "publishedAt": "2026-11-06T13:18:36.096Z",
+  "version": "1.6.0",
+  "notes": "重写 AGENT.md：给 AI 的部署规格按实际文件校正；一句话部署同步更新",
+  "package": "xiaoxi-ai-live-1.6.0.zip",
+  "size": 3857865,
+  "sha256": "b2767526baf4844b16ec934a270cda004ea550b473858a1a8f3d9e48dcd0772c",
+  "publishedAt": "2026-11-06T13:26:34.904Z",
   "minAppVersion": "1.0.0"
 }
