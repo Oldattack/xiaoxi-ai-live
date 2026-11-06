@@ -21,8 +21,10 @@ sprites_hd/idle.png
 sprites_hd/sad.png
 sprites_hd/stomp.png
 supervisor.mjs
+update.ps1
 xiaoxi.mjs
 一句话部署.txt
+一键更新.cmd
 使用说明.md
 启动.cmd
 打开直播设置.cmd
