@@ -1,95 +1,88 @@
-﻿# 把本包的 plugin/ 装进 DSH（自动找 profile，自动改配置）
-# 用法：双击 安装到DSH.cmd，或 powershell -File install-plugin.ps1
+﻿# 把「小汐AI直播平台」装成 DSH 插件（侧栏出现入口）
+param(
+  [string]$DshHome = "$env:USERPROFILE\.dsh"
+)
 
 $ErrorActionPreference = 'Stop'
-try { [Console]::OutputEncoding = [Text.Encoding]::UTF8 } catch {}
-
-$root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$pluginSrc = Join-Path $root 'plugin'
-$dshHome = if ($env:DSH_HOME) { $env:DSH_HOME } else { Join-Path $env:USERPROFILE '.dsh' }
-
-Write-Host ''
-Write-Host '  小汐AI直播平台 · 装进 DSH 侧栏' -ForegroundColor Cyan
-Write-Host '  ------------------------------------' -ForegroundColor DarkGray
-
-if (-not (Test-Path $pluginSrc)) {
-  Write-Host '  [!!] 找不到本目录下的 plugin\ 文件夹' -ForegroundColor Red
-  Write-Host '  请确认 安装到DSH.cmd 和 plugin\ 在同一个文件夹里。'
-  Read-Host '  按回车退出'
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$pluginSrc = Join-Path $here 'plugin'
+if (-not (Test-Path $pluginSrc)) { Write-Host "[X] 找不到 plugin 目录：$pluginSrc"; exit 1 }
+if (-not (Test-Path $DshHome)) {
+  Write-Host "[X] 没找到 DSH：$DshHome"
+  Write-Host "    先装 DeepSeek Harness，或者用「启动.cmd」直接开网页版。"
   exit 1
 }
 
-$profilesDir = Join-Path $dshHome 'profiles'
-if (-not (Test-Path $profilesDir)) {
-  Write-Host "  [!!] 没找到 DSH 配置目录：$profilesDir" -ForegroundColor Red
-  Write-Host '  说明这台机器没装过 DeepSeek Harness，或者装在了别的用户下。'
-  Write-Host '  没有 DSH 也能用：直接双击 打开直播设置.cmd 即可。'
-  Read-Host '  按回车退出'
+# 读插件名
+$pkg = Get-Content (Join-Path $pluginSrc 'package.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+$name = $pkg.name
+$short = ($name -split '/')[-1]
+Write-Host "[..] 插件：$name"
+
+# 1) 复制到 ~/.dsh/plugins/<short>
+$pluginsRoot = Join-Path $DshHome 'plugins'
+New-Item -ItemType Directory -Force -Path $pluginsRoot | Out-Null
+$target = Join-Path $pluginsRoot $short
+if (Test-Path $target) { Remove-Item $target -Recurse -Force }
+Copy-Item $pluginSrc $target -Recurse
+
+# 2) 告诉插件：主程序在哪（绝对路径，别用相对路径）
+Set-Content -Path (Join-Path $target 'agent-path.txt') -Value $here -Encoding UTF8
+Write-Host "[OK] 主程序目录：$here"
+
+# 3) 注册到 desktop profile
+$profileDir = Join-Path $DshHome 'profiles\desktop'
+New-Item -ItemType Directory -Force -Path $profileDir | Out-Null
+$pj = Join-Path $profileDir 'package.json'
+if (-not (Test-Path $pj)) {
+  Write-Host "[X] profile 里没有 package.json：$pj"
+  Write-Host "    先在 DSH 里打开一次（让它初始化），再运行本脚本。"
   exit 1
 }
+Copy-Item $pj "$pj.bak-xiaoxi" -Force
 
-$profiles = Get-ChildItem $profilesDir -Directory | Where-Object { Test-Path (Join-Path $_.FullName 'package.json') }
-if (-not $profiles) {
-  Write-Host '  [!!] DSH 里还没有任何 profile' -ForegroundColor Red
-  Read-Host '  按回车退出'
-  exit 1
+$cfg = Get-Content $pj -Raw -Encoding UTF8 | ConvertFrom-Json
+if (-not $cfg.PSObject.Properties['dependencies']) {
+  $cfg | Add-Member -NotePropertyName dependencies -NotePropertyValue ([pscustomobject]@{})
+}
+$link = 'link:' + ($target -replace '\\', '/')
+if ($cfg.dependencies.PSObject.Properties[$name]) {
+  $cfg.dependencies.$name = $link
+} else {
+  $cfg.dependencies | Add-Member -NotePropertyName $name -NotePropertyValue $link
 }
 
-$done = 0
-foreach ($prof in $profiles) {
-  $pkgPath = Join-Path $prof.FullName 'package.json'
-  try {
-    $json = Get-Content -Raw -Encoding UTF8 $pkgPath | ConvertFrom-Json
-  } catch {
-    Write-Host "  [..] 跳过 $($prof.Name)：package.json 读不了"
-    continue
-  }
-  if (-not $json.dsh -or -not $json.dsh.profile) {
-    Write-Host "  [..] 跳过 $($prof.Name)：不是 DSH profile"
-    continue
-  }
+if (-not $cfg.dsh) { $cfg | Add-Member -NotePropertyName dsh -NotePropertyValue ([pscustomobject]@{}) }
+if (-not $cfg.dsh.profile) { $cfg.dsh | Add-Member -NotePropertyName profile -NotePropertyValue ([pscustomobject]@{}) }
+$bundles = @($cfg.dsh.profile.bundles)
+if ($bundles -notcontains $name) { $bundles += $name }
+$cfg.dsh.profile | Add-Member -NotePropertyName bundles -NotePropertyValue $bundles -Force
 
-  Write-Host "  [..] 处理 profile: $($prof.Name)"
+$cfg | ConvertTo-Json -Depth 10 | Set-Content $pj -Encoding UTF8
+Write-Host "[OK] 已写入 profile/package.json"
 
-  # 1) 复制插件文件
-  $dest = Join-Path $prof.FullName 'node_modules\@local\dsh-live-agent'
-  if (Test-Path $dest) {
-    $item = Get-Item $dest -Force
-    if ($item.LinkType) { cmd /c "rmdir `"$dest`"" 2>$null }   # 旧 junction/symlink
-    else { Remove-Item $dest -Recurse -Force }
-  }
-  New-Item -ItemType Directory -Force -Path (Split-Path $dest -Parent) | Out-Null
-  Copy-Item -Path $pluginSrc -Destination $dest -Recurse -Force
-  # 插件被复制到 node_modules 里，相对路径会失效，写成安装目录的绝对路径
-  Set-Content -Path (Join-Path $dest 'agent-path.txt') -Value $root -Encoding UTF8 -NoNewline
-
-  # 2) package.json：只加 bundles。
-  #    不写 dependencies 的 link: —— 那个绝对路径一旦文件夹被移动/删除，
-  #    DSH 下次启动会解析失败，直接打不开（踩过）。
-  if ($json.dependencies) {
-    $props = $json.dependencies.PSObject.Properties.Name
-    if ($props -contains '@local/dsh-live-agent') { $json.dependencies.PSObject.Properties.Remove('@local/dsh-live-agent') }
-  }
-
-  $bundles = @($json.dsh.profile.bundles)
-  if ($bundles -notcontains '@local/dsh-live-agent') { $bundles += '@local/dsh-live-agent' }
-  $json.dsh.profile.bundles = $bundles
-
-  $out = $json | ConvertTo-Json -Depth 12
-  [IO.File]::WriteAllText($pkgPath, $out, [Text.UTF8Encoding]::new($false))
-  $done++
-  Write-Host "  [OK] 已写入 $($prof.Name)" -ForegroundColor Green
-}
-
-if ($done -eq 0) {
-  Write-Host '  [!!] 没有可以安装的 profile' -ForegroundColor Red
-  Read-Host '  按回车退出'
-  exit 1
+# 4) 在 node_modules/@local 里做链接（DSH 从这里找包）
+$localDir = Join-Path $profileDir 'node_modules\@local'
+New-Item -ItemType Directory -Force -Path $localDir | Out-Null
+$linkPath = Join-Path $localDir $short
+if (Test-Path $linkPath) { Remove-Item $linkPath -Recurse -Force -ErrorAction SilentlyContinue }
+try {
+  New-Item -ItemType Junction -Path $linkPath -Target $target | Out-Null
+  Write-Host "[OK] 已建立链接：node_modules\@local\$short"
+} catch {
+  # 退路：复制一份（不影响使用）
+  Copy-Item $target $linkPath -Recurse
+  Write-Host "[OK] 已复制到 node_modules\@local\$short"
 }
 
 Write-Host ''
-Write-Host '  装好了！' -ForegroundColor Cyan
-Write-Host '  现在请：完全退出 DSH（不是最小化），重新打开。'
-Write-Host '  左侧栏就会出现「小汐 AI 直播平台」，点进去就是设置页。'
+Write-Host '=========================================='
+Write-Host ' 装好了。接下来：'
+Write-Host '   1. 完全退出 DSH（托盘也退出）'
+Write-Host '   2. 重新打开 DSH'
+Write-Host '   3. 左侧栏会出现「小汐AI直播平台」'
 Write-Host ''
-Read-Host '  按回车退出'
+Write-Host ' 如果没出现：'
+Write-Host '   - 在 DSH 里打开 设置 → 插件，看有没有 @local/dsh-live-agent'
+Write-Host '   - 把本窗口截图发我'
+Write-Host '=========================================='

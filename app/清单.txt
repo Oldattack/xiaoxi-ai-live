@@ -1,4 +1,4 @@
-分销版文件列表
+小汐AI直播平台 v1.8.0
 
 AGENT.md
 VERSION
@@ -29,7 +29,10 @@ xiaoxi.mjs
 使用说明.md
 修复DSH.cmd
 修复DSH.ps1
+停止.cmd
+停止.ps1
 启动.cmd
 安装到DSH.cmd
 打开直播设置.cmd
 插件说明.md
+自检.cmd

@@ -51,7 +51,7 @@
     "quietTo": "",
     "endpoint": "",
     "apiKeyEnv": "",
-    "appId": "",
+    "appId": "1234567",
     "token": "",
     "apiKey": "",
     "baseUrl": "http://127.0.0.1:9799/tts",
@@ -116,8 +116,8 @@
     "maxQueue": 3
   },
   "douyin": {
-    "webRid": "",
-    "autoConnect": false
+    "webRid": "111181888150",
+    "autoConnect": true
   },
   "song": {
     "enabled": true,

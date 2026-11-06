@@ -1,9 +1,9 @@
 {
-  "version": "1.6.1",
-  "notes": "AGENT.md：修正解压路径说明（包内自带顶层目录）",
-  "package": "xiaoxi-ai-live-1.6.1.zip",
-  "size": 3858017,
-  "sha256": "dd0b83ec9305cf519af55202cd124370bc2cf102256b22963232b3097be5d189",
-  "publishedAt": "2026-11-06T13:27:17.519Z",
+  "version": "1.8.0",
+  "notes": "修复启动脚本行尾问题；插件安装改为正确的 DSH 注册方式；更新入口整合到主页与顶栏",
+  "package": "xiaoxi-ai-live-1.8.0.zip",
+  "size": 3851203,
+  "sha256": "03f90c5bc9813c649d1218acd2967f5f1ecae2a957d1223aa0281e1586c70133",
+  "publishedAt": "2026-11-06T16:13:12.807Z",
   "minAppVersion": "1.0.0"
 }

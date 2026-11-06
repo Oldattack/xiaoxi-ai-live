@@ -20,6 +20,9 @@ window.__ModuleLoader__.load({
       'status.checking': '正在检查…',
       'action.reload': '重新加载',
       'action.window': '独立窗口打开',
+        'action.update': '检查更新',
+        'action.updating': '更新中…',
+        'action.version': '版本',
       'offline.title': '本地直播服务没有运行',
       'offline.hint': '先在终端里启动它（窗口不要关）：',
       'offline.cmd': 'cd xiaoxi-live && node server.mjs',
@@ -93,6 +96,9 @@ window.__ModuleLoader__.load({
         const [error, setError] = useState('');
         const frameRef = useRef(null);
         const loaded = useRef(false);
+        const [ver, setVer] = useState('');
+        const [upd, setUpd] = useState(null);     // { hasUpdate, latest, current, notes }
+        const [updBusy, setUpdBusy] = useState(false);
 
         useEffect(() => {
           let stop = false;
@@ -107,6 +113,10 @@ window.__ModuleLoader__.load({
             }
           }
           tick();
+          fetch('/live-agent/version', { cache: 'no-store' })
+            .then((r) => r.json())
+            .then((j) => { if (!stop && j && j.version) setVer(j.version); })
+            .catch(() => {});
           const timer = setInterval(tick, 3000);
           return () => { stop = true; clearInterval(timer); };
         }, []);
@@ -124,6 +134,32 @@ window.__ModuleLoader__.load({
           } finally {
             setBusy('');
           }
+        }
+
+        async function checkUpdate() {
+          setUpdBusy(true);
+          setError('');
+          try {
+            const r = await fetch('/live-agent/update/check', { method: 'POST' });
+            const j = await r.json();
+            if (j && j.ok === false) { setError(j.reason || '检查失败'); setUpd(null); }
+            else setUpd(j);
+          } catch (e) {
+            setError(String((e && e.message) || e));
+          } finally { setUpdBusy(false); }
+        }
+
+        async function doUpdate() {
+          if (!upd || !upd.hasUpdate) { await checkUpdate(); return; }
+          setUpdBusy(true);
+          try {
+            const r = await fetch('/live-agent/update/apply', { method: 'POST' });
+            const j = await r.json();
+            if (j && j.ok === false) setError(j.error || '更新失败');
+            else { setError(''); setUpd(null); setStatus('checking'); }
+          } catch (e) {
+            setError(String((e && e.message) || e));
+          } finally { setUpdBusy(false); }
         }
 
         useEffect(() => {
@@ -155,12 +191,32 @@ window.__ModuleLoader__.load({
                   busy === 'stop' ? '停止中…' : '停止服务')
               : h('button', { className: 'dsh-la-btn', disabled: busy === 'start', onClick: () => act('start') },
                   busy === 'start' ? '启动中…' : '启动服务'),
+            ver ? h('span', { className: 'dsh-la-pill' }, 'v' + ver) : null,
+            upd && upd.hasUpdate
+              ? h('button', {
+                  className: 'dsh-la-btn',
+                  style: { background: 'var(--dsw-alias-brand-primary)', color: '#fff', borderColor: 'transparent' },
+                  disabled: updBusy,
+                  onClick: doUpdate,
+                }, updBusy ? t('action.updating') : ('更新到 v' + upd.latest))
+              : h('button', { className: 'dsh-la-btn', disabled: updBusy, onClick: checkUpdate },
+                  updBusy ? t('action.updating') : t('action.update')),
             h('button', { className: 'dsh-la-btn', onClick: () => setNonce(nonce + 1) }, t('action.reload')),
             h('button', {
               className: 'dsh-la-btn',
               onClick: () => window.open(ORIGIN + '/settings', '_blank', 'width=1600,height=1000'),
             }, t('action.window')),
           ),
+          upd && upd.hasUpdate && upd.notes
+            ? h('div', {
+                style: {
+                  padding: '8px 16px', fontSize: '12.5px',
+                  background: 'var(--dsw-alias-bg-layer-2)',
+                  borderBottom: '1px solid var(--dsw-alias-border-l1)',
+                  color: 'var(--dsw-alias-label-secondary)',
+                },
+              }, '新版本 v' + upd.latest + '：' + upd.notes)
+            : null,
           h('div', { className: 'dsh-la-body' },
             status === 'offline'
               ? h('div', { className: 'dsh-la-offline' },

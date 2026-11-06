@@ -122,6 +122,13 @@
   .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#2a2333;color:#fff;
     padding:10px 18px;border-radius:10px;font-size:13px;opacity:0;transition:.22s;pointer-events:none;z-index:99}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .upd-bar{display:flex;align-items:center;gap:10px;background:#eaf8f1;border:1px solid #bfe6da;
+    color:#0f7a55;border-radius:14px;padding:12px 16px;margin-bottom:14px;font-size:13.5px}
+  .upd-bar .dot{width:8px;height:8px;border-radius:50%;background:#0f7a55;box-shadow:0 0 0 4px #d6f0e6}
+  .upd-bar .btn{margin-left:auto}
+  .upd-bar.bad{background:#fdf3ee;border-color:#f6d8cd;color:#a4603f}
+  .upd-bar.bad .dot{background:#e2603f;box-shadow:0 0 0 4px #fbe3da}
 </style>
 </head>
 <body>
@@ -132,7 +139,9 @@
   <span class="pill" id="pSource"><i></i>弹幕源</span>
   <span class="pill" id="pGate"><i></i>回复中</span>
   <span class="pill" id="pLat"><i></i>耗时 —</span>
+  <a class="pill" id="pVer" style="cursor:pointer" title="点击检查更新">v—</a>
   <div class="grow"></div>
+  <button class="btn" id="shutdown" style="color:#c0392b;border-color:#f0c4c0">关闭服务</button>
   <button class="btn" id="reload">重新读取</button>
   <button class="btn pri" id="save">保存并生效</button>
 </div>
@@ -175,6 +184,12 @@
         </div>
       </div>
 
+      <div class="upd-bar" id="updBar" style="display:none">
+        <span class="dot"></span>
+        <span id="updBarText">有新版本可用</span>
+        <button class="btn sm" id="updBarGo">去更新</button>
+      </div>
+
       <div class="home-stats">
         <div class="n"><b id="hRecv">0</b><span>收到弹幕</span></div>
         <div class="n"><b id="hRep">0</b><span>回了她</span></div>
@@ -197,6 +212,7 @@
           <div class="li"><b>对齐 OBS</b><button class="btn sm" id="actAlign">一键对齐</button></div>
           <div class="li"><b>清空点歌台</b><button class="btn sm" id="actClearSong">清空</button></div>
           <div class="li"><b>说出这句话</b><button class="btn sm" id="actSay">试一句</button></div>
+            <div class="li"><b>检查更新</b><button class="btn sm" id="actUpdate">检查</button></div>
         </div>
       </div>
     </div>
@@ -423,9 +439,9 @@
       <div class="card">
         <h3>版本与更新<span class="live">自动同步</span></h3>
         <p class="sub">有新版本会在这里提示，点一下就能升级；升级不会覆盖你的配置。</p>
-        <div class="row"><label>当前版本</label><div><b id="appVer">—</b> <span class="mini" id="updState"></span></div></div>
+        <div class="row"><label>当前版本</label><div><b id="appVer">—</b> <span id="updState" style="margin-left:8px;font-size:12.5px;color:var(--ink3)">还没检查过</span></div></div>
         <div class="row" id="updAddrRow" style="display:none"><label>更新地址</label><div>
-          <input class="inp" id="manifestUrl" placeholder="更新服务器地址（一般不用改）">
+          <input class="inp" id="manifestUrl" readonly style="background:#f7f3ee;color:#6d6478">
           <div class="hint">出厂已配好，改成别的可能导致收不到更新</div>
         </div></div>
         <div class="row"><label></label><div style="display:flex;gap:8px">
@@ -474,6 +490,16 @@
       <div class="mini">OBS 浏览器源抓这个地址，1920×1080</div>
       <div class="mini" style="margin-top:6px;color:var(--ink)">http://127.0.0.1:8792/</div>
     </div>
+  </div>
+</div>
+
+<div id="byeLayer" style="display:none;position:fixed;inset:0;background:rgba(20,10,8,.75);z-index:999;place-items:center">
+  <div style="background:#fff;border-radius:20px;padding:36px 44px;text-align:center;max-width:460px">
+    <div style="font-size:22px;font-weight:600;color:#2a2333">小汐已经下班了</div>
+    <div style="margin-top:10px;font-size:13.5px;color:#8b8397;line-height:1.8">
+      服务和后台进程都已停止，不会再说话。<br>这个页面可以直接关掉。
+    </div>
+    <div style="margin-top:18px;font-size:12.5px;color:#b3aabd">想再开：双击「启动.cmd」</div>
   </div>
 </div>
 
@@ -967,7 +993,13 @@ function cmpVer(a, b) {
 }
 $('updCheck').onclick = async function () {
   var url = $('manifestUrl').value.trim();
-  if (!url) { toast('先填更新地址'); return; }
+  if (!url) {
+    $('updState').textContent = '先填更新地址（点上面的「填我自己的地址」也行）';
+    $('updState').style.color = '#c0392b';
+    $('manifestUrl').focus();
+    toast('先填更新地址');
+    return;
+  }
   this.disabled = true;
   try {
     var r = await api('/api/update/check', { manifestUrl: url });
@@ -1032,8 +1064,12 @@ $('updApply').onclick = async function () {
   if (!updArm) {
     updArm = true;
     btn.textContent = '再点一次确认更新';
+      btn.style.background = "#c0392b";
+      btn.style.color = "#fff";
+      $("updState").textContent = "再点一次按钮才开始更新（8 秒内有效）";
+      $("updState").style.color = "#c0392b";
     clearTimeout(updArmTimer);
-    updArmTimer = setTimeout(function () { updArm = false; btn.textContent = '立即更新'; }, 8000);
+    updArmTimer = setTimeout(function () { updArm = false; btn.textContent = '立即更新'; btn.style.background = ''; btn.style.color = ''; }, 8000);
     return;
   }
   clearTimeout(updArmTimer); updArm = false; btn.textContent = '立即更新';
@@ -1107,6 +1143,7 @@ $('homeStart').onclick = async function () {
     await api('/api/scene-window', { action: 'use-browser-source' });
     await api('/api/config', { gate: { enabled: true } });
     toast('准备好了，去直播伴侣点开播');
+
     load();
   } catch (e) { toast('启动失败：' + e.message); }
   b.disabled = false; b.textContent = '开始直播';
@@ -1134,11 +1171,96 @@ setInterval(function () {
   if (document.querySelector('.pane.on') && document.querySelector('.pane.on').id === 'p0') load();
 }, 6000);
 
+
+/* ─────────── 关闭服务（连后台一起关） ─────────── */
+var byeArmed = false;
+var byeTimer = null;
+function doShutdown() {
+  var btn = document.getElementById('shutdown');
+  if (!btn) return;
+  if (!byeArmed) {
+    byeArmed = true;
+    btn.textContent = '再点一次确认关闭';
+    btn.style.background = '#c0392b';
+    btn.style.color = '#fff';
+    clearTimeout(byeTimer);
+    byeTimer = setTimeout(function () {
+      byeArmed = false;
+      btn.textContent = '关闭服务';
+      btn.style.background = '';
+      btn.style.color = '#c0392b';
+    }, 8000);
+    toast('再点一次「确认关闭」，会停掉服务和后台');
+    return;
+  }
+  clearTimeout(byeTimer);
+  byeArmed = false;
+  btn.disabled = true;
+  btn.textContent = '正在关闭…';
+  fetch('/api/shutdown', { method: 'POST' })
+    .catch(function () {})
+    .then(function () {
+      var layer = document.getElementById('byeLayer');
+      if (layer) layer.style.display = 'grid';
+    });
+}
+var _sd = document.getElementById('shutdown');
+if (_sd) _sd.onclick = doShutdown;
+
 /* ─────────── 启动 ─────────── */
 load();
 loadTts();
 loadVersion();
+checkUpdateQuick();
 loadAvatar();
+
+/* ─────────── 版本 / 更新（顶栏 + 主页） ─────────── */
+var UPD_LATEST = null;
+
+function paintVer(version, info) {
+  var el = document.getElementById("pVer");
+  if (el) el.textContent = "v" + (version || "—");
+  var bar = document.getElementById("updBar");
+  if (!bar) return;
+  if (info && info.ok && info.hasUpdate) {
+    bar.style.display = "flex";
+    bar.className = "upd-bar";
+    document.getElementById("updBarText").textContent = "有新版本 " + info.latest + "（当前 " + info.current + "），点右边更新";
+    UPD_LATEST = info;
+  } else if (info && info.ok && !info.hasUpdate) {
+    bar.style.display = "flex";
+    bar.className = "upd-bar";
+    document.getElementById("updBarText").textContent = "已经是最新版（" + info.current + "）";
+  } else {
+    bar.style.display = "none";
+  }
+}
+
+async function checkUpdateQuick() {
+  try {
+    var r = await api("/api/update");
+    paintVer(r.version, null);
+    if (r.update && r.update.manifestUrl) {
+      var c = await api("/api/update/check", {});
+      paintVer(r.version, c);
+    }
+  } catch (e) {}
+}
+
+var _actUpdate = document.getElementById("actUpdate");
+if (_actUpdate) _actUpdate.onclick = async function () {
+  try {
+    var c = await api("/api/update/check", {});
+    paintVer((await api("/api/update")).version, c);
+    document.querySelector(".nav a[data-p=\"p4\"]").click();
+    toast(c.ok ? (c.hasUpdate ? "发现新版本 " + c.latest : "已经是最新版") : ("检查失败：" + (c.reason || "")));
+  } catch (e) { toast("检查失败：" + e.message); }
+};
+var _pVer = document.getElementById("pVer");
+if (_pVer) _pVer.onclick = function () { document.querySelector(".nav a[data-p=\"p4\"]").click(); };
+var _updGo = document.getElementById("updBarGo");
+if (_updGo) _updGo.onclick = function () { document.querySelector(".nav a[data-p=\"p4\"]").click(); };
+
 </script>
 </body>
 </html>

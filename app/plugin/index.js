@@ -25,7 +25,7 @@ function agentDir() {
   if (fromEnv) return fromEnv;
   try {
     const line = readFileSync(path.join(DIR, 'agent-path.txt'), 'utf8').trim();
-    if (line) return path.isAbsolute(line) ? line : path.resolve(DIR, line);
+    if (line) return line;
   } catch { /* 没配就用默认 */ }
   return path.join(DIR, '..', 'xiaoxi-live');
 }
@@ -88,7 +88,7 @@ async function start() {
     return { ok: false, error: '找不到独立的 node.exe（装 Node.js，或用环境变量 LIVE_AGENT_NODE 指一个）' };
   }
 
-  const child = spawn(nodeBin, ['supervisor.mjs'], {
+  const child = spawn(nodeBin, ['supervisor.mjs', '--parent-pid', String(process.pid)], {
     cwd: agentDir(),
     detached: true,
     stdio: 'ignore',
@@ -128,6 +128,22 @@ async function stop() {
   return { ok: false, error: '进程还在响应，可能不是它（端口被别的程序占着）' };
 }
 
+/** 转发到本地直播服务 */
+async function callService(pathname, method = 'GET', body) {
+  try {
+    const opt = { method, signal: AbortSignal.timeout(180000) };
+    if (body !== undefined) {
+      opt.headers = { 'content-type': 'application/json' };
+      opt.body = JSON.stringify(body);
+    }
+    const r = await fetch(`http://127.0.0.1:${PORT}${pathname}`, opt);
+    const text = await r.text();
+    try { return JSON.parse(text); } catch { return { ok: r.ok, error: text.slice(0, 300) }; }
+  } catch (e) {
+    return { ok: false, error: (e && e.message) || '连不上本地服务' };
+  }
+}
+
 function json(res, code, body) {
   try {
     res.writeHead(code, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
@@ -140,6 +156,11 @@ async function handler(req, res) {
   const p = url.pathname.replace(/^\/live-agent/, '') || '/';
 
   if (p === '/status' && req.method === 'GET') return json(res, 200, await status());
+
+  // 更新：转发给本地服务（官方源写死在服务里，客户不用填地址）
+  if (p === '/version' && req.method === 'GET') return json(res, 200, await callService('/api/update', 'GET'));
+  if (p === '/update/check' && req.method === 'POST') return json(res, 200, await callService('/api/update/check', 'POST', {}));
+  if (p === '/update/apply' && req.method === 'POST') return json(res, 200, await callService('/api/update/apply', 'POST', {}));
   if (p === '/start' && req.method === 'POST') return json(res, 200, await start());
   if (p === '/stop' && req.method === 'POST') return json(res, 200, await stop());
   return json(res, 404, { ok: false, error: 'no route' });
