@@ -1,9 +1,9 @@
 {
-  "version": "1.6.0",
-  "notes": "重写 AGENT.md：给 AI 的部署规格按实际文件校正；一句话部署同步更新",
-  "package": "xiaoxi-ai-live-1.6.0.zip",
-  "size": 3857865,
-  "sha256": "b2767526baf4844b16ec934a270cda004ea550b473858a1a8f3d9e48dcd0772c",
-  "publishedAt": "2026-11-06T13:26:34.904Z",
+  "version": "1.6.1",
+  "notes": "AGENT.md：修正解压路径说明（包内自带顶层目录）",
+  "package": "xiaoxi-ai-live-1.6.1.zip",
+  "size": 3858017,
+  "sha256": "dd0b83ec9305cf519af55202cd124370bc2cf102256b22963232b3097be5d189",
+  "publishedAt": "2026-11-06T13:27:17.519Z",
   "minAppVersion": "1.0.0"
 }

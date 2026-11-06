@@ -64,19 +64,22 @@ Test-NetConnection -ComputerName 127.0.0.1 -Port 8792 -InformationLevel Quiet
 
 ### 2.1 解压到 D 盘
 
-压缩包**没有顶层目录**（文件就在根上），所以必须先建目录再解压：
+压缩包解压后自带一层 `xiaoxi-ai-live\` 目录，所以**直接解到 D 盘根目录**即可：
 
 ```powershell
-New-Item -ItemType Directory -Force -Path "D:\xiaoxi-ai-live" | Out-Null
-Expand-Archive -Path "小汐AI直播平台.zip" -DestinationPath "D:\xiaoxi-ai-live" -Force
+Expand-Archive -Path "小汐AI直播平台.zip" -DestinationPath "D:\" -Force
 ```
 
-解压后这四个必须存在：
+解压后得到 `D:\xiaoxi-ai-live\`，里面应该是：
 
 - `D:\xiaoxi-ai-live\xiaoxi.mjs`
 - `D:\xiaoxi-ai-live\supervisor.mjs`
 - `D:\xiaoxi-ai-live\config.json`
 - `D:\xiaoxi-ai-live\sprites_hd\`
+
+> 如果 `D:\xiaoxi-ai-live` **已经存在**（用户以前装过），说明这是升级：
+> 先备份 `config.json`，复制新文件时**跳过 config.json**，装完后把备份放回去。
+> 或者直接让用户双击本目录下的 `一键更新.cmd`（更省事，配置完全不动）。
 
 **不要**装到 `C:\Program Files`（没写权限）。用户指定别的盘就换盘符。
 
