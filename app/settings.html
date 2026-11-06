@@ -422,21 +422,16 @@
     <div class="pane" id="p4">
       <div class="card">
         <h3>版本与更新<span class="live">自动同步</span></h3>
-        <p class="sub">填更新地址，这边就能拿到新版本；升级不会覆盖你的配置。</p>
+        <p class="sub">有新版本会在这里提示，点一下就能升级；升级不会覆盖你的配置。</p>
         <div class="row"><label>当前版本</label><div><b id="appVer">—</b> <span class="mini" id="updState"></span></div></div>
-        <div class="row"><label>更新地址</label><div>
-          <input class="inp" id="manifestUrl" placeholder="https://.../manifest.json 或 http://192.168.x.x:8792/updates/manifest.json">
-          <div class="hint">新版会自动下载并重启</div>
-          <div class="hint" style="margin-top:8px">
-            本机可用地址：
-            <a id="useLocal" style="color:var(--brand);text-decoration:underline">填我自己的地址</a>
-            <span id="localUrl" style="color:var(--ink2)"></span>
-          </div>
-          <div class="hint" style="margin-top:4px">别人用：把他那台电脑能访问到的地址给他（同一局域网填你的 IP；公网就把 updates 文件夹传上去）</div>
+        <div class="row" id="updAddrRow" style="display:none"><label>更新地址</label><div>
+          <input class="inp" id="manifestUrl" placeholder="更新服务器地址（一般不用改）">
+          <div class="hint">出厂已配好，改成别的可能导致收不到更新</div>
         </div></div>
         <div class="row"><label></label><div style="display:flex;gap:8px">
           <button class="btn" id="updCheck">检查更新</button>
           <button class="btn pri" id="updApply">立即更新</button>
+          <a id="updAdvanced" style="align-self:center;color:var(--ink2);font-size:12.5px;text-decoration:underline;cursor:pointer">手动设置</a>
         </div></div>
         <div class="row" id="updProgressRow" style="display:none"><label>进度</label><div>
           <div style="height:10px;border-radius:999px;background:rgba(120,110,100,.16);overflow:hidden">
@@ -935,22 +930,32 @@ async function loadModules() {
 
 /* ─────────── 版本与更新 ─────────── */
 var UPDATE = null;
-var LOCAL_URLS = [];
 async function loadVersion() {
   try {
     var r = await api('/api/update');
     $('appVer').textContent = r.version || '—';
-    $('manifestUrl').value = (r.update && r.update.manifestUrl) || '';
+    var url = (r.update && r.update.manifestUrl) || '';
+    $('manifestUrl').value = url;
+    // 没配地址才把输入框露出来，配好了就只留按钮，界面干净
+    var row = document.getElementById('updAddrRow');
+    var adv = document.getElementById('updAdvanced');
+    if (row) row.style.display = url ? 'none' : '';
+    if (adv) adv.style.display = url ? '' : 'none';
     UPDATE = r.latest || null;
-    LOCAL_URLS = r.localManifestUrls || [];
-    var lu = document.getElementById('localUrl');
-    if (lu) lu.textContent = LOCAL_URLS[1] || LOCAL_URLS[0] || '';
     if (UPDATE && UPDATE.hasUpdate) {
       $('updState').textContent = '发现新版本 ' + UPDATE.latest;
       $('updState').style.color = '#0f7a55';
     }
   } catch (e) { }
 }
+var advLink = document.getElementById('updAdvanced');
+if (advLink) advLink.onclick = function () {
+  var row = document.getElementById('updAddrRow');
+  if (row) row.style.display = '';
+  this.style.display = 'none';
+  var inp = document.getElementById('manifestUrl');
+  if (inp) inp.focus();
+};
 $('updCheck').onclick = async function () {
   var url = $('manifestUrl').value.trim();
   if (!url) { toast('先填更新地址'); return; }

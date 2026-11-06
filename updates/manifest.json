@@ -1,9 +1,9 @@
 {
-  "version": "1.5.4",
-  "notes": "新增：一键装进 DSH 侧栏（安装到DSH.cmd）",
-  "package": "xiaoxi-ai-live-1.5.4.zip",
-  "size": 3854556,
-  "sha256": "07e8fb8d97999f76fe8a85f097238efae785bd50e82221c31fb09b572ae87b52",
-  "publishedAt": "2026-11-06T12:54:32.917Z",
+  "version": "1.5.5",
+  "notes": "运行状态页去掉开发者话术：更新地址默认收起，改为手动设置",
+  "package": "xiaoxi-ai-live-1.5.5.zip",
+  "size": 3854424,
+  "sha256": "7432486f1a70451adbaa67a6cf3d94c6023b4c38c0fd17929cab10c997ae1e68",
+  "publishedAt": "2026-11-06T12:57:39.774Z",
   "minAppVersion": "1.0.0"
 }
