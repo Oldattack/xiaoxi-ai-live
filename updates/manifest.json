@@ -1,9 +1,9 @@
 {
-  "version": "1.4.0",
-  "notes": "设置页全新改版：主页、暖色主题、更清楚的文案",
-  "package": "xiaoxi-ai-live-1.4.0.zip",
-  "size": 3836278,
-  "sha256": "110bc51cc00b4e7c1b6fdb5c632099245f63fd51d98440b65aebdba04201063e",
-  "publishedAt": "2026-11-06T12:23:30.212Z",
+  "version": "1.5.0",
+  "notes": "新增：更新进度条；自带 DSH 插件与一键打开脚本",
+  "package": "xiaoxi-ai-live-1.5.0.zip",
+  "size": 3848819,
+  "sha256": "063c3733d2e4a9e4935d97fb52ccfde3033cc93e4db06d246e887c07c1822ac5",
+  "publishedAt": "2026-11-06T12:29:21.403Z",
   "minAppVersion": "1.0.0"
 }

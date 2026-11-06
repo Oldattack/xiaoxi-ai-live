@@ -424,11 +424,25 @@
         <h3>版本与更新<span class="live">自动同步</span></h3>
         <p class="sub">填更新地址，这边就能拿到新版本；升级不会覆盖你的配置。</p>
         <div class="row"><label>当前版本</label><div><b id="appVer">—</b> <span class="mini" id="updState"></span></div></div>
-        <div class="row"><label>更新地址</label><div><input class="inp" id="manifestUrl" placeholder="https://.../manifest.json">
-          <div class="hint">新版会自动下载并重启</div></div></div>
+        <div class="row"><label>更新地址</label><div>
+          <input class="inp" id="manifestUrl" placeholder="https://.../manifest.json 或 http://192.168.x.x:8792/updates/manifest.json">
+          <div class="hint">新版会自动下载并重启</div>
+          <div class="hint" style="margin-top:8px">
+            本机可用地址：
+            <a id="useLocal" style="color:var(--brand);text-decoration:underline">填我自己的地址</a>
+            <span id="localUrl" style="color:var(--ink2)"></span>
+          </div>
+          <div class="hint" style="margin-top:4px">别人用：把他那台电脑能访问到的地址给他（同一局域网填你的 IP；公网就把 updates 文件夹传上去）</div>
+        </div></div>
         <div class="row"><label></label><div style="display:flex;gap:8px">
           <button class="btn" id="updCheck">检查更新</button>
           <button class="btn pri" id="updApply">立即更新</button>
+        </div></div>
+        <div class="row" id="updProgressRow" style="display:none"><label>进度</label><div>
+          <div style="height:10px;border-radius:999px;background:rgba(120,110,100,.16);overflow:hidden">
+            <div id="updBar" style="height:100%;width:0%;background:var(--brand);border-radius:999px;transition:width .25s ease"></div>
+          </div>
+          <div class="hint" id="updProgressText" style="margin-top:6px">准备中…</div>
         </div></div>
       </div>
 
@@ -921,12 +935,16 @@ async function loadModules() {
 
 /* ─────────── 版本与更新 ─────────── */
 var UPDATE = null;
+var LOCAL_URLS = [];
 async function loadVersion() {
   try {
     var r = await api('/api/update');
     $('appVer').textContent = r.version || '—';
     $('manifestUrl').value = (r.update && r.update.manifestUrl) || '';
     UPDATE = r.latest || null;
+    LOCAL_URLS = r.localManifestUrls || [];
+    var lu = document.getElementById('localUrl');
+    if (lu) lu.textContent = LOCAL_URLS[1] || LOCAL_URLS[0] || '';
     if (UPDATE && UPDATE.hasUpdate) {
       $('updState').textContent = '发现新版本 ' + UPDATE.latest;
       $('updState').style.color = '#0f7a55';
@@ -945,16 +963,68 @@ $('updCheck').onclick = async function () {
   } catch (e) { $('updState').textContent = '检查失败'; }
   this.disabled = false;
 };
+/* ─── 更新进度条 ─── */
+var updTimer = null;
+function fmtMB(n) { return n ? (n / 1048576).toFixed(1) + ' MB' : ''; }
+function showUpdProgress(on) {
+  var row = document.getElementById('updProgressRow');
+  if (row) row.style.display = on ? '' : 'none';
+  if (!on) { var b = document.getElementById('updBar'); if (b) b.style.width = '0%'; }
+}
+function renderUpdProgress(p) {
+  var bar = document.getElementById('updBar');
+  var txt = document.getElementById('updProgressText');
+  if (!bar || !txt || !p) return;
+  var pct = 0, label = '';
+  if (p.phase === 'download') {
+    if (p.total) { pct = p.pct || Math.min(99, Math.round(p.received / p.total * 100)); label = '正在下载 ' + pct + '%（' + fmtMB(p.received) + ' / ' + fmtMB(p.total) + '）'; }
+    else { pct = 40; label = '正在下载 ' + fmtMB(p.received); }
+  } else if (p.phase === 'verify') { pct = 99; label = '校验安装包…'; }
+  else if (p.phase === 'install') { pct = 99; label = '正在写入文件…'; }
+  else if (p.phase === 'done') { pct = 100; label = '更新完成，正在重启…'; }
+  else if (p.phase === 'error') { pct = 100; label = '更新失败：' + (p.error || ''); }
+  bar.style.width = Math.max(0, Math.min(100, pct)) + '%';
+  txt.textContent = label;
+}
+function stopUpdPoll() { if (updTimer) { clearInterval(updTimer); updTimer = null; } }
+
 $('updApply').onclick = async function () {
   if (!confirm('现在更新？更新完服务会自动重启。')) return;
-  this.disabled = true;
+  var btn = this;
+  btn.disabled = true;
+  showUpdProgress(true);
+  renderUpdProgress({ phase: 'download', received: 0, total: 0, pct: 0 });
   $('updState').textContent = '正在下载…';
+  stopUpdPoll();
+  updTimer = setInterval(async function () {
+    try {
+      var r = await api('/api/update/progress');
+      if (r && r.progress) renderUpdProgress(r.progress);
+    } catch (e) {
+      // 服务已经退出重启，轮询断开就是"装好了"
+      stopUpdPoll();
+      renderUpdProgress({ phase: 'done' });
+      setTimeout(function () { location.reload(); }, 1800);
+    }
+  }, 400);
   try {
     var r = await api('/api/update/apply', {});
-    $('updState').textContent = r.needRestart ? '更新完成，正在重启…' : (r.message || '已是最新版');
-    toast(r.needRestart ? '更新完成，马上重启' : (r.message || '已是最新版'));
-  } catch (e) { $('updState').textContent = '更新失败：' + e.message; }
-  this.disabled = false;
+    stopUpdPoll();
+    if (r.needRestart) {
+      renderUpdProgress({ phase: 'done' });
+      $('updState').textContent = '更新完成，正在重启…';
+      toast('更新完成，马上重启');
+      setTimeout(function () { location.reload(); }, 2200);
+    } else {
+      showUpdProgress(false);
+      $('updState').textContent = r.message || '已是最新版';
+    }
+  } catch (e) {
+    stopUpdPoll();
+    renderUpdProgress({ phase: 'error', error: e.message });
+    $('updState').textContent = '更新失败：' + e.message;
+  }
+  btn.disabled = false;
 };
 
 /* ─────────── 主页按钮 ─────────── */

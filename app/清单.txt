@@ -3,6 +3,15 @@
 AGENT.md
 VERSION
 config.json
+plugin/README.md
+plugin/agent-path.txt
+plugin/client.js
+plugin/cordis.patch.yml
+plugin/icon.svg
+plugin/index.js
+plugin/locale/en.json
+plugin/locale/zh.json
+plugin/package.json
 scene.html
 settings.html
 sprites_hd/angry.png
@@ -16,3 +25,5 @@ xiaoxi.mjs
 一句话部署.txt
 使用说明.md
 启动.cmd
+打开直播设置.cmd
+插件说明.md
