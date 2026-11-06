@@ -1010,6 +1010,18 @@ function renderUpdProgress(p) {
   txt.textContent = label;
 }
 function stopUpdPoll() { if (updTimer) { clearInterval(updTimer); updTimer = null; } }
+// 等新版服务把端口重新占上
+async function waitServerBack(maxMs) {
+  var t0 = Date.now();
+  while (Date.now() - t0 < maxMs) {
+    try {
+      var r = await fetch('/health', { cache: 'no-store' });
+      if (r.ok) return true;
+    } catch (e) { /* 还没起来 */ }
+    await new Promise(function (s) { setTimeout(s, 700); });
+  }
+  return false;
+}
 
 var updArm = false, updArmTimer = null;
 $('updApply').onclick = async function () {
@@ -1056,9 +1068,23 @@ $('updApply').onclick = async function () {
     stopUpdPoll();
     if (r.needRestart) {
       renderUpdProgress({ phase: 'done' });
-      $('updState').textContent = '更新完成，正在重启…';
-      toast('更新完成，马上重启');
-      setTimeout(function () { location.reload(); }, 2200);
+      $('updState').textContent = '更新成功，正在重启服务…';
+      $('updState').style.color = '';
+      toast('更新成功，正在重启');
+      var back = await waitServerBack(30000);
+      if (back) {
+        var nv = r.to || '';
+        try { var u = await api('/api/update'); nv = u.version || nv; } catch (e2) { /* 忽略 */ }
+        $('appVer').textContent = nv;                    // 版本号当场变
+        $('updState').textContent = '已更新到 ' + nv + '，服务已重新连上';
+        $('updState').style.color = '#0f7a55';
+        renderUpdProgress({ phase: 'done' });
+        toast('更新完成：v' + nv);
+        setTimeout(function () { location.reload(); }, 1800);
+      } else {
+        $('updState').textContent = '已写入新版本，但服务没自动起来 — 请关掉黑窗口重新双击 启动.cmd';
+        $('updState').style.color = '#c0392b';
+      }
     } else {
       showUpdProgress(false);
       $('updState').textContent = r.message || '已是最新版';

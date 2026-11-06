@@ -34,7 +34,8 @@ function start() {
   child = spawn(process.execPath, ['xiaoxi.mjs', ...args], {
     cwd: HERE,
     stdio: 'inherit',
-    windowsHide: false
+    windowsHide: false,
+    env: { ...process.env, XIAOXI_SUPERVISED: '1' }
   });
 
   child.on('exit', (code, signal) => {
