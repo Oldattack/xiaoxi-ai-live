@@ -3,6 +3,7 @@
 AGENT.md
 VERSION
 config.json
+install-plugin.ps1
 plugin/README.md
 plugin/agent-path.txt
 plugin/client.js
@@ -27,5 +28,6 @@ xiaoxi.mjs
 一键更新.cmd
 使用说明.md
 启动.cmd
+安装到DSH.cmd
 打开直播设置.cmd
 插件说明.md

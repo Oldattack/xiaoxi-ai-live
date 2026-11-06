@@ -1,9 +1,9 @@
 {
-  "version": "1.5.3",
-  "notes": "自带一键更新脚本（update.ps1），程序内更新失败时兜底",
-  "package": "xiaoxi-ai-live-1.5.3.zip",
-  "size": 3851993,
-  "sha256": "b4c79f52a1c0def0ff6dd8642391ae456f9e0a1126366c4e0e315a63ff604b39",
-  "publishedAt": "2026-11-06T12:42:54.568Z",
+  "version": "1.5.4",
+  "notes": "新增：一键装进 DSH 侧栏（安装到DSH.cmd）",
+  "package": "xiaoxi-ai-live-1.5.4.zip",
+  "size": 3854556,
+  "sha256": "07e8fb8d97999f76fe8a85f097238efae785bd50e82221c31fb09b572ae87b52",
+  "publishedAt": "2026-11-06T12:54:32.917Z",
   "minAppVersion": "1.0.0"
 }
