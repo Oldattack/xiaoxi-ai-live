@@ -1,0 +1,15 @@
+# 系统垃圾
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 密钥与本地配置(绝不入库)
+.env
+.env.*
+config.local.json
+
+# 运行时产物
+node_modules/
+*.log
+*.pid
+__pycache__/

@@ -1,0 +1,141 @@
+{
+  "port": 8792,
+  "gate": {
+    "cooldownMs": 1500,
+    "perMinute": 40,
+    "perUserMs": 2000,
+    "dedupMs": 8000,
+    "ignoreAdmins": true,
+    "selfName": "小汐",
+    "banned": [
+      "加群",
+      "微信",
+      "代练",
+      "外挂",
+      "刷单",
+      "qq"
+    ],
+    "enabled": true,
+    "similarMs": 120000
+  },
+  "welcome": {
+    "minGapMs": 1000,
+    "perHour": 50,
+    "perUserMs": 20000
+  },
+  "behavior": {
+    "dryRun": false
+  },
+  "llm": {
+    "enabled": true,
+    "baseUrl": "https://api.deepseek.com/v1",
+    "model": "deepseek-flash",
+    "persona": "你是直播间里的主播「小汐」，说话短、口语化、有点憨，偶尔自嘲。很聪明，性格很温柔",
+    "maxChars": 40,
+    "temperature": 1.3,
+    "timeoutMs": 8000,
+    "maxTokens": 200,
+    "fastMode": true,
+    "bufferLine": "这个我想想啊…"
+  },
+  "tts": {
+    "provider": "custom",
+    "enabled": true,
+    "voice": "zh_female_tianmeixiaoyuan_moon_bigtts",
+    "rate": 8,
+    "pitch": 0,
+    "volume": 0,
+    "maxChars": 70,
+    "skipEmoji": true,
+    "quietFrom": "",
+    "quietTo": "",
+    "endpoint": "",
+    "apiKeyEnv": "",
+    "appId": "1234567",
+    "token": "",
+    "apiKey": "",
+    "baseUrl": "http://127.0.0.1:9799/tts",
+    "cluster": "volcano_tts",
+    "speed": 1,
+    "pitchRatio": 1,
+    "volumeRatio": 1,
+    "timeoutMs": 12000
+  },
+  "mock": {
+    "intervalMs": 2600,
+    "enterChance": 0.18,
+    "giftChance": 0.07
+  },
+  "scene": {
+    "layout": "landscape",
+    "autoOpen": true,
+    "obsMode": "browser",
+    "autoReloadSource": true,
+    "autoSyncObs": true
+  },
+  "quick": {
+    "enabled": true,
+    "ruleCooldownMs": 60000,
+    "welcomeLine": "欢迎 {user} 来到直播间～",
+    "giftLine": "谢谢 {user} 的{gift}！",
+    "welcomeVariants": [
+      "欢迎 {user} 来到直播间～",
+      "{user} 来啦，随便坐，别客气",
+      "哟，{user} 来了，正好聊着呢",
+      "欢迎 {user}，今天想听点啥",
+      "嗨 {user}，来得正好"
+    ],
+    "rules": [
+      {
+        "match": "几点|下播|播到",
+        "reply": "今天播到十一点，别熬太晚"
+      },
+      {
+        "match": "在吗|在不在",
+        "reply": "在的在的，一直看着呢"
+      },
+      {
+        "match": "粉丝群|怎么进群|群号",
+        "reply": "点关注加粉丝群"
+      }
+    ]
+  },
+  "idle": {
+    "enabled": true,
+    "afterSec": 150,
+    "maxPerHour": 12,
+    "lines": [
+      "好久没人说话啦…",
+      "那我自说自话一会儿",
+      "有人在吗？扣个 1 让我看看",
+      "这么安静，是不是都去吃饭了"
+    ]
+  },
+  "speech": {
+    "serialize": true,
+    "maxQueue": 3
+  },
+  "douyin": {
+    "webRid": "",
+    "autoConnect": true
+  },
+  "song": {
+    "enabled": true,
+    "perUserMs": 300000,
+    "globalMs": 5000,
+    "maxQueue": 8
+  },
+  "avatar": {
+    "height": 520,
+    "heightPortrait": 700,
+    "glow": true,
+    "sources": {}
+  },
+  "update": {
+    "enabled": false,
+    "manifestUrl": "",
+    "checkOnStart": true,
+    "intervalMinutes": 60,
+    "autoApply": false
+  }
+}
