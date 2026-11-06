@@ -1,8 +1,9 @@
-小汐AI直播平台 v1.8.0
+小汐AI直播平台 v1.9.2
 
 AGENT.md
 VERSION
 config.json
+dsh-check.ps1
 install-plugin.ps1
 plugin/README.md
 plugin/agent-path.txt

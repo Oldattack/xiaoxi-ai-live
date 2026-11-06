@@ -33,6 +33,27 @@ target_dir: D:\xiaoxi-ai-live
 
 ---
 
+## 0.5 DSH 插件（装了 DSH 才需要）
+
+启动脚本 `启动.cmd` 会自动检测：`%USERPROFILE%\.dsh` 存在就把插件装进 DSH 的 desktop profile。
+
+手动兜底：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install-plugin.ps1
+```
+
+它做三件事：
+1. 复制 `plugin\` 到 `%USERPROFILE%\.dsh\plugins\dsh-live-agent`
+2. 写 `agent-path.txt`（绝对路径，指向本安装目录）
+3. 在 profile 的 `package.json` 里加 `link:` 依赖 + `dsh.profile.bundles`，并在 `node_modules\@local\` 建 Junction
+
+**装完必须让用户完全退出 DSH 再打开**，客户端面板是启动时编排的。
+
+如果 DSH 因此打不开：双击 `修复DSH.cmd`，把插件从配置里摘掉。
+
+---
+
 ## 1. 前置检查（PREFLIGHT）
 
 ```powershell
@@ -76,7 +97,7 @@ cd D:\xiaoxi-ai-live
 Start-Process node -ArgumentList "supervisor.mjs" -WorkingDirectory "D:\xiaoxi-ai-live" -WindowStyle Hidden
 ```
 
-> `supervisor.mjs` 是守护进程：服务崩溃或更新后会自己拉起来。**不要**直接起 `server.mjs`。
+> `supervisor.mjs` 是守护进程：服务崩溃或更新后会自己拉起来。**不要**直接起 `xiaoxi.mjs`。
 
 ### 2.3 等待就绪
 
@@ -136,12 +157,26 @@ Start-Process "http://127.0.0.1:8792/settings"
 
 | 现象 | 判定 | 处理 |
 |---|---|---|
-| `/health` 连不上 | 进程没起 / 秒退 | 前台跑 `node server.mjs` 看报错；常见是 Node 版本低 |
+| `/health` 连不上 | 进程没起 / 秒退 | 前台跑 `node supervisor.mjs` 看报错；常见是 Node 版本低 |
 | 启动报 `EADDRINUSE` | 端口被占 | `Get-Process node` 找到旧进程杀掉，或 `node supervisor.mjs --port 8793` |
 | 设置页能开，收不到弹幕 | 房间不是公开的 / 未开播 | 让用户把直播间权限改成「所有人可进」并确认正在直播 |
 | OBS 里黑屏 | 浏览器源地址错 | 必须是 `http://127.0.0.1:8792/`，宽高 1920×1080 |
 | 点歌没声音 | OBS 没开音频 | 浏览器源属性里勾「控制音频通过 OBS」 |
 | 说话是机械音 | 没接语音服务 | 设置 → 说话方式 → 粘 API 密钥 |
+
+---
+
+## 6.5 停止服务
+
+三种方式，效果一样（主程序 + 守护进程一起退）：
+
+| 方式 | 说明 |
+|---|---|
+| 关掉启动窗口 | supervisor 盯着父进程，窗口没了就退出 |
+| `停止.cmd` | 结束所有相关 node 进程 |
+| 设置页「关闭服务」 | POST /api/shutdown，写 stop.flag 后退出 |
+
+**注意**：stop.flag 会在下次启动时自动清理，不会卡住启动。
 
 ---
 

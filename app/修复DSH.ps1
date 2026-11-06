@@ -1,11 +1,13 @@
 ﻿# 小汐AI直播平台 · 修复 DSH（当 DSH 打不开 / 加载失败时用）
 # 作用：从 DSH 的 profile 里摘掉小汐插件，让 DSH 恢复正常启动
 
+param([string]$DshHome = '')
+
 $ErrorActionPreference = 'Continue'
 try { [Console]::OutputEncoding = [Text.Encoding]::UTF8 } catch {}
 Add-Type -AssemblyName System.Windows.Forms | Out-Null
 
-$dshHome = if ($env:DSH_HOME) { $env:DSH_HOME } else { Join-Path $env:USERPROFILE '.dsh' }
+$dshHome = if ($DshHome) { $DshHome } elseif ($env:DSH_HOME) { $env:DSH_HOME } else { Join-Path $env:USERPROFILE '.dsh' }
 $autoYes = ($env:XIAOXI_AUTOYES -eq '1')
 $PLUGIN = '@local/dsh-live-agent'
 
@@ -39,7 +41,7 @@ foreach ($prof in (Get-ChildItem $profilesDir -Directory)) {
 
   # 2) 解析；解析不了就用最近的 package.json.bak-* 还原
   $json = $null
-  try { $json = Get-Content -Raw -Encoding UTF8 $pkg | ConvertFrom-Json } catch { $json = $null }
+  try { $rawTxt = [IO.File]::ReadAllText($pkg, [Text.Encoding]::UTF8).TrimStart([char]0xFEFF); $json = $rawTxt | ConvertFrom-Json } catch { $json = $null }
 
   if (-not $json) {
     Info '  package.json 已损坏，尝试用历史备份还原…' 
@@ -48,7 +50,7 @@ foreach ($prof in (Get-ChildItem $profilesDir -Directory)) {
     if ($old) {
       Copy-Item $old.FullName $pkg -Force
       Info "  已还原: $($old.Name)"
-      try { $json = Get-Content -Raw -Encoding UTF8 $pkg | ConvertFrom-Json } catch { $json = $null }
+      try { $rawTxt = [IO.File]::ReadAllText($pkg, [Text.Encoding]::UTF8).TrimStart([char]0xFEFF); $json = $rawTxt | ConvertFrom-Json } catch { $json = $null }
     }
   }
 
