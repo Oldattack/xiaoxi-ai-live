@@ -27,6 +27,8 @@ xiaoxi.mjs
 一句话部署.txt
 一键更新.cmd
 使用说明.md
+修复DSH.cmd
+修复DSH.ps1
 启动.cmd
 安装到DSH.cmd
 打开直播设置.cmd

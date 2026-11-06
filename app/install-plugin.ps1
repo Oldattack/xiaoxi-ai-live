@@ -63,12 +63,13 @@ foreach ($prof in $profiles) {
   # 插件被复制到 node_modules 里，相对路径会失效，写成安装目录的绝对路径
   Set-Content -Path (Join-Path $dest 'agent-path.txt') -Value $root -Encoding UTF8 -NoNewline
 
-  # 2) package.json：dependencies + bundles
-  if (-not $json.dependencies) {
-    $json | Add-Member -NotePropertyName dependencies -NotePropertyValue ([pscustomobject]@{}) -Force
+  # 2) package.json：只加 bundles。
+  #    不写 dependencies 的 link: —— 那个绝对路径一旦文件夹被移动/删除，
+  #    DSH 下次启动会解析失败，直接打不开（踩过）。
+  if ($json.dependencies) {
+    $props = $json.dependencies.PSObject.Properties.Name
+    if ($props -contains '@local/dsh-live-agent') { $json.dependencies.PSObject.Properties.Remove('@local/dsh-live-agent') }
   }
-  $json.dependencies | Add-Member -NotePropertyName '@local/dsh-live-agent' `
-    -NotePropertyValue ("link:" + ($pluginSrc -replace '\\', '/')) -Force
 
   $bundles = @($json.dsh.profile.bundles)
   if ($bundles -notcontains '@local/dsh-live-agent') { $bundles += '@local/dsh-live-agent' }
