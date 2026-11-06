@@ -1,9 +1,9 @@
 {
-  "version": "1.5.6",
-  "notes": "更新检查：失败自动重试；更新源版本比当前还旧时明确报警（防 CDN 缓存旧清单）",
-  "package": "xiaoxi-ai-live-1.5.6.zip",
-  "size": 3854763,
-  "sha256": "f26258756e5a9e79663b3b902e368705a10956c4bd9f0a033adaf4223965c6b8",
-  "publishedAt": "2026-11-06T13:01:55.275Z",
+  "version": "1.5.7",
+  "notes": "修复：点更新没反应（去掉 confirm 系统弹窗）；后端是旧代码时明确提示重启",
+  "package": "xiaoxi-ai-live-1.5.7.zip",
+  "size": 3855211,
+  "sha256": "1c75f69632042efb56c2185fba0bb9f99906f492e3183670cfe65cbab3c28606",
+  "publishedAt": "2026-11-06T13:04:54.476Z",
   "minAppVersion": "1.0.0"
 }

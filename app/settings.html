@@ -1011,11 +1011,20 @@ function renderUpdProgress(p) {
 }
 function stopUpdPoll() { if (updTimer) { clearInterval(updTimer); updTimer = null; } }
 
+var updArm = false, updArmTimer = null;
 $('updApply').onclick = async function () {
   var url = $('manifestUrl').value.trim();
   if (!url) { toast('先填上面的更新地址'); $('manifestUrl').focus(); return; }
-  if (!confirm('现在更新？更新完服务会自动重启。')) return;
   var btn = this;
+  // 不用 confirm()：iframe / 桌面壳里可能被静默拦截，表现就是“点了没反应”
+  if (!updArm) {
+    updArm = true;
+    btn.textContent = '再点一次确认更新';
+    clearTimeout(updArmTimer);
+    updArmTimer = setTimeout(function () { updArm = false; btn.textContent = '立即更新'; }, 8000);
+    return;
+  }
+  clearTimeout(updArmTimer); updArm = false; btn.textContent = '立即更新';
   btn.disabled = true;
   showUpdProgress(true);
   renderUpdProgress({ phase: 'download', received: 0, total: 0, pct: 0 });
@@ -1024,10 +1033,19 @@ $('updApply').onclick = async function () {
   stopUpdPoll();
   updTimer = setInterval(async function () {
     try {
-      var r = await api('/api/update/progress');
-      if (r && r.progress) renderUpdProgress(r.progress);
+      var res = await fetch('/api/update/progress', { cache: 'no-store' });
+      if (res.status === 404) {
+        // 后端是旧代码（文件更新了但服务没重启），别当成"重启完成"
+        stopUpdPoll();
+        renderUpdProgress({ phase: 'error', error: '服务还是旧版本，请关掉黑窗口重新双击 启动.cmd' });
+        $('updState').textContent = '服务是旧版本，重启后重试';
+        $('updState').style.color = '#c0392b';
+        return;
+      }
+      var j = await res.json();
+      if (j && j.progress) renderUpdProgress(j.progress);
     } catch (e) {
-      // 服务已经退出重启，轮询断开就是"装好了"
+      // 连不上了：服务正在退出重启，这才是"装好了"
       stopUpdPoll();
       renderUpdProgress({ phase: 'done' });
       setTimeout(function () { location.reload(); }, 1800);
