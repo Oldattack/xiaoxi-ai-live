@@ -989,12 +989,15 @@ function renderUpdProgress(p) {
 function stopUpdPoll() { if (updTimer) { clearInterval(updTimer); updTimer = null; } }
 
 $('updApply').onclick = async function () {
+  var url = $('manifestUrl').value.trim();
+  if (!url) { toast('先填上面的更新地址'); $('manifestUrl').focus(); return; }
   if (!confirm('现在更新？更新完服务会自动重启。')) return;
   var btn = this;
   btn.disabled = true;
   showUpdProgress(true);
   renderUpdProgress({ phase: 'download', received: 0, total: 0, pct: 0 });
   $('updState').textContent = '正在下载…';
+  $('updState').style.color = '';
   stopUpdPoll();
   updTimer = setInterval(async function () {
     try {
@@ -1008,7 +1011,7 @@ $('updApply').onclick = async function () {
     }
   }, 400);
   try {
-    var r = await api('/api/update/apply', {});
+    var r = await api('/api/update/apply', { manifestUrl: url });
     stopUpdPoll();
     if (r.needRestart) {
       renderUpdProgress({ phase: 'done' });
@@ -1023,6 +1026,8 @@ $('updApply').onclick = async function () {
     stopUpdPoll();
     renderUpdProgress({ phase: 'error', error: e.message });
     $('updState').textContent = '更新失败：' + e.message;
+    $('updState').style.color = '#c0392b';
+    toast('更新失败：' + e.message);
   }
   btn.disabled = false;
 };

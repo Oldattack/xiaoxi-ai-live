@@ -1,9 +1,9 @@
 {
-  "version": "1.5.0",
-  "notes": "新增：更新进度条；自带 DSH 插件与一键打开脚本",
-  "package": "xiaoxi-ai-live-1.5.0.zip",
-  "size": 3848819,
-  "sha256": "063c3733d2e4a9e4935d97fb52ccfde3033cc93e4db06d246e887c07c1822ac5",
-  "publishedAt": "2026-11-06T12:29:21.403Z",
+  "version": "1.5.1",
+  "notes": "修复：填了地址直接点更新不生效；失败提示更明显；下载超时缩短到 60 秒",
+  "package": "xiaoxi-ai-live-1.5.1.zip",
+  "size": 3849165,
+  "sha256": "303d568fe4cf69b8a56b506f46d13ca60e3e1d733934ecc82855e5bb53aea621",
+  "publishedAt": "2026-11-06T12:34:36.798Z",
   "minAppVersion": "1.0.0"
 }
