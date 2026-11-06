@@ -15,6 +15,22 @@
 
 ---
 
+## 自动更新
+
+已经在用的机器,在 **设置页 →「版本与更新」→ 更新地址** 里填:
+
+```
+https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/updates/manifest.json
+```
+
+点「检查更新」,看到新版本点「立即更新」即可。
+
+- 更新**不会覆盖 `config.json`**,直播间号、语音密钥、人设全部保留
+- 更新完服务自动重启,不用手动关窗口
+- 旧版本会自动备份到 `backup/<旧版本号>/`
+
+---
+
 ## 三分钟跑起来
 
 ### 1. 装 Node.js（只需一次）
