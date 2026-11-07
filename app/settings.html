@@ -4,6 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>小汐AI直播平台 · 设置</title>
+<script id="xx-theme-init">
+  (function () {
+    try {
+      var t = localStorage.getItem('xx-theme') || 'dark';
+      var real = t === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : t;
+      document.documentElement.setAttribute('data-theme', real);
+      document.documentElement.setAttribute('data-theme-pref', t);
+    } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+  })();
+</script>
 <style>
   :root{
     --warm:#fbf7f2; --card:#fff; --line:#efe9e2; --line2:#e4dcd3;
@@ -129,6 +139,97 @@
   .upd-bar .btn{margin-left:auto}
   .upd-bar.bad{background:#fdf3ee;border-color:#f6d8cd;color:#a4603f}
   .upd-bar.bad .dot{background:#e2603f;box-shadow:0 0 0 4px #fbe3da}
+
+  /* ══════════ 深色主题（毛玻璃）══════════ */
+  html[data-theme="dark"]{
+    --warm:#0e0c13;
+    --card:rgba(255,255,255,.055);
+    --line:rgba(255,255,255,.10);
+    --line2:rgba(255,255,255,.17);
+    --ink:#f2eef6; --ink2:#a79fb5; --ink3:#6f6880;
+    --brand:#ff7a4d; --brand-soft:rgba(255,122,77,.15);
+    --ok:#4ad19a; --ok-soft:rgba(74,209,154,.15);
+    --warn:#ffb648; --warn-soft:rgba(255,182,72,.15);
+  }
+  html[data-theme="dark"] body{background:#0e0c13}
+  html[data-theme="dark"] .top{background:rgba(255,255,255,.045);border-bottom-color:rgba(255,255,255,.08);backdrop-filter:blur(18px)}
+  html[data-theme="dark"] .brand .dot{box-shadow:0 0 0 4px rgba(255,122,77,.22), 0 0 18px rgba(255,122,77,.75)}
+  html[data-theme="dark"] .pill{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.13);color:var(--ink2)}
+  html[data-theme="dark"] .pill.on{background:rgba(74,209,154,.14);border-color:rgba(74,209,154,.32);color:#a8ecd0}
+  html[data-theme="dark"] .pill.off{background:rgba(255,90,80,.14);border-color:rgba(255,90,80,.34);color:#ffa59c}
+  html[data-theme="dark"] .btn{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:var(--ink)}
+  html[data-theme="dark"] .btn:hover{background:rgba(255,255,255,.11)}
+  html[data-theme="dark"] .btn.pri{background:linear-gradient(180deg,#ff8b5f,#f4673a);border-color:rgba(255,150,110,.5);color:#1c0f0a;box-shadow:0 12px 26px -12px rgba(255,122,77,.85)}
+  html[data-theme="dark"] .btn.pri:hover{background:linear-gradient(180deg,#ff9a70,#f9703f)}
+  /* 卡片 = 毛玻璃 */
+  html[data-theme="dark"] .card{
+    background:linear-gradient(160deg,rgba(255,255,255,.085),rgba(255,255,255,.035) 46%,rgba(255,255,255,.055));
+    border-color:rgba(255,255,255,.13);
+    box-shadow:0 26px 60px -44px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.18);
+    backdrop-filter:blur(22px) saturate(125%);
+  }
+  html[data-theme="dark"] .inp,
+  html[data-theme="dark"] textarea,
+  html[data-theme="dark"] select{
+    background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.16);color:var(--ink);
+  }
+  html[data-theme="dark"] .inp::placeholder,
+  html[data-theme="dark"] textarea::placeholder{color:#6a6279}
+  html[data-theme="dark"] .inp:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(255,122,77,.18)}
+  html[data-theme="dark"] .nav a{color:var(--ink2)}
+  html[data-theme="dark"] .nav a:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+  html[data-theme="dark"] .nav a.on{background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.07));color:#fff;border-color:rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+  html[data-theme="dark"] .nav .grp{color:#5f5870}
+  html[data-theme="dark"] .hint,html[data-theme="dark"] .mini{color:var(--ink3)}
+  html[data-theme="dark"] .toast{background:rgba(30,25,40,.96);color:#f2eef6;border:1px solid rgba(255,255,255,.14)}
+  html[data-theme="dark"] #byeLayer>div{background:linear-gradient(160deg,#241f30,#181420);border:1px solid rgba(255,255,255,.12)}
+  html[data-theme="dark"] #byeLayer>div>div{color:var(--ink)!important}
+  html[data-theme="dark"] .li:hover,html[data-theme="dark"] .row:hover{background:rgba(255,255,255,.03)}
+  html[data-theme="dark"] .upd-bar{background:rgba(74,209,154,.1);border-color:rgba(74,209,154,.3);color:#a8ecd0}
+  html[data-theme="dark"] .upd-bar .dot{background:#4ad19a;box-shadow:0 0 0 4px rgba(74,209,154,.18)}
+  html[data-theme="dark"] img[src*="sprites_hd"]{filter:drop-shadow(0 18px 28px rgba(0,0,0,.6))}
+
+  /* 外观设定用的主题卡 */
+  .thm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+  .thm{cursor:pointer;border:1px solid var(--line2);border-radius:14px;padding:10px;background:var(--card);transition:.15s;text-align:left}
+  .thm:hover{border-color:var(--brand)}
+  .thm.on{border-color:var(--brand);box-shadow:0 0 0 3px rgba(226,96,63,.16)}
+  .thm .pv{height:64px;border-radius:9px;position:relative;overflow:hidden;border:1px solid var(--line)}
+  .thm .pv i{position:absolute;border-radius:4px;display:block}
+  .thm .nm{margin-top:9px;font-size:13px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:6px}
+  .thm .nm b{font-size:10px;font-weight:600;padding:1px 6px;border-radius:5px;background:var(--brand-soft);color:var(--brand)}
+  .thm .ds{font-size:11.5px;color:var(--ink3);margin-top:3px}
+  .thm-light .pv{background:#f4efe9}
+  .thm-light .pv i{background:#fff;box-shadow:0 1px 3px rgba(150,110,80,.25)}
+  .thm-dark .pv{background:#0e0c13}
+  .thm-dark .pv i{background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+  .thm-auto .pv{background:linear-gradient(90deg,#f4efe9 0 50%,#0e0c13 50% 100%)}
+  .thm-auto .pv i{background:rgba(255,255,255,.55)}
+  .theme-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line2);background:var(--card);cursor:pointer;display:grid;place-items:center;font-size:15px;transition:.15s}
+  .theme-btn:hover{border-color:var(--brand);color:var(--brand)}
+  html[data-theme="dark"] .side-card,
+  html[data-theme="dark"] .soft,
+  html[data-theme="dark"] .home-hero{
+    background:linear-gradient(160deg,rgba(255,255,255,.085),rgba(255,255,255,.035) 46%,rgba(255,255,255,.055));
+    border-color:rgba(255,255,255,.13);
+    box-shadow:0 26px 60px -44px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.16);
+    backdrop-filter:blur(22px) saturate(125%);
+  }
+  html[data-theme="dark"] .side-card h3,
+  html[data-theme="dark"] .soft h3{color:var(--ink)}
+  html[data-theme="dark"] .b2{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16);color:var(--ink)}
+  html[data-theme="dark"] .b2:hover{background:rgba(255,255,255,.11)}
+  html[data-theme="dark"] .home-fig{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12)}
+  html[data-theme="dark"] .home-fig .tag{background:rgba(0,0,0,.45);color:#cfc6dc;border-color:rgba(255,255,255,.14)}
+  html[data-theme="dark"] .li{border-color:rgba(255,255,255,.07)}
+  html[data-theme="dark"] .li b{color:var(--ink)}
+  html[data-theme="dark"] .stat b{color:var(--ink)}
+  html[data-theme="dark"] [style*="background:#f7f3ee"]{background:rgba(255,255,255,.05)!important;color:var(--ink3)!important}
+  html[data-theme="dark"] #byeLayer>div{background:linear-gradient(160deg,#241f30,#181420)!important}
+  html[data-theme="dark"] #byeLayer>div div{color:var(--ink)!important}
+  html[data-theme="dark"] .sw{background:rgba(255,255,255,.16)}
+  html[data-theme="dark"] .sw.on{background:rgba(255,122,77,.75)}
+  html[data-theme="dark"] .toast{background:rgba(30,25,40,.96);color:#f2eef6;border:1px solid rgba(255,255,255,.14)}
 </style>
 </head>
 <body>
@@ -141,6 +242,7 @@
   <span class="pill" id="pLat"><i></i>耗时 —</span>
   <a class="pill" id="pVer" style="cursor:pointer" title="点击检查更新">v—</a>
   <div class="grow"></div>
+  <button class="theme-btn" id="themeQuick" title="切换深色 / 浅色">◐</button>
   <button class="btn" id="shutdown" style="color:#c0392b;border-color:#f0c4c0">关闭服务</button>
   <button class="btn" id="reload">重新读取</button>
   <button class="btn pri" id="save">保存并生效</button>
@@ -160,6 +262,7 @@
     <a data-p="p9">直播画面</a>
     <a data-p="p5">AI 大脑</a>
     <div class="grp">其他</div>
+        <a data-p="p12">外观设定</a>
     <a data-p="p10">插件</a>
     <a data-p="p4">运行状态</a>
   </div>
@@ -425,6 +528,53 @@
       </div>
     </div>
 
+    <!-- ══════ 外观设定 ══════ -->
+    <div class="pane" id="p12">
+      <div class="card">
+        <h3>界面主题</h3>
+        <p class="sub">深色适合夜里直播，浅色适合白天调参数。选「跟随系统」就跟着 Windows 走。</p>
+        <div class="thm-grid">
+          <button class="thm thm-light" data-theme-set="light">
+            <div class="pv"><i style="left:8px;top:8px;width:24px;height:46px"></i><i style="left:38px;top:8px;width:54px;height:20px"></i><i style="left:38px;top:32px;width:54px;height:22px"></i></div>
+            <div class="nm">浅色 <b>白天</b></div>
+            <div class="ds">暖白底，看久了不刺眼</div>
+          </button>
+          <button class="thm thm-dark" data-theme-set="dark">
+            <div class="pv"><i style="left:8px;top:8px;width:24px;height:46px"></i><i style="left:38px;top:8px;width:54px;height:20px"></i><i style="left:38px;top:32px;width:54px;height:22px"></i></div>
+            <div class="nm">深色 <b>推荐</b></div>
+            <div class="ds">毛玻璃面板，和 OBS 画面更搭</div>
+          </button>
+          <button class="thm thm-auto" data-theme-set="auto">
+            <div class="pv"><i style="left:8px;top:8px;width:24px;height:46px"></i><i style="left:38px;top:8px;width:54px;height:20px"></i><i style="left:38px;top:32px;width:54px;height:22px"></i></div>
+            <div class="nm">跟随系统</div>
+            <div class="ds">Windows 是深色她就深色</div>
+          </button>
+        </div>
+        <div class="row" style="margin-top:16px">
+          <label>毛玻璃</label>
+          <div>
+            <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="glassOn" checked> 开启
+            </label>
+            <div class="hint">推流时电脑吃力的话可以关掉，省一点显卡</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>效果预览</h3>
+        <p class="sub">点上面的主题卡立刻生效，不用保存。</p>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+          <span class="pill on"><i></i>画面就绪</span>
+          <span class="pill"><i></i>弹幕已连</span>
+          <span class="pill off"><i></i>服务未启动</span>
+          <button class="btn sm">普通按钮</button>
+          <button class="btn sm pri">主要按钮</button>
+          <input class="inp" style="max-width:170px" placeholder="输入框长这样">
+        </div>
+      </div>
+    </div>
+
     <!-- ══════ 插件 ══════ -->
     <div class="pane" id="p10">
       <div class="card">
@@ -440,14 +590,9 @@
         <h3>版本与更新<span class="live">自动同步</span></h3>
         <p class="sub">有新版本会在这里提示，点一下就能升级；升级不会覆盖你的配置。</p>
         <div class="row"><label>当前版本</label><div><b id="appVer">—</b> <span id="updState" style="margin-left:8px;font-size:12.5px;color:var(--ink3)">还没检查过</span></div></div>
-        <div class="row" id="updAddrRow" style="display:none"><label>更新地址</label><div>
-          <input class="inp" id="manifestUrl" readonly style="background:#f7f3ee;color:#6d6478">
-          <div class="hint">出厂已配好，改成别的可能导致收不到更新</div>
-        </div></div>
         <div class="row"><label></label><div style="display:flex;gap:8px">
           <button class="btn" id="updCheck">检查更新</button>
           <button class="btn pri" id="updApply">立即更新</button>
-          <a id="updAdvanced" style="align-self:center;color:var(--ink2);font-size:12.5px;text-decoration:underline;cursor:pointer">手动设置</a>
         </div></div>
         <div class="row" id="updProgressRow" style="display:none"><label>进度</label><div>
           <div style="height:10px;border-radius:999px;background:rgba(120,110,100,.16);overflow:hidden">
@@ -455,15 +600,6 @@
           </div>
           <div class="hint" id="updProgressText" style="margin-top:6px">准备中…</div>
         </div></div>
-      </div>
-
-      <div class="card">
-        <h3>实时数据</h3>
-        <div class="kv"><span>收到弹幕</span><b id="sRecv">0</b></div>
-        <div class="kv"><span>已回复</span><b id="sRep">0</b></div>
-        <div class="kv"><span>跳过</span><b id="sDrop">0</b></div>
-        <div class="kv"><span>响应耗时</span><b id="sLat">—</b></div>
-        <div class="kv"><span>运行时长</span><b id="sUp">—</b></div>
       </div>
 
       <div class="card">
@@ -484,11 +620,6 @@
       <div class="kv"><span>已回</span><b id="sideRep">0</b></div>
       <div class="kv"><span>丢弃</span><b id="sideDrop">0</b></div>
       <div class="kv"><span>运行</span><b id="sideUp">—</b></div>
-    </div>
-    <div class="side-card">
-      <h4>画面地址</h4>
-      <div class="mini">OBS 浏览器源抓这个地址，1920×1080</div>
-      <div class="mini" style="margin-top:6px;color:var(--ink)">http://127.0.0.1:8792/</div>
     </div>
   </div>
 </div>
@@ -542,6 +673,7 @@ document.querySelectorAll('.nav a').forEach(function (a) {
     if (a.dataset.p === 'p10') loadModules();
     if (a.dataset.p === 'p4') loadVersion();
     if (a.dataset.p === 'p11') loadAvatar();
+  syncTopLatency(a.dataset.p);
   };
 });
 
@@ -610,19 +742,14 @@ function fill(st) {
   renderSong(st);
   renderHome(st);
   highlightLayout(sc.layout || 'landscape');
-  $('sceneState').textContent = sc.obsMode === 'browser' ? '浏览器源 1920×1080 · 已对齐' : '还没对齐 OBS';
+    $('sceneState').textContent = (sc && sc.obsMode === 'browser') ? '✅ 已连上 OBS，画面在播' : '⚠ 还没连上 OBS，点上面的按钮';
 }
 
 function renderStats(st) {
   var s = st.stats || {};
   var lat = st.latency || {};
-  $('sRecv').textContent = s.received || 0;
-  $('sRep').textContent = s.replied || 0;
-  $('sDrop').textContent = s.dropped || 0;
-  $('sLat').textContent = (lat.avg ? Math.round(lat.avg) + ' ms' : '—');
   var up = st.uptimeSec || 0;
   var txt = up > 3600 ? Math.floor(up / 3600) + ' 小时 ' + Math.floor((up % 3600) / 60) + ' 分' : Math.floor(up / 60) + ' 分';
-  $('sUp').textContent = txt;
   $('sideRecv').textContent = s.received || 0;
   $('sideRep').textContent = s.replied || 0;
   $('sideDrop').textContent = s.dropped || 0;
@@ -701,6 +828,16 @@ async function load() {
   catch (e) { toast('连不上本地服务：' + e.message); return; }
   ST = st;
   try { fill(st); } catch (e) { toast('界面渲染出错：' + e.message); console.error(e); }
+  if (!window.APPEARANCE_APPLIED && st && st.config && st.config.appearance) {
+    window.APPEARANCE_APPLIED = true;
+    var ap = st.config.appearance;
+    if (ap.theme) applyTheme(ap.theme, false);
+    if (typeof ap.glass === 'boolean') {
+      var g = document.getElementById('glassOn');
+      if (g) g.checked = ap.glass;
+      applyGlass(ap.glass);
+    }
+  }
 }
 
 /* ─────────── 保存 ─────────── */
@@ -956,184 +1093,132 @@ async function loadModules() {
 
 /* ─────────── 版本与更新 ─────────── */
 var UPDATE = null;
-async function loadVersion() {
-  try {
-    var r = await api('/api/update');
-    $('appVer').textContent = r.version || '—';
-    var url = (r.update && r.update.manifestUrl) || '';
-    $('manifestUrl').value = url;
-    // 没配地址才把输入框露出来，配好了就只留按钮，界面干净
-    var row = document.getElementById('updAddrRow');
-    var adv = document.getElementById('updAdvanced');
-    if (row) row.style.display = url ? 'none' : '';
-    if (adv) adv.style.display = url ? '' : 'none';
-    UPDATE = r.latest || null;
-    if (UPDATE && UPDATE.hasUpdate) {
-      $('updState').textContent = '发现新版本 ' + UPDATE.latest;
-      $('updState').style.color = '#0f7a55';
-    } else if (UPDATE && UPDATE.ok && UPDATE.latest && cmpVer(UPDATE.latest, r.version) < 0) {
-      $('updState').textContent = '更新源版本 ' + UPDATE.latest + ' 比当前还旧，检查地址';
-      $('updState').style.color = '#c0392b';
-    }
-  } catch (e) { }
+var updTimer = null;
+function stopUpdPoll() { if (updTimer) { clearInterval(updTimer); updTimer = null; } }
+function showUpdProgress(on) {
+  var row = document.getElementById('updProgressRow');
+  if (row) row.style.display = on ? '' : 'none';
 }
-var advLink = document.getElementById('updAdvanced');
-if (advLink) advLink.onclick = function () {
-  var row = document.getElementById('updAddrRow');
-  if (row) row.style.display = '';
-  this.style.display = 'none';
-  var inp = document.getElementById('manifestUrl');
-  if (inp) inp.focus();
-};
+function renderUpdProgress(p) {
+  if (!p) return;
+  var bar = document.getElementById('updBar');
+  var txt = document.getElementById('updProgressText');
+  if (p.phase === 'download') {
+    var pct = p.total ? Math.min(99, Math.round((p.received / p.total) * 100)) : 8;
+    if (bar) bar.style.width = pct + '%';
+    if (txt) txt.textContent = (p.mode === 'files')
+      ? '正在下载改动文件 ' + (p.received || 0) + '/' + (p.total || 0)
+      : ('正在下载 ' + Math.round((p.received || 0) / 1024) + ' KB' + (p.total ? ' / ' + Math.round(p.total / 1024) + ' KB' : ''));
+  } else if (p.phase === 'verify') {
+    if (txt) txt.textContent = '正在校验…';
+  } else if (p.phase === 'install') {
+    if (bar) bar.style.width = '100%';
+    if (txt) txt.textContent = '正在替换文件…';
+  } else if (p.phase === 'done') {
+    if (bar) bar.style.width = '100%';
+    if (txt) txt.textContent = '更新完成';
+  } else if (p.phase === 'error') {
+    if (txt) txt.textContent = '失败：' + (p.error || '');
+  }
+}
 function cmpVer(a, b) {
   function p(v) { return String(v || '0').split(/[.\-+]/).slice(0, 3).map(function (n) { return parseInt(n, 10) || 0; }); }
   var x = p(a), y = p(b);
   for (var i = 0; i < 3; i++) { if (x[i] > y[i]) return 1; if (x[i] < y[i]) return -1; }
   return 0;
 }
-$('updCheck').onclick = async function () {
-  var url = $('manifestUrl').value.trim();
-  if (!url) {
-    $('updState').textContent = '先填更新地址（点上面的「填我自己的地址」也行）';
-    $('updState').style.color = '#c0392b';
-    $('manifestUrl').focus();
-    toast('先填更新地址');
-    return;
-  }
-  this.disabled = true;
+async function loadVersion() {
   try {
-    var r = await api('/api/update/check', { manifestUrl: url });
-    if (!r.ok) { $('updState').textContent = '检查失败：' + (r.reason || ''); toast('检查失败'); }
-    else if (r.hasUpdate) { $('updState').textContent = '有新版本 ' + r.latest; toast('发现 ' + r.latest); }
-    else if (cmpVer(r.latest, r.current) < 0) {
-      $('updState').textContent = '更新源是 ' + r.latest + '，比当前 ' + r.current + ' 还旧 —— 地址填错了或缓存没刷新';
-      $('updState').style.color = '#c0392b';
-      toast('更新源版本比当前还旧，检查地址');
-      var row = document.getElementById('updAddrRow');
-      if (row) row.style.display = '';
-      var adv = document.getElementById('updAdvanced');
-      if (adv) adv.style.display = 'none';
+    var r = await api('/api/update');
+    $('appVer').textContent = r.version || '—';
+    UPDATE = r.latest || null;
+    if (UPDATE && UPDATE.hasUpdate) {
+      $('updState').textContent = '发现新版本 ' + UPDATE.latest;
+      $('updState').style.color = '#0f7a55';
     }
-    else { $('updState').textContent = '已经是最新版（' + r.current + '）'; $('updState').style.color = ''; toast('已是最新版'); }
-  } catch (e) { $('updState').textContent = '检查失败'; }
+  } catch (e) { /* 读不到就不管 */ }
+}
+$('updCheck').onclick = async function () {
+  this.disabled = true;
+  $('updState').textContent = '正在检查…';
+  $('updState').style.color = '';
+  try {
+    var r = await api('/api/update/check', {});
+    if (!r.ok) {
+      $('updState').textContent = '检查失败：' + (r.reason || '网络不通');
+      $('updState').style.color = '#c0392b';
+      toast('检查失败');
+    } else if (r.hasUpdate) {
+      $('updState').textContent = '有新版本 ' + r.latest;
+      $('updState').style.color = '#0f7a55';
+      toast('发现 ' + r.latest);
+    } else {
+      $('updState').textContent = '已经是最新版（' + r.current + '）';
+      $('updState').style.color = '';
+      toast('已是最新版');
+    }
+  } catch (e) {
+    $('updState').textContent = '检查失败';
+    $('updState').style.color = '#c0392b';
+  }
   this.disabled = false;
 };
-/* ─── 更新进度条 ─── */
-var updTimer = null;
-function fmtMB(n) { return n ? (n / 1048576).toFixed(1) + ' MB' : ''; }
-function showUpdProgress(on) {
-  var row = document.getElementById('updProgressRow');
-  if (row) row.style.display = on ? '' : 'none';
-  if (!on) { var b = document.getElementById('updBar'); if (b) b.style.width = '0%'; }
-}
-function renderUpdProgress(p) {
-  var bar = document.getElementById('updBar');
-  var txt = document.getElementById('updProgressText');
-  if (!bar || !txt || !p) return;
-  var pct = 0, label = '';
-  if (p.phase === 'download') {
-    if (p.total) { pct = p.pct || Math.min(99, Math.round(p.received / p.total * 100)); label = '正在下载 ' + pct + '%（' + fmtMB(p.received) + ' / ' + fmtMB(p.total) + '）'; }
-    else { pct = 40; label = '正在下载 ' + fmtMB(p.received); }
-  } else if (p.phase === 'verify') { pct = 99; label = '校验安装包…'; }
-  else if (p.phase === 'install') { pct = 99; label = '正在写入文件…'; }
-  else if (p.phase === 'done') { pct = 100; label = '更新完成，正在重启…'; }
-  else if (p.phase === 'error') { pct = 100; label = '更新失败：' + (p.error || ''); }
-  bar.style.width = Math.max(0, Math.min(100, pct)) + '%';
-  txt.textContent = label;
-}
-function stopUpdPoll() { if (updTimer) { clearInterval(updTimer); updTimer = null; } }
-// 等新版服务把端口重新占上
-async function waitServerBack(maxMs) {
-  var t0 = Date.now();
-  while (Date.now() - t0 < maxMs) {
-    try {
-      var r = await fetch('/health', { cache: 'no-store' });
-      if (r.ok) return true;
-    } catch (e) { /* 还没起来 */ }
-    await new Promise(function (s) { setTimeout(s, 700); });
-  }
-  return false;
-}
-
 var updArm = false, updArmTimer = null;
 $('updApply').onclick = async function () {
-  var url = $('manifestUrl').value.trim();
-  if (!url) { toast('先填上面的更新地址'); $('manifestUrl').focus(); return; }
   var btn = this;
-  // 不用 confirm()：iframe / 桌面壳里可能被静默拦截，表现就是“点了没反应”
   if (!updArm) {
     updArm = true;
     btn.textContent = '再点一次确认更新';
-      btn.style.background = "#c0392b";
-      btn.style.color = "#fff";
-      $("updState").textContent = "再点一次按钮才开始更新（8 秒内有效）";
-      $("updState").style.color = "#c0392b";
+    btn.style.background = '#c0392b';
+    btn.style.color = '#fff';
+    $('updState').textContent = '再点一次按钮才开始更新（8 秒内有效）';
+    $('updState').style.color = '#c0392b';
     clearTimeout(updArmTimer);
-    updArmTimer = setTimeout(function () { updArm = false; btn.textContent = '立即更新'; btn.style.background = ''; btn.style.color = ''; }, 8000);
+    updArmTimer = setTimeout(function () {
+      updArm = false;
+      btn.textContent = '立即更新';
+      btn.style.background = '';
+      btn.style.color = '';
+      $('updState').textContent = '已取消，没有更新';
+      $('updState').style.color = 'var(--ink3)';
+    }, 8000);
     return;
   }
-  clearTimeout(updArmTimer); updArm = false; btn.textContent = '立即更新';
+  clearTimeout(updArmTimer);
+  updArm = false;
+  btn.textContent = '立即更新';
+  btn.style.background = '';
+  btn.style.color = '';
   btn.disabled = true;
   showUpdProgress(true);
   renderUpdProgress({ phase: 'download', received: 0, total: 0, pct: 0 });
   $('updState').textContent = '正在下载…';
   $('updState').style.color = '';
   stopUpdPoll();
-  updTimer = setInterval(async function () {
+  var pollTimer = setInterval(async function () {
     try {
-      var res = await fetch('/api/update/progress', { cache: 'no-store' });
-      if (res.status === 404) {
-        // 后端是旧代码（文件更新了但服务没重启），别当成"重启完成"
-        stopUpdPoll();
-        renderUpdProgress({ phase: 'error', error: '服务还是旧版本，请关掉黑窗口重新双击 启动.cmd' });
-        $('updState').textContent = '服务是旧版本，重启后重试';
-        $('updState').style.color = '#c0392b';
-        return;
-      }
-      var j = await res.json();
-      if (j && j.progress) renderUpdProgress(j.progress);
-    } catch (e) {
-      // 连不上了：服务正在退出重启，这才是"装好了"
-      stopUpdPoll();
-      renderUpdProgress({ phase: 'done' });
-      setTimeout(function () { location.reload(); }, 1800);
-    }
-  }, 400);
+      var s = await api('/api/update');
+      if (s.progress) renderUpdProgress(s.progress);
+    } catch (e) { /* 重启中 */ }
+  }, 800);
+  updTimer = pollTimer;
   try {
-    var r = await api('/api/update/apply', { manifestUrl: url });
-    stopUpdPoll();
-    if (r.needRestart) {
-      renderUpdProgress({ phase: 'done' });
-      $('updState').textContent = '更新成功，正在重启服务…';
-      $('updState').style.color = '';
-      toast('更新成功，正在重启');
-      var back = await waitServerBack(30000);
-      if (back) {
-        var nv = r.to || '';
-        try { var u = await api('/api/update'); nv = u.version || nv; } catch (e2) { /* 忽略 */ }
-        $('appVer').textContent = nv;                    // 版本号当场变
-        $('updState').textContent = '已更新到 ' + nv + '，服务已重新连上';
-        $('updState').style.color = '#0f7a55';
-        renderUpdProgress({ phase: 'done' });
-        toast('更新完成：v' + nv);
-        setTimeout(function () { location.reload(); }, 1800);
-      } else {
-        $('updState').textContent = '已写入新版本，但服务没自动起来 — 请关掉黑窗口重新双击 启动.cmd';
-        $('updState').style.color = '#c0392b';
-      }
-    } else {
-      showUpdProgress(false);
-      $('updState').textContent = r.message || '已是最新版';
-    }
+    var r = await api('/api/update/apply', {});
+    if (r.ok === false) throw new Error(r.error || '更新失败');
+    renderUpdProgress({ phase: 'done', pct: 100 });
+    $('updState').textContent = '更新完成，正在重启…';
+    $('updState').style.color = '#0f7a55';
+    setTimeout(function () { location.reload(); }, 6000);
   } catch (e) {
     stopUpdPoll();
-    renderUpdProgress({ phase: 'error', error: e.message });
+    showUpdProgress(false);
     $('updState').textContent = '更新失败：' + e.message;
     $('updState').style.color = '#c0392b';
-    toast('更新失败：' + e.message);
+    toast('更新失败');
   }
   btn.disabled = false;
 };
+
 
 /* ─────────── 主页按钮 ─────────── */
 $('homeStart').onclick = async function () {
@@ -1172,6 +1257,12 @@ setInterval(function () {
 }, 6000);
 
 
+/* 顶栏「耗时」只在运行状态页显示 */
+function syncTopLatency(pane) {
+  var el = document.getElementById('pLat');
+  if (el) el.style.display = (pane === 'p4') ? '' : 'none';
+}
+
 /* ─────────── 关闭服务（连后台一起关） ─────────── */
 var byeArmed = false;
 var byeTimer = null;
@@ -1207,12 +1298,75 @@ function doShutdown() {
 var _sd = document.getElementById('shutdown');
 if (_sd) _sd.onclick = doShutdown;
 
+
+/* ─────────── 外观设定 ─────────── */
+var THEME = 'dark';
+function themeReal(pref) {
+  if (pref === 'auto') {
+    return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return pref === 'light' ? 'light' : 'dark';
+}
+function applyTheme(pref, persist) {
+  THEME = (pref === 'light' || pref === 'auto') ? pref : 'dark';
+  var real = themeReal(THEME);
+  document.documentElement.setAttribute('data-theme', real);
+  document.documentElement.setAttribute('data-theme-pref', THEME);
+  try { if (persist !== false) localStorage.setItem('xx-theme', THEME); } catch (e) {}
+  var q = document.getElementById('themeQuick');
+  if (q) {
+    q.textContent = THEME === 'auto' ? '◑' : (real === 'dark' ? '☀' : '☾');
+    q.title = '当前：' + (THEME === 'auto' ? '跟随系统' : (real === 'dark' ? '深色' : '浅色')) + '（点击切换）';
+  }
+  document.querySelectorAll('[data-theme-set]').forEach(function (b) {
+    b.classList.toggle('on', b.getAttribute('data-theme-set') === THEME);
+  });
+  saveAppearance();
+}
+function applyGlass(on) {
+  document.documentElement.setAttribute('data-glass', on ? 'on' : 'off');
+  if (!on) {
+    var st = document.getElementById('xx-noglass') || document.createElement('style');
+    st.id = 'xx-noglass';
+    st.textContent = 'html[data-glass="off"] .card,html[data-glass="off"] .top,html[data-glass="off"] .btn{backdrop-filter:none!important}';
+    document.head.appendChild(st);
+  }
+}
+var appearanceTimer = null;
+function saveAppearance() {
+  clearTimeout(appearanceTimer);
+  appearanceTimer = setTimeout(function () {
+    var glassEl = document.getElementById('glassOn');
+    api('/api/config', {
+      appearance: { theme: THEME, glass: glassEl ? glassEl.checked : true }
+    }).catch(function () {});
+  }, 400);
+}
+document.querySelectorAll('[data-theme-set]').forEach(function (b) {
+  b.onclick = function () {
+    applyTheme(b.getAttribute('data-theme-set'));
+    toast('主题：' + (THEME === 'auto' ? '跟随系统' : (THEME === 'dark' ? '深色' : '浅色')));
+  };
+});
+var themeQuickEl = document.getElementById('themeQuick');
+if (themeQuickEl) themeQuickEl.onclick = function () {
+  var real = themeReal(THEME);
+  applyTheme(real === 'dark' ? 'light' : 'dark');
+};
+var glassEl2 = document.getElementById('glassOn');
+if (glassEl2) glassEl2.onchange = function () {
+  applyGlass(glassEl2.checked);
+  saveAppearance();
+};
+try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (THEME === 'auto') applyTheme('auto', false); }); } catch (e) {}
+
 /* ─────────── 启动 ─────────── */
 load();
 loadTts();
 loadVersion();
 checkUpdateQuick();
 loadAvatar();
+  syncTopLatency('p0');
 
 /* ─────────── 版本 / 更新（顶栏 + 主页） ─────────── */
 var UPD_LATEST = null;

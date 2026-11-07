@@ -137,5 +137,9 @@
     "checkOnStart": true,
     "intervalMinutes": 60,
     "autoApply": false
+  },
+  "appearance": {
+    "theme": "dark",
+    "glass": true
   }
 }
