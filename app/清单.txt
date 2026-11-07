@@ -1,10 +1,11 @@
-小汐AI直播平台 v1.9.2
+小汐AI直播平台 v1.9.6
 
 AGENT.md
 VERSION
 config.json
 dsh-check.ps1
 install-plugin.ps1
+open-browser.vbs
 plugin/README.md
 plugin/agent-path.txt
 plugin/client.js
@@ -32,7 +33,9 @@ xiaoxi.mjs
 修复DSH.ps1
 停止.cmd
 停止.ps1
+停止.vbs
 启动.cmd
+启动.vbs
 安装到DSH.cmd
 打开直播设置.cmd
 插件说明.md

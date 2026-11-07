@@ -35,7 +35,7 @@ target_dir: D:\xiaoxi-ai-live
 
 ## 0.5 DSH 插件（装了 DSH 才需要）
 
-启动脚本 `启动.cmd` 会自动检测：`%USERPROFILE%\.dsh` 存在就把插件装进 DSH 的 desktop profile。
+启动脚本 `启动.vbs`（静默）或 `启动.cmd`（带窗口）会自动检测：`%USERPROFILE%\.dsh` 存在就把插件装进 DSH 的 desktop profile。
 
 手动兜底：
 
@@ -88,9 +88,22 @@ Expand-Archive -Path "小汐AI直播平台.zip" -DestinationPath "D:\" -Force
 Rename-Item "D:\xiaoxi-ai-live" "D:\xiaoxi-ai-live" -ErrorAction SilentlyContinue
 ```
 
-解压后应存在：`D:\xiaoxi-ai-live\server.mjs`、`supervisor.mjs`、`config.json`、`sprites_hd\`。
+解压后应存在：`D:\xiaoxi-ai-live\xiaoxi.mjs`、`supervisor.mjs`、`启动.cmd`、`config.json`、`sprites_hd\`。
 
 ### 2.2 启动
+
+优先用静默方式（不弹命令行窗口）：
+
+```powershell
+wscript //nologo .\启动.vbs
+```
+
+要看到日志/排错时才用带窗口的：
+
+```powershell
+.\启动.cmd
+```
+
 
 ```powershell
 cd D:\xiaoxi-ai-live
@@ -213,7 +226,7 @@ POST http://127.0.0.1:8792/api/update/apply
 ## 8. 程序结构（供排错参考）
 
 ```
-server.mjs            主程序：HTTP + SSE + 弹幕源 + 点歌 + 语音
+xiaoxi.mjs            主程序（混淆单文件）：HTTP + SSE + 弹幕源 + 点歌 + 语音
 supervisor.mjs        守护：拉起 server，退出即重启
 scene.html            直播画面（OBS 抓这个）
 settings.html         设置页

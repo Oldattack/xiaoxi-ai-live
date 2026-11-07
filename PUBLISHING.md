@@ -42,9 +42,32 @@ node tools/publish-github.mjs 1.8.1
 | 1 | 打分销版：合并 + 混淆成单文件 `xiaoxi.mjs` |
 | 2 | 打整包（含插件、启动器、修复工具） |
 | 3 | 生成 `updates/manifest.json` + 版本 zip |
-| 4 | 同步到本仓库的 `app/` 和 `updates/`，顺手改 README 里的版本号 |
-| 5 | `git commit` |
-| 6 | 有 `GH_TOKEN` 就推送 + 刷新 jsDelivr 缓存 |
+| 4 | **发布前自检**（20 项，不过就中止，不会提交/推送） |
+| 5 | 同步到本仓库的 `app/` 和 `updates/`，顺手改 README 里的版本号 |
+| 6 | `git commit` |
+| 7 | 有 `GH_TOKEN` 就推送 + 刷新 jsDelivr 缓存 |
+
+### 发布前自检（`tools/preflight.mjs`）
+
+单独也能跑：
+
+```powershell
+node tools/preflight.mjs 1.9.3
+```
+
+它会真做一遍：
+
+```
+解压整包 → 查关键文件 / .cmd 行尾 / VERSION / VBS 编码
+假 DSH 里装插件 → 用 node JSON.parse 验（防 BOM 崩溃）
+真起服务 → /health、/settings、/api/update
+调 /api/shutdown → 确认端口释放 + 0 残留进程\n真双击 启动.vbs / 停止.vbs → 确认静默启停正常
+校验 manifest 版本与 sha256
+```
+
+**24 项全绿才允许发布**，任何一项红了 publish 会直接中止。
+
+硬要发（不建议）：`set SKIP_PRECHECK=1` 再跑。
 
 ## Token 安全约定（重要）
 
