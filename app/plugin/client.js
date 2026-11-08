@@ -5,6 +5,8 @@ window.__ModuleLoader__.load({
     const h = React.createElement;
     const { useState, useEffect, useRef } = React;
     const NS = 'dsh-live-agent';
+      const AUTHOR = 'Oldattack';
+      const PLUGIN_VERSION = '1.1.0';
 
     /** 本地直播服务地址；换端口就改这里（或 localStorage 覆盖） */
     const ORIGIN =
@@ -59,6 +61,11 @@ window.__ModuleLoader__.load({
 .dsh-la-btn{appearance:none;padding:6px 12px;border:1px solid var(--dsw-alias-border-l1);border-radius:8px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap;}
 .dsh-la-btn:hover{background:var(--dsw-alias-bg-layer-3);}
 .dsh-la-body{position:relative;flex:1;min-height:0;}
+  .dsh-la-foot{flex:none;display:flex;align-items:center;gap:8px;padding:7px 16px;
+    border-top:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1);
+    font-size:11.5px;color:var(--dsw-alias-label-secondary);}
+  .dsh-la-foot b{font-weight:600;color:var(--dsw-alias-label-primary);}
+  .dsh-la-foot .sep{opacity:.45;}
 .dsh-la-frame{width:100%;height:100%;border:0;display:block;background:#f6f6fa;}
 .dsh-la-offline{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--dsw-alias-bg-base);}
 .dsh-la-card{max-width:520px;width:100%;border:1px solid var(--dsw-alias-border-l1);border-radius:16px;background:var(--dsw-alias-bg-layer-1);padding:22px 24px;}
@@ -68,20 +75,23 @@ window.__ModuleLoader__.load({
 .dsh-la-tip{margin-top:10px;font-size:12px;color:var(--dsw-alias-state-warn-primary);}
 `;
 
+    /* 小汐的标记：圆角方块 + 一道潮汐 + 一点水滴 */
     function Glyph(props) {
       const p = props || {};
       const size = p.size || 20;
+      const active = !!p.active;
       return h(
         'svg',
         {
           width: size, height: size, viewBox: '0 0 24 24', fill: 'none',
-          stroke: 'currentColor', strokeWidth: p.active ? 2 : 1.7,
+          stroke: 'currentColor', strokeWidth: active ? 1.95 : 1.7,
           strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true,
           style: { display: 'block' },
         },
-        h('rect', { x: 3, y: 6, width: 18, height: 13, rx: 3 }),
-        h('path', { d: 'M8 3.5 10.5 6M16 3.5 13.5 6' }),
-        h('circle', { cx: 12, cy: 12.5, r: 2.4 }),
+        h('rect', { x: 2.6, y: 2.6, width: 18.8, height: 18.8, rx: 6 }),
+        h('path', { d: 'M6.4 14.4c1.5-2.3 3.2-2.3 4.7 0s3.2 2.3 4.7 0' }),
+        h('path', { d: 'M6.4 10.2c1.5-2.3 3.2-2.3 4.7 0', opacity: 0.55 }),
+        h('circle', { cx: 16.6, cy: 8.4, r: 1.15, fill: 'currentColor', stroke: 'none' }),
       );
     }
 
@@ -179,7 +189,7 @@ window.__ModuleLoader__.load({
             h('div', { className: 'dsh-la-badge' }, h(Glyph, { size: 18 })),
             h('div', null,
               h('div', { className: 'dsh-la-title' }, t('page.title')),
-              h('div', { className: 'dsh-la-sub' }, t('page.subtitle')),
+              h('div', { className: 'dsh-la-sub' }, t('page.subtitle'), ' · 作者 ', h('span', { style: { fontWeight: 600, color: 'var(--dsw-alias-label-primary)' } }, AUTHOR)),
             ),
             h('div', { className: 'dsh-la-spacer' }),
             stats ? h('span', { className: 'dsh-la-pill' },
@@ -217,6 +227,14 @@ window.__ModuleLoader__.load({
                 },
               }, '新版本 v' + upd.latest + '：' + upd.notes)
             : null,
+            h('div', { className: 'dsh-la-foot' },
+              h(Glyph, { size: 13 }),
+              h('span', null, '小汐AI直播平台'),
+              h('span', { className: 'sep' }, '·'),
+              h('span', null, '作者 ', h('b', null, AUTHOR)),
+              h('span', { className: 'sep' }, '·'),
+              h('span', null, 'v' + (ver || PLUGIN_VERSION)),
+            ),
           h('div', { className: 'dsh-la-body' },
             status === 'offline'
               ? h('div', { className: 'dsh-la-offline' },

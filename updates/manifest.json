@@ -1,10 +1,10 @@
 {
-  "version": "1.9.8",
+  "version": "2.0.0",
   "notes": "修复启动脚本行尾问题；插件安装改为正确的 DSH 注册方式；更新入口整合到主页与顶栏",
-  "package": "xiaoxi-ai-live-1.9.8.zip",
-  "size": 3856252,
-  "sha256": "cb6025708c96b59baeb6a6dc1f07f89fddb43904da807ada40becd08d4e2dfe5",
-  "publishedAt": "2026-11-07T18:08:59.032Z",
+  "package": "xiaoxi-ai-live-2.0.0.zip",
+  "size": 3857663,
+  "sha256": "9ddc29ca6cbbba9e0ab21e7404557f541e5ac3e876929990c8d57288c8761cc0",
+  "publishedAt": "2026-11-08T16:19:50.813Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/app/",
   "files": [
@@ -20,8 +20,8 @@
     },
     {
       "path": "启动.cmd",
-      "size": 2781,
-      "sha256": "8c793fb063cdeeca659ce30667164846a0d92f4b4f88046c267b2a436b0b1cf7"
+      "size": 2855,
+      "sha256": "5e3bc70f36c5ede6b8f4889b36cae5ce0301042f8d24a76a2430ee4f3f1a9f79"
     },
     {
       "path": "启动.vbs",
@@ -80,8 +80,8 @@
     },
     {
       "path": "dsh-check.ps1",
-      "size": 2023,
-      "sha256": "53dce09ae59f09daf7988ead45cc3f835dfa746ee484b14b370d1495cf0eec82"
+      "size": 2741,
+      "sha256": "1454a3312d34b37fc01908c3e61cba370adf7f24f9c7d62f8987a9aff5d813c6"
     },
     {
       "path": "open-browser.vbs",
@@ -95,8 +95,8 @@
     },
     {
       "path": "settings.html",
-      "size": 70731,
-      "sha256": "fc0f1d8753f390f65e0a451d60669aeb0c969b697c95fa7dcf04aa3ea54bbdaf"
+      "size": 72405,
+      "sha256": "06baa7d408f2307a8133cd5efe1d35703835d34f52643ae8d04b0be9f2d457ce"
     },
     {
       "path": "sprites_hd/angry.png",
@@ -130,8 +130,8 @@
     },
     {
       "path": "supervisor.mjs",
-      "size": 4079,
-      "sha256": "ac6c213d2e39b9d7b31159ed082327d007855466a4164b7e9db593a55d6ff2cf"
+      "size": 4598,
+      "sha256": "bea1cd1f15788f91427f50423aeddc71a18c4de11cd39e015f8fd971f57a1fd6"
     },
     {
       "path": "update.ps1",
@@ -141,12 +141,12 @@
     {
       "path": "VERSION",
       "size": 6,
-      "sha256": "c26a46257161da86b9bf36413d034e521588fb65044bc4dfbf5e17e136e499d9"
+      "sha256": "c28fcca53637bc88e124af1725df13cb98c69dedefd62fb3cdbe1cdb6b760624"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 154638,
-      "sha256": "75ab2a380782bab15fd3f5c99f61b5c42098e9290e1c752a9f78c621be24e9ae"
+      "size": 155007,
+      "sha256": "f7cd03b9a7e27b55f914f27f95bd049032919bd98bdbdbb5bc9e465749777226"
     }
   ]
 }

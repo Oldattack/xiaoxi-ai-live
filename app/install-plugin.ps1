@@ -51,6 +51,8 @@ Copy-Item $pluginSrc $target -Recurse
 
 # 2) 主程序目录（绝对路径）
 [IO.File]::WriteAllText((Join-Path $target 'agent-path.txt'), $here, $utf8NoBom)
+# 记下插件版本，升级时用来判断要不要重装
+try { [IO.File]::WriteAllText((Join-Path $target '.installed-version'), [string]$pkg.version, $utf8NoBom) } catch { }
 Write-Host "[OK] 主程序目录：$here"
 
 # 3) 注册到 desktop profile

@@ -28,8 +28,20 @@ try {
 } catch {}
 
 if ($registered) {
-  Write-Host '  [OK] DSH 插件已安装'
-  exit 0
+  # 已登记：比对插件版本，升级了就重装（否则客户一直用旧图标/旧逻辑）
+  $wantVer = ''
+  $pluginPkg = Join-Path $here 'plugin\package.json'
+  if (Test-Path $pluginPkg) {
+    try { $wantVer = (Get-Content $pluginPkg -Raw -Encoding UTF8 | ConvertFrom-Json).version } catch { }
+  }
+  $haveVer = ''
+  $verFile = Join-Path $dsh 'plugins\dsh-live-agent\.installed-version'
+  if (Test-Path $verFile) { try { $haveVer = (Get-Content $verFile -Raw -Encoding UTF8).Trim() } catch { } }
+  if (-not $wantVer -or $wantVer -eq $haveVer) {
+    Write-Host ('  [OK] DSH 插件已安装' + $(if ($haveVer) { '（v' + $haveVer + '）' } else { '' }))
+    exit 0
+  }
+  Write-Host ('  [..] 插件有新版本 v' + $wantVer + '，正在更新…')
 }
 
 # 没登记 → 自动装一次

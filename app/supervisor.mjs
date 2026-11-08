@@ -8,7 +8,7 @@
  */
 
 import { spawn } from 'node:child_process';
-import { existsSync, writeFileSync, unlinkSync, appendFileSync } from 'node:fs';
+import fs, { existsSync, writeFileSync, unlinkSync, appendFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -28,9 +28,12 @@ function argOf(flag) {
 }
 // 没显式指定就盯着自己的父进程（启动窗口）；窗口一关就跟着退
 const PARENT_PID = Number(argOf('--parent-pid')) || process.ppid || 0;
+// --hidden：由插件 / 启动.vbs 拉起时不弹任何控制台窗口
+// 没有终端（插件 / vbs 拉起）就自动隐藏，避免弹黑框
+const HIDDEN = argv.includes('--hidden') || !!Number(process.env.XIAOXI_HIDDEN || 0) || !process.stdout.isTTY;
 const PASSTHROUGH = argv.filter((a, i) => {
-  if (a === '--parent-pid') return false;
-  if (i > 0 && argv[i - 1] === '--parent-pid') return false;
+  if (a === '--parent-pid' || a === '--hidden') return false;
+  if (i > 0 && (argv[i - 1] === '--parent-pid')) return false;
   return true;
 });
 
@@ -63,10 +66,15 @@ function start() {
 
   // 分销版是 xiaoxi.mjs（混淆单文件），源码版是 server.mjs
   const entry = existsSync(path.join(HERE, 'xiaoxi.mjs')) ? 'xiaoxi.mjs' : 'server.mjs';
+  // 隐藏模式：不弹窗，输出重定向到 supervisor.log
+  let errFd = null;
+  if (HIDDEN) {
+    try { errFd = fs.openSync(LOG, 'a'); } catch { errFd = null; }
+  }
   child = spawn(process.execPath, [entry, ...PASSTHROUGH], {
     cwd: HERE,
-    stdio: 'inherit',
-    windowsHide: false
+    stdio: HIDDEN ? ['ignore', errFd || 'ignore', errFd || 'ignore'] : 'inherit',
+    windowsHide: HIDDEN
   });
 
   child.on('exit', (code, signal) => {

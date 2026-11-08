@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-live-agent",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "小汐AI直播平台控制台：把本地直播设置页搬进 DSH，侧栏一键打开。",
@@ -10,13 +10,28 @@
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg"
   },
-  "files": ["index.js", "client.js", "cordis.patch.yml", "locale/*.json", "icon.svg"],
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg"
+  ],
   "dsh": {
-    "bundle": { "patch": "./cordis.patch.yml" },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
     "client": {
       "platform": "web",
       "immediately": true,
-      "inject": ["@deepseek-ai/dsh-client-ui-sidebar"]
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ]
     }
-  }
+  },
+  "author": {
+    "name": "Oldattack"
+  },
+  "homepage": "https://github.com/Oldattack/xiaoxi-ai-live",
+  "license": "UNLICENSED"
 }

@@ -84,7 +84,7 @@ if "%QUIET%"=="0" (
   echo.
 )
 
-node supervisor.mjs --port !PORT!
+if "%QUIET%"=="1" ( node supervisor.mjs --hidden --port !PORT! ) else ( node supervisor.mjs --port !PORT! )
 
 if "%QUIET%"=="0" (
   echo.
