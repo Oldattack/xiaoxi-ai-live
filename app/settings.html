@@ -1463,7 +1463,16 @@ async function chatSend(text) {
     var r = await api('/api/test', { text: text, user: '试聊观众' });
     var ms = Date.now() - t0;
     if (r.ok === false || r.error) {
-      chatAppend('her', '（出错了：' + (r.error || '未知') + '）', '<b>失败</b> · ' + ms + 'ms');
+      var em = String(r.error || '');
+      var tip = '（出错了：' + em.slice(0, 60) + '）';
+      if (/401|Authentication|api key|invalid/i.test(em)) {
+        tip = '（接口密钥无效或没填 —— 去「AI 大脑」里把密钥填上再试）';
+      } else if (/timeout|超时/i.test(em)) {
+        tip = '（等太久了，模型没回 —— 再试一次，或把「等多久算超时」调大）';
+      } else if (/429|rate/i.test(em)) {
+        tip = '（请求太频繁被限流了，等半分钟再试）';
+      }
+      chatAppend('her', tip, '<b>失败</b> · ' + ms + 'ms');
     } else {
       var from = r.from === 'rule' ? '固定话术' : (r.from === 'pool' ? '内置话术' : 'AI 生成');
       chatAppend('her', r.text || '（这次没生成出来，再试一次）', '<b>' + from + '</b> · ' + ms + 'ms' + (r.emotion ? ' · ' + r.emotion : ''));
