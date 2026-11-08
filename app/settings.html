@@ -302,6 +302,7 @@
     <a data-p="p6">说话方式</a>
     <a data-p="p2">进场欢迎</a>
     <a data-p="p8">点歌台</a>
+    <a data-p="p13">视频点播</a>
     <div class="grp">主播</div>
     <a data-p="p11">形象</a>
     <a data-p="p9">直播画面</a>
@@ -512,6 +513,34 @@
         <div class="kv"><span>歌名</span><b id="songName">—</b></div>
         <div class="kv"><span>歌手</span><b id="songArtist">—</b></div>
         <div class="kv"><span>队列</span><b id="songQueue">0 首</b></div>
+      </div>
+    </div>
+
+    <!-- ══════ 视频点播 ══════ -->
+    <div class="pane" id="p13">
+      <div class="card">
+        <h3>一起看视频<span class="live">B站</span></h3>
+        <p class="sub">贴一个 B站链接或 BV 号，她就放到画面中间、自己让到右下角一起看。放不了会自动跳下一条。</p>
+        <div class="row"><label>添加视频</label><div class="three" style="grid-template-columns:1fr auto">
+          <div><input class="inp" id="vidInput" placeholder="贴 BV 号或 https://www.bilibili.com/video/BV..."><div class="hint">支持 BV 号、完整链接、b23.tv 短链</div></div>
+          <div style="align-self:start"><button class="btn pri" id="vidAdd">添加</button></div>
+        </div></div>
+        <div class="row"><label>现在在放</label><div id="vidNow" class="mini">还没有放</div></div>
+        <div class="row"><label>队列</label><div id="vidQueue" class="mini">空</div></div>
+        <div class="row"><label></label><div style="display:flex;gap:8px">
+          <button class="btn" id="vidNext">下一条</button>
+          <button class="btn" id="vidClear">全部清空</button>
+          <button class="btn" id="vidOpen">打开画面预览</button>
+        </div></div>
+      </div>
+
+      <div class="card">
+        <h3>播放规则</h3>
+        <p class="sub">下面这些视频不会播，会自动跳过：</p>
+        <div class="li"><b>番剧 / 影视 / 付费</b><span class="m">版权受限，跳过</span></div>
+        <div class="li"><b>UP主标了禁止转载</b><span class="m">跳过</span></div>
+        <div class="li"><b>互动视频 / 地区限制</b><span class="m">跳不过就跳过</span></div>
+        <div class="tiny">素材由你提供，请确保有在直播中使用它的权利。播放时会显示 UP 主和标题。</div>
       </div>
     </div>
 
@@ -1535,13 +1564,15 @@ function evTime(t) {
   return p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
 }
 function evLabel(k) {
-  var m = { reply: '回复', skip: '跳过', song: '点歌', 'song-note': '点歌', welcome: '欢迎', gift: '礼物' };
+  var m = { reply: '回复', skip: '跳过', song: '点歌', 'song-note': '点歌', welcome: '欢迎', gift: '礼物', video: '一起看', 'video-skip': '跳过' };
   return m[k] || k;
 }
 function evClass(k) {
   if (k === 'reply' || k === 'welcome' || k === 'gift') return 're';
   if (k === 'skip') return 'sk';
   if (k === 'song' || k === 'song-note') return 'sg';
+  if (k === 'video') return 're';
+  if (k === 'video-skip') return 'sk';
   return '';
 }
 function renderEvents() {
@@ -1582,6 +1613,58 @@ renderTpl();
 loadEvents();
 setInterval(loadEvents, 3000);
 
+
+
+/* ─────────── 视频点播 ─────────── */
+var vidTimer = null;
+function vidFmt(sec) {
+  sec = Math.max(0, Math.round(sec || 0));
+  var m = Math.floor(sec / 60), s = sec % 60;
+  return m + ':' + String(s).padStart(2, '0');
+}
+function renderVideoState(st) {
+  st = st || {};
+  var now = $('vidNow'), q = $('vidQueue');
+  if (!now || !q) return;
+  if (st.playing) {
+    now.innerHTML = '<b>' + (st.playing.title || '') + '</b><div style="color:var(--ink3);font-size:11px;margin-top:3px">@' +
+      (st.playing.owner || '') + ' · ' + vidFmt(st.playing.duration) + ' · ' + (st.playing.by || '手动') + ' 点的</div>';
+  } else {
+    now.textContent = '还没有放';
+  }
+  var list = st.queue || [];
+  if (!list.length) { q.textContent = '空'; return; }
+  q.innerHTML = '';
+  list.forEach(function (v, i) {
+    var d = document.createElement('div');
+    d.className = 'li';
+    d.innerHTML = '<b>' + (i + 1) + '. ' + (v.title || v.bvid) + '</b><span class="m">@' + (v.owner || '') + ' · ' + vidFmt(v.duration) + '</span>';
+    q.appendChild(d);
+  });
+}
+async function loadVideoState() {
+  try { renderVideoState(await api('/api/video/state')); } catch (e) {}
+}
+async function addVideo() {
+  var el = $('vidInput');
+  var v = String(el && el.value || '').trim();
+  if (!v) { toast('先贴一个 BV 号或链接'); return; }
+  if ($('vidAdd')) $('vidAdd').disabled = true;
+  try {
+    var r = await api('/api/video/request', { input: v, by: '手动' });
+    if (r.ok) { toast('已加入队列：' + r.item.title.slice(0, 18)); if (el) el.value = ''; }
+    else toast(r.reason || '加不了这个视频');
+  } catch (e) { toast('加不了：' + e.message); }
+  if ($('vidAdd')) $('vidAdd').disabled = false;
+  loadVideoState();
+}
+if ($('vidAdd')) $('vidAdd').onclick = addVideo;
+if ($('vidInput')) $('vidInput').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); addVideo(); } };
+if ($('vidNext')) $('vidNext').onclick = async function () { await api('/api/video/next', {}); setTimeout(loadVideoState, 500); };
+if ($('vidClear')) $('vidClear').onclick = async function () { await api('/api/video/clear', {}); loadVideoState(); };
+if ($('vidOpen')) $('vidOpen').onclick = function () { window.open('/?clean=1', '_blank'); };
+loadVideoState();
+vidTimer = setInterval(function () { if (!document.hidden) loadVideoState(); }, 4000);
 
 /* ─────────── 启动 ─────────── */
 load();
