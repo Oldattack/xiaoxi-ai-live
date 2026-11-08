@@ -699,8 +699,29 @@ function speak(text, emotion){
   function videoMode(on) {
     document.getElementById('stage').classList.toggle('video', !!on);
   }
+  var songFrozenForVideo = false;
+
+  // 事件可能乱序：每秒校正一次，视频在放就一定把歌停掉
+  function enforceMutex() {
+    if (vidPlaying && sg && !sg.paused) { try { sg.pause(); } catch (e) {} songFrozenForVideo = true; }
+  }
+  setInterval(enforceMutex, 1000);
+
+  function pauseSongForVideo() {
+    if (sg && !sg.paused && sg.currentSrc) {
+      try { sg.pause(); songFrozenForVideo = true; } catch (e) {}
+    }
+  }
+
+  function resumeSongAfterVideo() {
+    if (!songFrozenForVideo) return;
+    songFrozenForVideo = false;
+    if (sg && sg.currentSrc) { try { sg.play().catch(function () {}); } catch (e) {} }
+  }
+
   function playVideo(d) {
     if (!d || !d.url) return;
+    pauseSongForVideo();
     vidPlaying = d;
     document.getElementById('vidTitle').textContent = d.title || '';
     document.getElementById('vidBy').textContent = d.owner ? ('@' + d.owner) : '';
@@ -713,6 +734,7 @@ function speak(text, emotion){
   }
   function stopVideo() {
     vidPlaying = null;
+    resumeSongAfterVideo();
     try { vidEl.pause(); } catch (e) {}
     vidEl.removeAttribute('src');
     vidEl.load();
