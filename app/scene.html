@@ -70,11 +70,17 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   border:1px solid rgba(255,255,255,.2);
   box-shadow:0 40px 80px -40px #000, 0 0 60px rgba(255,106,61,.16);
   transition:all .4s cubic-bezier(.3,.9,.3,1)}
+#stage.video .pet::before{content:"ON AIR";position:absolute;right:12px;top:12px;z-index:9;
+  font-size:11px;letter-spacing:.16em;color:#ffd0bd;padding:4px 9px;border-radius:6px;
+  background:rgba(255,106,61,.24);border:1px solid rgba(255,106,61,.5)}
+#stage.video .pet::after{content:"陪你一起看";position:absolute;left:12px;bottom:10px;z-index:9;
+  font-size:11px;color:#cfc6dd;padding:3px 8px;border-radius:5px;background:rgba(0,0,0,.42)}
 #stage.video .pet .fig{height:382px;animation:none}
 #stage.video .pet .halo{opacity:0}
 #stage.video .pool{width:470px}
 #stage.video .songs{opacity:0;pointer-events:none;transition:opacity .3s}
-#stage.video .cap{max-width:900px}
+#stage.video .cap{left:auto;right:430px;bottom:250px;transform:none;text-align:right;max-width:640px;z-index:9}
+#stage.video .cap .bubble{text-align:left;border-radius:18px}
 .vid-tag{position:absolute;left:16px;top:16px;z-index:2;display:flex;align-items:center;gap:7px;
   font-size:13px;letter-spacing:.1em;color:#ffd0bd;padding:4px 10px;border-radius:7px;
   background:rgba(255,106,61,.22);border:1px solid rgba(255,106,61,.45);backdrop-filter:blur(6px)}
@@ -586,6 +592,9 @@ function reportSpeech(type, id){
 
 // 服务端语音：优先拿音频文件来播，失败再退回浏览器朗读
 var ttsAudio = null;
+  // 视频在放时把她的语音压低，别盖住视频声音
+  function speechVolume(){ return vidPlaying ? 0.35 : 1; }
+
 function playServerTts(sp, onDone){
   var ac = new AbortController();
   var timer = setTimeout(function(){ try { ac.abort(); } catch (e) {} }, 15000);
@@ -602,6 +611,7 @@ function playServerTts(sp, onDone){
     var url = URL.createObjectURL(blob);
     if (ttsAudio) { try { ttsAudio.pause(); } catch (e) {} }
     ttsAudio = new Audio(url);
+    try { ttsAudio.volume = speechVolume(); } catch (e) {}
     ttsAudio.onended = function(){ URL.revokeObjectURL(url); onDone(true); };
     ttsAudio.onerror = function(){ URL.revokeObjectURL(url); onDone(false); };
     var pr = ttsAudio.play();
@@ -639,7 +649,7 @@ function speakWithBrowser(sp){
     u.lang = 'zh-CN';
     u.rate = Math.min(2, Math.max(0.5, 1 + (Number(sp.rate) || 0) / 100));
     u.pitch = Math.min(2, Math.max(0, 1 + (Number(sp.pitch) || 0) / 50));
-    u.volume = Math.min(1, Math.max(0, 1 + (Number(sp.volume) || 0) / 100));
+    u.volume = Math.min(1, Math.max(0, 1 + (Number(sp.volume) || 0) / 100)) * speechVolume();
     var byName = ttsVoices.filter(function (v) { return v.name === sp.voice; })[0];
     var zh = ttsVoices.filter(function (v) { return /^zh/i.test(v.lang); });
     u.voice = byName || zh[0] || ttsVoices[0] || null;
