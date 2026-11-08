@@ -139,7 +139,7 @@
     "autoApply": false
   },
   "appearance": {
-    "theme": "dark",
+    "theme": "light",
     "glass": true
   }
 }

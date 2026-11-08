@@ -133,6 +133,51 @@
     padding:10px 18px;border-radius:10px;font-size:13px;opacity:0;transition:.22s;pointer-events:none;z-index:99}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
+  /* 试聊 */
+  .chat-box{display:flex;flex-direction:column;gap:9px}
+  .chat-log{display:flex;flex-direction:column;gap:8px;max-height:210px;overflow-y:auto;padding-right:2px}
+  .chat-log .empty{font-size:11.5px;color:var(--ink3);padding:8px 2px;line-height:1.6}
+  .cm{display:flex;gap:7px;align-items:flex-start}
+  .cm>div{flex:1;min-width:0}
+  .cm .who{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;flex:none;font-size:10px;font-weight:700}
+  .cm.me .who{background:var(--line);color:var(--ink2)}
+  .cm.her .who{background:linear-gradient(145deg,#ffc59a,#e2603f);color:#2a1006}
+  .cm .bub{max-width:100%;padding:6px 10px;border-radius:9px;font-size:12px;line-height:1.55;border:1px solid var(--line);word-break:break-word}
+  .cm.me .bub{background:var(--card);border-top-left-radius:3px}
+  .cm.her .bub{background:var(--brand-soft);border-color:rgba(226,96,63,.26);border-top-left-radius:3px}
+  .cm .m2{margin-top:4px;font-size:10px;color:var(--ink3)}
+  .cm .m2 b{color:var(--brand);font-weight:600}
+  .chat-in{display:flex;gap:6px}
+  .chat-in .inp{flex:1;height:32px;font-size:12px}
+  .chat-in .btn{height:32px;padding:0 12px}
+  .chat-quick{display:flex;gap:5px;flex-wrap:wrap}
+  .chat-quick button{height:22px;padding:0 8px;border-radius:6px;border:1px solid var(--line2);background:transparent;color:var(--ink3);font:inherit;font-size:10.5px;cursor:pointer}
+  .chat-quick button:hover{border-color:var(--brand);color:var(--brand)}
+
+  /* 人设模板 */
+  .tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:2px 0 14px}
+  .tpl-card{text-align:left;cursor:pointer;border:1px solid var(--line2);border-radius:11px;padding:10px 11px;background:var(--card);transition:.15s}
+  .tpl-card:hover{border-color:var(--brand)}
+  .tpl-card.on{border-color:var(--brand);box-shadow:0 0 0 3px rgba(226,96,63,.14)}
+  .tpl-card .tn{font-size:12.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:6px}
+  .tpl-card .tn i{font-style:normal;font-size:9.5px;color:var(--ink3);font-weight:400}
+  .tpl-card .td{margin-top:4px;font-size:10.5px;color:var(--ink3);line-height:1.5}
+
+  /* 事件流 */
+  .ev-filters{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px}
+  .ev-filters button{height:21px;padding:0 7px;border-radius:5px;border:1px solid var(--line2);background:transparent;color:var(--ink3);font:inherit;font-size:10px;cursor:pointer}
+  .ev-filters button.on{background:var(--brand-soft);border-color:rgba(226,96,63,.3);color:var(--brand)}
+  .ev-list{display:flex;flex-direction:column;max-height:230px;overflow-y:auto}
+  .ev-row{display:grid;grid-template-columns:40px 34px 1fr;gap:6px;align-items:baseline;padding:5px 0;border-bottom:1px dashed var(--line)}
+  .ev-row:last-child{border-bottom:0}
+  .ev-row time{font-size:9.5px;color:var(--ink3)}
+  .ev-row .ty{font-size:9px;text-align:center;padding:1px 3px;border-radius:4px;border:1px solid var(--line2);color:var(--ink2)}
+  .ev-row .ty.re{color:#b8502f;border-color:rgba(226,96,63,.32);background:rgba(226,96,63,.09)}
+  .ev-row .ty.sk{color:#c0392b;border-color:#f0c4c0;background:#fdeceb}
+  .ev-row .ty.sg{color:#1c7a56;border-color:#cdeade;background:#eaf8f1}
+  .ev-row .tx{font-size:11px;color:var(--ink2);line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ev-row .tx b{color:var(--ink);font-weight:600}
+
   .upd-bar{display:flex;align-items:center;gap:10px;background:#eaf8f1;border:1px solid #bfe6da;
     color:#0f7a55;border-radius:14px;padding:12px 16px;margin-bottom:14px;font-size:13.5px}
   .upd-bar .dot{width:8px;height:8px;border-radius:50%;background:#0f7a55;box-shadow:0 0 0 4px #d6f0e6}
@@ -520,6 +565,7 @@
       <div class="card">
         <h3>她是谁</h3>
         <p class="sub">这段决定说话风格，写得越具体越像你想要的。</p>
+          <div class="tpl-grid" id="tplGrid"></div>
         <textarea class="inp" id="llmPersona" rows="5"></textarea>
       </div>
       <div class="card">
@@ -624,6 +670,32 @@
       <div class="kv"><span>丢弃</span><b id="sideDrop">0</b></div>
       <div class="kv"><span>运行</span><b id="sideUp">—</b></div>
     </div>
+      <div class="side-card">
+        <h4>试聊<span style="font-weight:400;color:var(--ink3);font-size:10.5px;margin-left:6px">不会发到直播间</span></h4>
+        <div class="chat-box">
+          <div class="chat-log" id="chatLog"><div class="empty">试一句「今天播到几点呀」，看她怎么回。</div></div>
+          <div class="chat-quick">
+            <button data-say="今天播到几点呀">播到几点</button>
+            <button data-say="点一首晴天">点歌</button>
+            <button data-say="夸夸我">夸夸我</button>
+            <button data-say="讲个笑话">讲个笑话</button>
+          </div>
+          <div class="chat-in">
+            <input class="inp" id="chatInput" placeholder="说点什么…">
+            <button class="btn pri" id="chatSend">发送</button>
+          </div>
+        </div>
+      </div>
+      <div class="side-card">
+        <h4>事件流</h4>
+        <div class="ev-filters" id="evFilters">
+          <button class="on" data-k="all">全部</button>
+          <button data-k="reply">回复</button>
+          <button data-k="skip">跳过</button>
+          <button data-k="song">点歌</button>
+        </div>
+        <div class="ev-list" id="evList"><div class="mini">还没有事件</div></div>
+      </div>
   </div>
 </div>
 
@@ -1362,6 +1434,145 @@ if (glassEl2) glassEl2.onchange = function () {
   saveAppearance();
 };
 try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (THEME === 'auto') applyTheme('auto', false); }); } catch (e) {}
+
+/* ─────────── 试聊 ─────────── */
+var chatBusy = false;
+function chatAppend(who, text, meta) {
+  var log = $('chatLog');
+  if (!log) return;
+  var empty = log.querySelector('.empty');
+  if (empty) empty.remove();
+  var row = document.createElement('div');
+  row.className = 'cm ' + (who === 'me' ? 'me' : 'her');
+  row.innerHTML = '<span class="who">' + (who === 'me' ? '你' : '汐') + '</span>' +
+    '<div><div class="bub"></div>' + (meta ? '<div class="m2"></div>' : '') + '</div>';
+  row.querySelector('.bub').textContent = text;
+  if (meta) row.querySelector('.m2').innerHTML = meta;
+  log.appendChild(row);
+  log.scrollTop = log.scrollHeight;
+}
+async function chatSend(text) {
+  text = String(text || '').trim();
+  if (!text || chatBusy) return;
+  chatBusy = true;
+  if ($('chatSend')) $('chatSend').disabled = true;
+  chatAppend('me', text);
+  if ($('chatInput')) $('chatInput').value = '';
+  var t0 = Date.now();
+  try {
+    var r = await api('/api/test', { text: text, user: '试聊观众' });
+    var ms = Date.now() - t0;
+    if (r.ok === false || r.error) {
+      chatAppend('her', '（出错了：' + (r.error || '未知') + '）', '<b>失败</b> · ' + ms + 'ms');
+    } else {
+      var from = r.from === 'rule' ? '固定话术' : (r.from === 'pool' ? '内置话术' : 'AI 生成');
+      chatAppend('her', r.text || '（这次没生成出来，再试一次）', '<b>' + from + '</b> · ' + ms + 'ms' + (r.emotion ? ' · ' + r.emotion : ''));
+    }
+  } catch (e) {
+    chatAppend('her', '（连不上服务）', '<b>失败</b> · ' + (Date.now() - t0) + 'ms');
+  }
+  chatBusy = false;
+  if ($('chatSend')) $('chatSend').disabled = false;
+}
+if ($('chatSend')) $('chatSend').onclick = function () { chatSend($('chatInput').value); };
+if ($('chatInput')) $('chatInput').onkeydown = function (e) {
+  if (e.key === 'Enter') { e.preventDefault(); chatSend(this.value); }
+};
+document.querySelectorAll('.chat-quick button').forEach(function (b) {
+  b.onclick = function () { chatSend(b.getAttribute('data-say')); };
+});
+
+/* ─────────── 人设模板 ─────────── */
+var PERSONAS = [
+  { k: 'gentle', n: '温柔女友', d: '说话轻、会关心人，句子短，偶尔撒娇', t: 0.7,
+    p: '你是直播间里的 AI 主播「小汐」，说话轻、句子短，像朋友一样聊天。会关心观众，偶尔撒娇，但不腻。观众多是 20-30 岁的年轻人，别用书面语。' },
+  { k: 'sarcastic', n: '毒舌吐槽', d: '爱损人不伤人，遇杠精拐着弯怼', t: 1.1,
+    p: '你是直播间里的 AI 主播「小汐」，嘴有点毒，爱损人但不伤人，遇到杠精会拐着弯怼回去，偶尔自嘲。说话短、有梗，别用书面语。' },
+  { k: 'genki', n: '元气少女', d: '语气上扬，爱用感叹号，夸人真诚', t: 0.9,
+    p: '你是直播间里的 AI 主播「小汐」，元气满满，语气上扬，爱用感叹号，夸人特别真诚。说话短、跳脱，别用书面语。' },
+  { k: 'mature', n: '御姐御音', d: '慢条斯理，带点距离感', t: 0.8,
+    p: '你是直播间里的 AI 主播「小汐」，慢条斯理，带点距离感，偶尔一句话戳心。说话克制、不吵闹，别用书面语。' },
+  { k: 'naive', n: '憨憨学妹', d: '反应慢半拍，容易被逗笑', t: 0.85,
+    p: '你是直播间里的 AI 主播「小汐」，反应慢半拍，容易被逗笑，会认真回答傻问题。说话憨、可爱，别用书面语。' },
+  { k: 'custom', n: '自定义', d: '不用模板，自己写', t: null, p: '' }
+];
+var tplPicked = '';
+function renderTpl() {
+  var box = $('tplGrid');
+  if (!box) return;
+  box.innerHTML = '';
+  PERSONAS.forEach(function (p) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tpl-card' + (tplPicked === p.k ? ' on' : '');
+    b.innerHTML = '<div class="tn">' + p.n + '<i>' + (p.t ? '温度 ' + p.t : '空白') + '</i></div><div class="td">' + p.d + '</div>';
+    b.onclick = function () {
+      tplPicked = p.k;
+      renderTpl();
+      if ($('llmPersona')) { $('llmPersona').value = p.p; $('llmPersona').focus(); }
+      if (p.t != null && $('llmTemp')) $('llmTemp').value = p.t;
+      toast(p.k === 'custom' ? '已清空，自己写吧' : ('已套用「' + p.n + '」，可以直接改'));
+    };
+    box.appendChild(b);
+  });
+}
+
+/* ─────────── 事件流 ─────────── */
+var EV_FILTER = 'all';
+var EV_ITEMS = [];
+function evTime(t) {
+  var d = new Date(t || Date.now());
+  function p(n) { return String(n).padStart(2, '0'); }
+  return p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+}
+function evLabel(k) {
+  var m = { reply: '回复', skip: '跳过', song: '点歌', 'song-note': '点歌', welcome: '欢迎', gift: '礼物' };
+  return m[k] || k;
+}
+function evClass(k) {
+  if (k === 'reply' || k === 'welcome' || k === 'gift') return 're';
+  if (k === 'skip') return 'sk';
+  if (k === 'song' || k === 'song-note') return 'sg';
+  return '';
+}
+function renderEvents() {
+  var box = $('evList');
+  if (!box) return;
+  var items = EV_ITEMS.filter(function (e) {
+    if (EV_FILTER === 'all') return true;
+    if (EV_FILTER === 'song') return e.kind === 'song' || e.kind === 'song-note';
+    return e.kind === EV_FILTER;
+  }).slice(-60).reverse();
+  if (!items.length) { box.innerHTML = '<div class="mini">还没有事件</div>'; return; }
+  box.innerHTML = '';
+  items.forEach(function (e) {
+    var row = document.createElement('div');
+    row.className = 'ev-row';
+    var txt = '';
+    if (e.kind === 'reply') txt = '小汐 → <b>' + (e.user || '·') + '</b> ' + (e.text || '').slice(0, 24);
+    else if (e.kind === 'skip') txt = '<b>' + (e.user || '·') + '</b> ' + (e.reason || '跳过');
+    else txt = (e.text || evLabel(e.kind));
+    row.innerHTML = '<time>' + evTime(e.at) + '</time><span class="ty ' + evClass(e.kind) + '">' + evLabel(e.kind) + '</span><div class="tx">' + txt + '</div>';
+    box.appendChild(row);
+  });
+}
+async function loadEvents() {
+  try {
+    var r = await api('/api/events?limit=200');
+    if (r && r.items) { EV_ITEMS = r.items; renderEvents(); }
+  } catch (e) { /* 忽略 */ }
+}
+document.querySelectorAll('#evFilters button').forEach(function (b) {
+  b.onclick = function () {
+    EV_FILTER = b.getAttribute('data-k');
+    document.querySelectorAll('#evFilters button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    renderEvents();
+  };
+});
+renderTpl();
+loadEvents();
+setInterval(loadEvents, 3000);
+
 
 /* ─────────── 启动 ─────────── */
 load();
