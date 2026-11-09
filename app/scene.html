@@ -745,6 +745,29 @@ function speak(text, emotion){
   }
 
 
+  // 每 5 秒回传播放器状态（诊断「放着放着没声」）
+  setInterval(function () {
+    if (!sg) return;
+    try {
+      fetch('/api/scene-audio', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          at: Date.now(),
+          t: Number(sg.currentTime || 0),
+          paused: sg.paused,
+          ended: sg.ended,
+          volume: sg.volume,
+          readyState: sg.readyState,
+          err: sg.error ? sg.error.code : null,
+          src: (sg.currentSrc || '').slice(0, 120),
+          ducked: typeof songDucked !== 'undefined' ? songDucked : null,
+          vidPlaying: Boolean(vidPlaying)
+        })
+      }).catch(function () {});
+    } catch (e) {}
+  }, 5000);
+
 // ── 事件渲染 ──
   // ── 视频（B站点播）──
   var vidLayer = document.getElementById('vidLayer');
