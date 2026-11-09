@@ -723,7 +723,8 @@
           <h3>OBS 诊断<span class="live">排查用</span></h3>
           <p class="sub">画面没铺满、或者没声音的时候，点一下，把结果整段发我。</p>
           <div class="row"><label></label><div style="display:flex;gap:8px">
-            <button class="btn pri" id="obsDiagBtn">诊断 OBS</button>
+            <button class="btn pri" id="selfCheckBtn">自检并修复</button>
+            <button class="btn" id="obsDiagBtn">诊断 OBS</button>
             <button class="btn" id="obsDiagCopy">复制结果</button>
           </div></div>
           <pre id="obsDiagOut" class="mini" style="white-space:pre-wrap;word-break:break-all;max-height:260px;overflow:auto;background:rgba(127,127,127,.08);padding:10px;border-radius:10px;margin-top:8px">还没有诊断</pre>
@@ -1826,6 +1827,24 @@ if ($('obsDiagBtn')) {
     } finally {
       clearTimeout(timer);
       btn.disabled = false; btn.textContent = '诊断 OBS';
+    }
+  };
+}
+if ($('selfCheckBtn')) {
+  $('selfCheckBtn').onclick = async function () {
+    var btn = this;
+    btn.disabled = true; btn.textContent = '自检中…';
+    try {
+      var res = await fetch('/api/selfcheck', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+      var r = await res.json();
+      $('obsDiagOut').textContent = JSON.stringify(r, null, 2);
+      var n = (r.fixed || []).length;
+      toast(n ? ('已修复 ' + n + ' 处：' + r.fixed[0]) : '没发现冲突，一切正常');
+    } catch (e) {
+      $('obsDiagOut').textContent = '自检失败：' + e.message;
+      toast('自检失败：' + e.message);
+    } finally {
+      btn.disabled = false; btn.textContent = '自检并修复';
     }
   };
 }

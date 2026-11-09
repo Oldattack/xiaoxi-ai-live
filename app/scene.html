@@ -349,7 +349,12 @@ function updateDbg(v, W, H, s){
     '\n留白      ' + (Math.abs(window.innerWidth / window.innerHeight - W / H) < 0.01 ? '无（比例一致）' : '有（比例不一致）') +
     '\n\n正式播：地址加 ?clean=1 隐藏这个角标';
 }
-window.addEventListener('resize', fit);
+  // 防抖：OBS 重载/改尺寸会连发 resize，逐次 fit 会让画面跳
+  var fitDebounce = null;
+  window.addEventListener('resize', function () {
+    if (fitDebounce) clearTimeout(fitDebounce);
+    fitDebounce = setTimeout(fit, 120);
+  });
 fit();
 
 // 开局同步一次服务端布局设置；之后靠 SSE 的 config 事件热更新
@@ -490,6 +495,7 @@ function setSong(d){
   if (p.url && sg) {
     if (curUrl !== p.url) {
       curUrl = p.url;
+      try { sg.dataset.songName = p.name || ''; } catch (e) {}
       sg.src = p.url;
       sg.volume = 0.9;
       var pr = sg.play();
@@ -608,7 +614,8 @@ var ttsAudio = null;
   function unduckSong() {
     if (!songDucked) return;
     songDucked = false;
-    try { sg.volume = SONG_VOL; } catch (e) {}
+    // 视频还在放就留在低位，避免和视频声打架
+    try { sg.volume = vidPlaying ? 0.35 : SONG_VOL; } catch (e) {}
   }
 
   function speechVolume(){ return vidPlaying ? 0.35 : 1; }
@@ -726,6 +733,8 @@ function speak(text, emotion){
       if (!j || !j.ok) return;
       var u = j.playing && j.playing.url;
       if (!u) return;
+      // 期间如果换了歌，不要拿旧地址覆盖新歌
+      if (j.playing && j.playing.name && sg.dataset.songName && j.playing.name !== sg.dataset.songName) return;
       curUrl = u;
       sg.src = u;
       sg.volume = SONG_VOL;
