@@ -403,6 +403,7 @@ fit();
 // 开局同步一次服务端布局设置；之后靠 SSE 的 config 事件热更新
 fetch('/api/state').then(function(r){ return r.json(); }).then(function(j){
     if (j && j.config && j.config.scene && j.config.scene.bg) applyBg(j.config.scene.bg);
+    if (j && j.config && j.config.scene && j.config.scene.viz) vizCfg.enabled = j.config.scene.viz.enabled !== false;
   var l = j && j.config && j.config.scene && j.config.scene.layout;
   if (l) { layoutMode = l; fit(); }
   if (j && j.config && j.config.avatar) applyAvatar(j.config.avatar);
@@ -520,6 +521,7 @@ function setSong(d){
     document.getElementById('sDur').textContent = '0:00';
     renderQueue(d.queue || []);
     if (sg) { try { sg.pause(); sg.removeAttribute('src'); } catch (e) {} }
+    try { vizStop(); } catch (e) { /* ignore */ }
       try { sg.volume = 0.9; } catch (e) {} songDucked = false;
     curUrl = '';
     return;
@@ -543,6 +545,7 @@ function setSong(d){
       sg.src = p.url;
       sg.volume = 0.9;
       var pr = sg.play();
+      try { viz.mode = ''; vizStart(); } catch (e) { /* ignore */ }
       if (pr && pr.catch) pr.catch(function(){
         wrap.classList.remove('playing');
         document.getElementById('sArtist').textContent = (sub ? sub + ' · ' : '') + '点击画面播放';
@@ -825,7 +828,189 @@ function speak(text, emotion){
     } catch (e) {}
   }, 5000);
 
-// ── 事件渲染 ──
+  // ── 音乐可视化（只在放歌时出现，随机三种效果）──
+  var VIZ_MODES = ['spectrum', 'ring', 'particles'];
+  var viz = { on: true, mode: '', canvas: null, ctx: null, raf: 0, audio: null, analyser: null, data: null, last: 0, seed: 0 };
+  var vizCfg = { enabled: true };
+
+  function vizEnsure() {
+    var stage = document.getElementById('stage');
+    if (!stage) return null;
+    if (!viz.canvas) {
+      var c = document.createElement('canvas');
+      c.width = 960; c.height = 540;
+      c.style.cssText = 'position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;opacity:0;transition:opacity .4s';
+      var bgDim = document.getElementById('bgDim');
+      if (bgDim && bgDim.nextSibling) stage.insertBefore(c, bgDim.nextSibling);
+      else stage.appendChild(c);
+      viz.canvas = c;
+      viz.ctx = c.getContext('2d');
+    }
+    return viz.canvas;
+  }
+
+  function vizAudio() {
+    if (viz.audio) return viz.audio;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC || !sg) return null;
+      viz.audio = new AC();
+      var src = viz.audio.createMediaElementSource(sg);
+      var an = viz.audio.createAnalyser();
+      an.fftSize = 256;
+      an.smoothingTimeConstant = 0.82;
+      src.connect(an);
+      an.connect(viz.audio.destination);   // 必须接回去，否则点歌没声音
+      viz.analyser = an;
+      viz.data = new Uint8Array(an.frequencyBinCount);
+      if (viz.audio.state === 'suspended') viz.audio.resume().catch(function () {});
+    } catch (e) { viz.audio = null; return null; }
+    return viz.audio;
+  }
+
+  function vizBars() {
+    if (viz.barsEl) return viz.barsEl;
+    var stage = document.getElementById('stage');
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute;left:0;right:0;bottom:0;height:120px;display:flex;align-items:flex-end;gap:7px;padding:0 48px 0 48px;pointer-events:none;opacity:0;transition:opacity .35s;z-index:0';
+    for (var i = 0; i < 48; i++) {
+      var b = document.createElement('i');
+      var t2 = i / 47;
+      var col = 'rgba(' + Math.round(150 + 56 * t2) + ',' + Math.round(110 + 50 * t2) + ',255,';
+      b.style.cssText = 'flex:1;height:4px;border-radius:4px 4px 0 0;transition:height 80ms linear;background:linear-gradient(to top,' + col + '.08),' + col + '.85))';
+      wrap.appendChild(b);
+    }
+    var vid = document.getElementById('vidLayer');
+    if (vid) stage.insertBefore(wrap, vid);
+    else stage.appendChild(wrap);
+    viz.barsEl = wrap;
+    return wrap;
+  }
+
+  function vizPickMode() {
+    viz.seed = Math.floor(Math.random() * 1000);
+    viz.mode = VIZ_MODES[Math.floor(Math.random() * VIZ_MODES.length)];
+  }
+
+  function vizStop() {
+    if (viz.raf) { cancelAnimationFrame(viz.raf); viz.raf = 0; }
+    if (viz.canvas) { viz.canvas.style.opacity = '0'; if (viz.ctx) viz.ctx.clearRect(0, 0, 960, 540); }
+    if (viz.barsEl) viz.barsEl.style.opacity = '0';
+    viz.mode = '';
+  }
+
+  function vizStart() {
+    if (!vizCfg.enabled) return;
+    if (!sg || sg.paused || !sg.currentSrc) return;
+    if (!vizPickModeIfNeeded()) return;
+    vizEnsure();
+    vizAudio();
+    if (!viz.raf) viz.raf = requestAnimationFrame(vizFrame);
+    if (viz.canvas) viz.canvas.style.opacity = '1';
+    if (viz.audio && viz.audio.state === 'suspended') viz.audio.resume().catch(function () {});
+  }
+
+  function vizPickModeIfNeeded() {
+    if (!viz.mode) vizPickMode();
+    return true;
+  }
+
+  function vizFrame(ts) {
+    viz.raf = requestAnimationFrame(vizFrame);
+    if (!viz.canvas) return;
+    if (!sg || sg.paused || !sg.currentSrc) { vizStop(); return; }
+    if (ts && viz.last && ts - viz.last < 28) return;   // 约 30fps
+    viz.last = ts || Date.now();
+    var g = viz.ctx;
+    if (!g) return;
+    if (viz.canvas) viz.canvas.style.opacity = viz.mode === 'spectrum' ? '0' : '1';
+    if (viz.barsEl) viz.barsEl.style.opacity = viz.mode === 'spectrum' ? '1' : '0';
+    g.clearRect(0, 0, 960, 540);
+    var an = viz.analyser;
+    if (an && viz.data) an.getByteFrequencyData(viz.data);
+    var d = viz.data || new Uint8Array(64);
+    var n = d.length;
+    // 低/中/高能量
+    function band(a, b) { var s = 0, c = 0; for (var i = a; i < b && i < n; i++) { s += d[i]; c++; } return c ? s / c / 255 : 0; }
+    var bass = band(1, 8), mid = band(10, 34), high = band(36, 90);
+    // 有些环境拿不到音频数据（无声卡/分析器为 0），用合成节拍兜底，保证画面一直在动
+    var avgE = 0;
+    for (var q = 0; q < n; q++) avgE += d[q];
+    avgE = n ? avgE / n / 255 : 0;
+    var synth = avgE < 0.02;
+    var spec;
+    if (synth) {
+      bass = 0.42 + 0.34 * Math.abs(Math.sin(t * 2.1));
+      mid = 0.34 + 0.26 * Math.abs(Math.sin(t * 1.5 + 1.2));
+      high = 0.28 + 0.24 * Math.abs(Math.sin(t * 2.9 + 2.1));
+      spec = function (i2) { return Math.max(0.04, (Math.sin(t * 2.4 + i2 * 0.5) * 0.5 + 0.5) * (0.45 + 0.55 * Math.abs(Math.sin(t * 1.15 + i2 * 0.12)))); };
+    } else {
+      spec = function (i2) { return (d[i2] || 0) / 255; };
+    }
+    var t = (ts || Date.now()) / 1000;
+    var stage = document.getElementById('stage');
+    var W = 960, H = 540;
+
+    try {  // viz draw
+    if (viz.mode === 'spectrum') {
+      var barsEl = vizBars();
+      var kids = barsEl.children;
+      for (var i = 0; i < kids.length; i++) {
+        var idx = Math.floor(i / kids.length * 76) + 2;
+        var v = Math.max(spec(idx) || 0, 0.12 + 0.62 * Math.abs(Math.sin(t * 2.3 + i * 0.47)));
+        v = Math.min(1, Math.pow(v, 1.25) * (0.6 + (bass || 0) * 0.8));
+        if (!isFinite(v)) v = 0.2;
+        kids[i].style.height = (6 + v * 92) + "px";
+      }
+      barsEl.style.opacity = "1";
+      if (viz.canvas) viz.canvas.style.opacity = "0";
+    } else if (viz.mode === 'ring') {
+      var pet = document.querySelector('.pet');
+      var r = pet ? pet.getBoundingClientRect() : null;
+      var sr = stage ? stage.getBoundingClientRect() : null;
+      var cx = W / 2, cy = 330, rad = 250;
+      if (r && sr) {
+        var scale = sr.width / (stage.offsetWidth || 1920);
+        cx = ((r.left + r.width / 2) - sr.left) / scale * (W / 1920);
+        cy = ((r.top + r.height / 2) - sr.top) / scale * (H / 1080);
+        rad = (r.width / scale) * (W / 1920) * 0.52;
+      }
+      var bars2 = 72;
+      for (var k = 0; k < bars2; k++) {
+        var a = (k / bars2) * Math.PI * 2 - Math.PI / 2;
+        var idx2 = Math.floor((k / bars2) * 60) + 2;
+        var v2 = Math.max(spec(idx2), 0.10 + 0.40 * Math.abs(Math.sin(t * 1.9 + idx2 * 0.41)));
+        if (!isFinite(v2)) v2 = 0;
+        var len = 4 + Math.pow(v2, 1.3) * 46 * (0.6 + bass * 0.8);
+        if (!isFinite(len)) len = 6;
+        var x1 = cx + Math.cos(a) * rad, y1 = cy + Math.sin(a) * rad;
+        var x2 = cx + Math.cos(a) * (rad + len), y2 = cy + Math.sin(a) * (rad + len);
+        g.strokeStyle = 'rgba(200,150,255,' + (0.35 + v2 * 0.6) + ')';
+        g.lineWidth = 3.5;
+        g.lineCap = 'round';
+        g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+      }
+    } else {
+      // particles
+      var count = 26;
+      for (var p = 0; p < count; p++) {
+        var sx = (p * 137.5 + viz.seed * 31) % W;
+        var sp = 0.18 + ((p * 7) % 10) / 24 + bass * 0.8;
+        var sy = H - ((t * 26 * sp + p * 53) % (H + 120));
+        var rr = 1.2 + ((p * 13) % 7) / 4;
+        var alpha = 0.18 + high * 0.55 + (Math.sin(t * 1.7 + p) * 0.5 + 0.5) * 0.25;
+        g.beginPath(); g.arc(sx, sy, rr, 0, Math.PI * 2);
+        g.fillStyle = 'rgba(214,178,255,' + Math.min(0.85, alpha) + ')';
+        g.fill();
+      }
+      // 背景轻微脉动
+      g.fillStyle = 'rgba(140,100,230,' + (0.03 + mid * 0.07) + ')';
+      g.fillRect(0, 0, W, H);
+    }
+    } catch (e) { /* 绘制异常不中断循环 */ }
+  }
+
+  // ── 事件渲染 ──
   // ── 视频（B站点播）──
   var vidLayer = document.getElementById('vidLayer');
   var vidEl = document.getElementById('vid');
@@ -840,6 +1025,16 @@ function speak(text, emotion){
     if (vidPlaying && sg && !sg.paused) { try { sg.pause(); } catch (e) {} songFrozenForVideo = true; }
   }
   setInterval(enforceMutex, 1000);
+
+  // 看门狗：保证放歌时一定在动，停歌/暂停时一定停
+  var vizWatch = setInterval(function () {
+    try {
+      if (!vizCfg.enabled) { if (viz.raf) vizStop(); return; }
+      var playing = sg && !sg.paused && sg.currentSrc;
+      if (playing && !viz.raf) vizStart();
+      else if (!playing && viz.raf) vizStop();
+    } catch (e) { /* ignore */ }
+  }, 1200);
 
   function pauseSongForVideo() {
     if (sg && !sg.paused && sg.currentSrc) {
@@ -936,6 +1131,7 @@ function speak(text, emotion){
   } else if (d.kind === 'config') {
     if (d.scene && d.scene.layout) { layoutMode = d.scene.layout; fit(); }
       if (d.scene && d.scene.bg) applyBg(d.scene.bg);
+      if (d.scene && d.scene.viz) { vizCfg.enabled = d.scene.viz.enabled !== false; if (!vizCfg.enabled) vizStop(); }
   } else if (d.kind === 'backlog') {
     // 刚连上时补发最近的消息，OBS 重启 / 刷新不会一片空白
     (d.items || []).forEach(function(it){ handle(it, true); });

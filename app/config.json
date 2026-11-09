@@ -69,6 +69,10 @@
     "giftChance": 0.07
   },
   "scene": {
+    "lockTransform": true,
+    "viz": {
+      "enabled": true
+    },
     "bg": {
       "kind": "gradient",
       "preset": "aurora",
@@ -83,8 +87,8 @@
     "autoOpen": false,
     "obsMode": "browser",
     "autoReloadSource": true,
-    "autoSyncObs": false,
-    "obsScale": 2
+    "autoSyncObs": true,
+    "obsScale": 1
   },
   "quick": {
     "enabled": true,
