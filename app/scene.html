@@ -764,8 +764,8 @@ function speak(text, emotion){
 
   // 刷新/重开 OBS 后恢复正在播的视频
   fetch('/api/video/state').then(function (r) { return r.json(); }).then(function (s) {
-    if (s && s.playing && s.playing.file) {
-      playVideo({ url: '/media/' + s.playing.file + '?v=' + Date.now(), title: s.playing.title, owner: s.playing.owner, bvid: s.playing.bvid });
+    if (s && s.playing && (s.playing.url || s.playing.file)) {
+      playVideo({ url: s.playing.url || ('/media/' + s.playing.file + '?v=' + Date.now()), title: s.playing.title, owner: s.playing.owner, bvid: s.playing.bvid });
     }
   }).catch(function () {});
 
@@ -808,7 +808,7 @@ function speak(text, emotion){
       }
     } else if (d.kind === 'video-state') {
       if (!d.playing) stopVideo();
-      else if (!vidPlaying) playVideo({ url: '/media/' + d.playing.file + '?v=' + Date.now(), title: d.playing.title, owner: d.playing.owner, bvid: d.playing.bvid });
+      else if (!vidPlaying) playVideo({ url: d.playing.url || ('/media/' + d.playing.file + '?v=' + Date.now()), title: d.playing.title, owner: d.playing.owner, bvid: d.playing.bvid });
     } else if (d.kind === 'reply') {
       addLine('me', '[我]', d.text);
       if (replay) return;                       // 回放旧消息：不出声，避免重复说话
