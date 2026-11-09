@@ -643,6 +643,10 @@
         <h3>用哪个模型</h3>
         <div class="row"><label>模型</label><div><input class="inp" id="llmModel" placeholder="deepseek-flash"></div></div>
         <div class="row"><label>接口地址</label><div><input class="inp" id="llmBase" placeholder="https://api.deepseek.com/v1"></div></div>
+        <div class="row"><label>API 密钥</label><div>
+          <input class="inp" id="llmKey" type="password" placeholder="sk-…（填了才会真的用模型）">
+          <div class="hint" id="llmKeyHint">没填密钥时，她只能用兜底话术（「这个我想想啊…」这类）</div>
+        </div></div>
         <label class="sw"><input type="checkbox" id="llmEnabled"><span class="tr"></span><span class="t">启用模型</span></label>
         <label class="sw"><input type="checkbox" id="llmFast"><span class="tr"></span><span class="t">快速模式<i>更短的回复、更低的温度</i></span></label>
       </div>
@@ -874,6 +878,11 @@ function fill(st) {
   $('llmFast').checked = !!l.fastMode;
   $('llmModel').value = l.model || '';
   $('llmBase').value = l.baseUrl || '';
+  if ($('llmKey')) {
+    $('llmKey').value = '';
+    $('llmKey').placeholder = l.apiKey ? ('已保存 ' + l.apiKey + '（留空不改）') : 'sk-…（填了才会真的用模型）';
+    $('llmKeyHint').textContent = l.apiKey ? '密钥已保存；想换就直接粘新的' : '没填密钥时，她只能用兜底话术（「这个我想想啊…」这类）';
+  }
   $('llmPersona').value = l.persona || '';
   $('llmMaxChars').value = l.maxChars || 40;
   $('llmTemp').value = l.temperature != null ? l.temperature : 0.9;
@@ -1056,6 +1065,7 @@ $('save').onclick = async function () {
     },
     llm: {
       enabled: $('llmEnabled').checked,
+      ...($('llmKey') && $('llmKey').value.trim() ? { apiKey: $('llmKey').value.trim() } : {}),
       model: $('llmModel').value.trim(),
       baseUrl: $('llmBase').value.trim(),
       persona: $('llmPersona').value,
