@@ -417,6 +417,7 @@
           <div class="li"><b>对齐 OBS</b><button class="btn sm" id="actAlign">一键对齐</button></div>
           <div class="li"><b>清空点歌台</b><button class="btn sm" id="actClearSong">清空</button></div>
           <div class="li"><b>说出这句话</b><button class="btn sm" id="actSay">试一句</button></div>
+            <div class="li"><b>演示弹幕</b><button class="btn sm" id="mockSwitch">开启</button></div>
             <div class="li"><b>检查更新</b><button class="btn sm" id="actUpdate">检查</button></div>
         </div>
       </div>
@@ -474,7 +475,7 @@
           <div style="display:flex;gap:8px">
             <button class="btn pri" id="btnStart">连接</button>
             <button class="btn" id="btnStop">断开</button>
-            <button class="btn" id="btnMock">模拟弹幕（调试）</button>
+            <button class="btn" id="btnMock">演示弹幕</button>
           </div></div>
       </div>
 
@@ -1093,7 +1094,7 @@ $('btnStop').onclick = async function () {
   try { await api('/api/source', { action: 'stop', which: 'real' }); toast('已断开'); load(); }
   catch (e) { toast('断开失败：' + e.message); }
 };
-$('btnMock').onclick = async function () {
+var _oldMock = async function () {
   try { await api('/api/source', { action: 'start', which: 'mock' }); toast('模拟弹幕已开'); load(); }
   catch (e) { toast('启动失败：' + e.message); }
 };
@@ -1380,19 +1381,20 @@ $('updApply').onclick = async function () {
 /* ─────────── 主页按钮 ─────────── */
 $('homeStart').onclick = async function () {
   var b = this;
-    var rid = (ST && ST.config && ST.config.douyin && ST.config.douyin.webRid) || '';
-    if (!rid) {
-      toast('还没填直播间号，先去「抖音接入」填上');
-      var navP3 = document.querySelector('.nav a[data-p="p3"]');
-      if (navP3) navP3.click();
-      return;
-    }
+  var rid = (ST && ST.config && ST.config.douyin && ST.config.douyin.webRid) || '';
+  if (!rid) {
+    toast('还没填直播间号，先去「抖音接入」填上');
+    var navP3 = document.querySelector('.nav a[data-p="p3"]');
+    if (navP3) navP3.click();
+    return;
+  }
   b.disabled = true; b.textContent = '正在准备…';
   try {
-    await api('/api/scene-window', { action: 'use-browser-source' });
+    var r = await api('/api/scene-window', { action: 'use-browser-source' });
     await api('/api/config', { gate: { enabled: true } });
-    toast('准备好了，去直播伴侣点开播');
-
+    var d = (r && r.detail) || {};
+    if (r && r.ok) toast('准备好了，去直播伴侣点开播');
+    else toast('服务已开，但 OBS 没对齐：' + (d.reason || (r && r.reason) || '检查 OBS 是否打开'));
     load();
   } catch (e) { toast('启动失败：' + e.message); }
   b.disabled = false; b.textContent = '开始直播';
@@ -1403,9 +1405,18 @@ $('homeStop').onclick = async function () {
 };
 $('actPreview').onclick = function () { window.open('/', '_blank'); };
 $('actAlign').onclick = async function () {
-  try { await api('/api/scene-window', { action: 'use-browser-source' }); toast('已对齐'); load(); }
-  catch (e) { toast('对齐失败：' + e.message); }
+  var btn = this;
+  btn.disabled = true; btn.textContent = '对齐中…';
+  try {
+    var r = await api('/api/scene-window', { action: 'use-browser-source' });
+    var d = (r && r.detail) || {};
+    if (r && r.ok) toast(d.verified === false ? ('已摆放，但 OBS 抓不到画面：' + (d.note || '')) : '已对齐');
+    else toast('对齐失败：' + (d.reason || (r && r.reason) || 'OBS 没开或没连上'));
+    load();
+  } catch (e) { toast('对齐失败：' + e.message); }
+  btn.disabled = false; btn.textContent = '一键对齐';
 };
+$('mockSwitch').onclick = mockToggle;
 $('actClearSong').onclick = async function () {
   try { await api('/api/song/clear', {}); toast('已清空'); load(); }
   catch (e) { toast('清空失败：' + e.message); }
@@ -1523,6 +1534,29 @@ if (glassEl2) glassEl2.onchange = function () {
   saveAppearance();
 };
 try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (THEME === 'auto') applyTheme('auto', false); }); } catch (e) {}
+
+/* ─────────── 演示弹幕开关 ─────────── */
+async function mockToggle() {
+  var btn = $('mockSwitch') || $('btnMock');
+  var cur = ST && ST.sources && ST.sources.mock && ST.sources.mock.running;
+  if (btn) { btn.disabled = true; btn.textContent = '处理中…'; }
+  try {
+    var r = await api('/api/mock', { enabled: !cur });
+    toast(r.enabled ? '演示弹幕已开启：画面里会出现模拟弹幕' : '演示弹幕已关闭');
+    await load();
+  } catch (e) {
+    toast('操作失败：' + e.message);
+  }
+  if (btn) btn.disabled = false;
+  paintMock(ST);
+}
+function paintMock(st) {
+  var on = Boolean(st && st.sources && st.sources.mock && st.sources.mock.running);
+  var b1 = $('mockSwitch');
+  if (b1) b1.textContent = on ? '关闭' : '开启';
+  var b2 = $('btnMock');
+  if (b2) { b2.textContent = on ? '关闭演示弹幕' : '开启演示弹幕'; b2.classList.toggle('pri', on); }
+}
 
 /* ─────────── 试聊 ─────────── */
 var chatBusy = false;
@@ -1726,6 +1760,10 @@ if ($('vidOpen')) $('vidOpen').onclick = function () { window.open('/?clean=1', 
 loadVideoState();
 vidTimer = setInterval(function () { if (!document.hidden) loadVideoState(); }, 4000);
 
+if ($('btnMock')) $('btnMock').onclick = mockToggle;
+
+/* 统一按钮类型：避免任何按钮触发默认行为 */
+document.querySelectorAll('button:not([type])').forEach(function (b) { b.type = 'button'; });
 /* ─────────── 启动 ─────────── */
 load();
 loadTts();
