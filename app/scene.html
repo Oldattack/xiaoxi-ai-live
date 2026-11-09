@@ -856,6 +856,7 @@ function speak(text, emotion){
   }).catch(function () {});
 
   var spokenAt = {};
+  var lastSeenAt = 0;
   function alreadySpoken(at) {
     if (!at) return false;
     var now = Date.now();
@@ -866,6 +867,12 @@ function speak(text, emotion){
   }
 
   function handle(d, replay){
+    // 断线重连会重发最近 20 条（backlog），已经显示过的不再重复上屏
+    if (d && d.at) {
+      var stateKinds = { config: 1, song: 1, 'video-state': 1, stats: 1 };
+      if (replay && !stateKinds[d.kind] && d.at <= lastSeenAt) return;
+      if (d.at > lastSeenAt) lastSeenAt = d.at;
+    }
   if (d.kind === 'chat') {
     addLine('', d.user, d.text);
   } else if (d.kind === 'gift') {
