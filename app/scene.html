@@ -27,6 +27,10 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     linear-gradient(160deg,#0d0b18 0%,#0a0d16 55%,#080a10 100%);
   overflow:hidden;
 }
+  /* 舞台背景：图片层 / 暗化层 */
+  .bgimg{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0;transition:opacity .35s;z-index:0}
+  .bgdim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:1}
+
 #stage::after{
   content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(120% 80% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%);
@@ -266,6 +270,8 @@ html,body{height:100%;background:#05060a;overflow:hidden;
 
 <div class="dbg" id="dbg"></div>
 <div id="stage">
+    <div class="bgimg" id="bgImg"></div>
+    <div class="bgdim" id="bgDim"></div>
   <div class="grain"></div>
   <div class="floor"></div>
 
@@ -324,7 +330,44 @@ function applyLayout(){
   stageEl.classList.toggle('v', v);
   return v;
 }
-function fit(){
+  // ── 舞台背景 ──
+  var BG_PRESETS = {
+    aurora: 'radial-gradient(900px 700px at 22% 18%, #2a2350 0%, transparent 62%),radial-gradient(1100px 800px at 82% 78%, #14364a 0%, transparent 60%),radial-gradient(700px 600px at 62% 12%, #3a2a55 0%, transparent 65%),linear-gradient(160deg,#0d0b18 0%,#0a0d16 55%,#080a10 100%)',
+    midnight: 'radial-gradient(900px 700px at 30% 20%, #18203a 0%, transparent 62%),radial-gradient(1000px 800px at 78% 80%, #0e1b2e 0%, transparent 60%),linear-gradient(160deg,#080a12 0%,#05070d 100%)',
+    sakura: 'radial-gradient(900px 700px at 25% 18%, #3d2233 0%, transparent 62%),radial-gradient(1000px 800px at 80% 78%, #4a2436 0%, transparent 60%),linear-gradient(160deg,#160d14 0%,#0d070b 100%)',
+    ocean: 'radial-gradient(900px 700px at 22% 20%, #123a44 0%, transparent 62%),radial-gradient(1000px 800px at 80% 80%, #0f2f42 0%, transparent 60%),linear-gradient(160deg,#06121a 0%,#03090e 100%)',
+    sunset: 'radial-gradient(900px 700px at 25% 22%, #4a2536 0%, transparent 62%),radial-gradient(1000px 800px at 80% 78%, #4a3318 0%, transparent 60%),linear-gradient(160deg,#170d14 0%,#0d0709 100%)',
+    forest: 'radial-gradient(900px 700px at 25% 20%, #173326 0%, transparent 62%),radial-gradient(1000px 800px at 80% 80%, #16302a 0%, transparent 60%),linear-gradient(160deg,#08140f 0%,#040a08 100%)',
+    mono: 'radial-gradient(900px 700px at 25% 20%, #2a2a30 0%, transparent 62%),radial-gradient(1000px 800px at 80% 80%, #1c1c22 0%, transparent 60%),linear-gradient(160deg,#101013 0%,#07070a 100%)'
+  };
+
+  function applyBg(bg) {
+    if (!bg) return;
+    var stage = document.getElementById('stage');
+    var img = document.getElementById('bgImg');
+    var dim = document.getElementById('bgDim');
+    if (!stage || !img || !dim) return;
+    var kind = bg.kind || 'gradient';
+    dim.style.opacity = String(Math.max(0, Math.min(0.8, (Number(bg.dim) || 0) / 100)));
+    if (kind === 'image' && bg.image) {
+      stage.style.background = '#05060a';
+      img.style.backgroundImage = 'url("' + bg.image + '")';
+      img.style.filter = 'blur(' + (Number(bg.blur) || 0) + 'px)';
+      img.style.opacity = '1';
+    } else if (kind === 'color') {
+      stage.style.background = bg.color || '#0b1020';
+      img.style.opacity = '0';
+    } else {
+      var p = BG_PRESETS[bg.preset];
+      if (!p && bg.preset === 'custom') {
+        p = 'radial-gradient(1000px 800px at 25% 20%, ' + (bg.color || '#2a2350') + ' 0%, transparent 65%),radial-gradient(1200px 900px at 80% 80%, ' + (bg.color2 || '#14364a') + ' 0%, transparent 60%),linear-gradient(160deg,#08080e,#05060a)';
+      }
+      stage.style.background = p || BG_PRESETS.aurora;
+      img.style.opacity = '0';
+    }
+  }
+
+  function fit(){
   var v = applyLayout();
   var W = v ? 1080 : 1920;
   var H = v ? 1920 : 1080;
@@ -359,6 +402,7 @@ fit();
 
 // 开局同步一次服务端布局设置；之后靠 SSE 的 config 事件热更新
 fetch('/api/state').then(function(r){ return r.json(); }).then(function(j){
+    if (j && j.config && j.config.scene && j.config.scene.bg) applyBg(j.config.scene.bg);
   var l = j && j.config && j.config.scene && j.config.scene.layout;
   if (l) { layoutMode = l; fit(); }
   if (j && j.config && j.config.avatar) applyAvatar(j.config.avatar);
@@ -891,6 +935,7 @@ function speak(text, emotion){
     setSong(d);
   } else if (d.kind === 'config') {
     if (d.scene && d.scene.layout) { layoutMode = d.scene.layout; fit(); }
+      if (d.scene && d.scene.bg) applyBg(d.scene.bg);
   } else if (d.kind === 'backlog') {
     // 刚连上时补发最近的消息，OBS 重启 / 刷新不会一片空白
     (d.items || []).forEach(function(it){ handle(it, true); });
