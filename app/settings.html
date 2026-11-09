@@ -471,7 +471,8 @@
           <div><input class="inp" id="webRid" placeholder="例如 123456789012">
             <div class="hint">房间权限必须是「所有人可进」，而且正在直播中</div></div></div>
         <label class="sw"><input type="checkbox" id="autoConnect"><span class="tr"></span><span class="t">开软件时自动连上次的直播间</span></label>
-        <div class="row" style="margin-top:12px"><label></label>
+        <div class="row"><label>状态</label><div id="dyStatus" class="mini">未连接</div></div>
+          <div class="row" style="margin-top:12px"><label></label>
           <div style="display:flex;gap:8px">
             <button class="btn pri" id="btnStart">连接</button>
             <button class="btn" id="btnStop">断开</button>
@@ -961,7 +962,21 @@ function renderHome(st) {
 
   var real = !!(st.sources && st.sources.real && st.sources.real.running);
   setChip('cDouyin', real ? '抖音已连' : '抖音未连', real ? '' : 'off');
-  var rd = $('rDouyin'); rd.textContent = real ? '已连接' : '未连接'; rd.className = real ? 'g' : 'm';
+  var dySt = $('dyStatus');
+    if (dySt) {
+      var realInfo = (st && st.sources && st.sources.real) || {};
+      var msgCount = (st && st.source && st.source.messages) || 0;
+      if (realInfo.running) {
+        dySt.textContent = realInfo.connected
+          ? ('已连接 · 收到 ' + msgCount + ' 条' + (realInfo.note ? (' · ' + realInfo.note) : ''))
+          : ('未连上 · ' + (realInfo.error || realInfo.note || '正在连接…'));
+        dySt.style.color = realInfo.connected ? '#0f7a55' : '#c0392b';
+      } else {
+        dySt.textContent = '未连接';
+        dySt.style.color = '';
+      }
+    }
+    var rd = $('rDouyin'); rd.textContent = real ? '已连接' : '未连接'; rd.className = real ? 'g' : 'm';
 
   var sceneOk = (CFG.scene && CFG.scene.obsMode === 'browser');
   setChip('cScene', sceneOk ? '画面就绪' : '画面未就绪', sceneOk ? '' : 'off');
@@ -1083,19 +1098,25 @@ $('reload').onclick = function () { load(); };
 
 /* ─────────── 抖音源 ─────────── */
 $('btnStart').onclick = async function () {
+  var btn = this;
+  var rid = $('webRid').value.trim();
+  if (!rid) { toast('先填直播间号'); $('webRid').focus(); return; }
+  btn.disabled = true; btn.textContent = '连接中…';
   try {
-    await api('/api/config', { douyin: { webRid: $('webRid').value.trim(), autoConnect: $('autoConnect').checked } });
-    await api('/api/source', { action: 'start', which: 'real' });
-    toast('正在连接直播间…');
-    setTimeout(load, 1500);
+    await api('/api/config', { douyin: { webRid: rid, autoConnect: $('autoConnect').checked } });
+    var r = await api('/api/source', { action: 'start', type: 'douyin' });
+    if (r && r.ok === false) toast('连接失败：' + (r.error || '未知原因'));
+    else toast('正在连接直播间…');
+    setTimeout(load, 2500);
   } catch (e) { toast('连接失败：' + e.message); }
+  btn.disabled = false; btn.textContent = '连接';
 };
 $('btnStop').onclick = async function () {
-  try { await api('/api/source', { action: 'stop', which: 'real' }); toast('已断开'); load(); }
+    try { await api('/api/source', { action: 'stop', type: 'douyin' }); toast('已断开'); load(); }
   catch (e) { toast('断开失败：' + e.message); }
 };
 var _oldMock = async function () {
-  try { await api('/api/source', { action: 'start', which: 'mock' }); toast('模拟弹幕已开'); load(); }
+  try { await api('/api/source', { action: 'start', type: 'mock' }); toast('模拟弹幕已开'); load(); }
   catch (e) { toast('启动失败：' + e.message); }
 };
 
