@@ -635,6 +635,10 @@
             <button class="btn" id="btnPreview">打开画面</button>
           </div></div>
         <div class="row"><label>状态</label><div class="mini" id="sceneState">—</div></div>
+        <div class="row"><label>声音</label><div>
+          <label class="sw"><input type="checkbox" id="audioViaObs"><span class="tr"></span><span class="t">声音走 OBS 混音<i>OBS 需要听到声音（OBS 直接推流/录制）时打开；直播伴侣抓系统声音时保持关闭</i></span></label>
+        </div></div>
+        <div class="row"><label></label><div class="tiny" id="audioRouteHint">当前：声音放给系统（直播伴侣抓「系统声音」即可）</div></div>
       </div>
     </div>
 
@@ -929,6 +933,11 @@ function fill(st) {
   renderStats(st);
   renderSong(st);
   renderHome(st);
+  if ($('audioViaObs')) {
+    var viaObs = sc.audioRoute === 'obs';
+    $('audioViaObs').checked = viaObs;
+    $('audioRouteHint').textContent = viaObs ? '当前：声音走 OBS 混音（OBS 里能听到；直播伴侣抓窗口听不到）' : '当前：声音放给系统（直播伴侣抓「系统声音」即可）';
+  }
   highlightLayout(sc.layout || 'landscape');
     $('sceneState').textContent = (sc && sc.obsMode === 'browser') ? '✅ 已连上 OBS，画面在播' : '⚠ 还没连上 OBS，点上面的按钮';
 }
@@ -1164,6 +1173,17 @@ $('btnSync').onclick = async function () {
   try { var r = await api('/api/scene-window', { action: 'use-browser-source' }); toast(r.ok ? '已对齐 OBS' : '对齐失败'); load(); }
   catch (e) { toast('对齐失败：' + e.message); }
 };
+if ($('audioViaObs')) {
+  $('audioViaObs').onchange = async function () {
+    var mode = this.checked ? 'obs' : 'system';
+    try {
+      await api('/api/config', { scene: { audioRoute: mode } });
+      await api('/api/scene-window', { action: 'use-browser-source' });
+      $('audioRouteHint').textContent = this.checked ? '当前：声音走 OBS 混音（OBS 里能听到；直播伴侣抓窗口听不到）' : '当前：声音放给系统（直播伴侣抓「系统声音」即可）';
+      toast(this.checked ? '已切到 OBS 混音' : '已切到系统声音');
+    } catch (e) { toast('切换失败：' + e.message); }
+  };
+}
 $('btnPreview').onclick = function () { window.open('/', '_blank'); };
 
 /* ─────────── 点歌 ─────────── */
