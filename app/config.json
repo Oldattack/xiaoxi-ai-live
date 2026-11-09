@@ -15,7 +15,7 @@
       "刷单",
       "qq"
     ],
-    "enabled": true,
+    "enabled": false,
     "similarMs": 120000
   },
   "welcome": {
