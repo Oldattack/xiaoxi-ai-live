@@ -1414,7 +1414,7 @@ $('homeStart').onclick = async function () {
     var r = await api('/api/scene-window', { action: 'use-browser-source' });
     await api('/api/config', { gate: { enabled: true } });
     var d = (r && r.detail) || {};
-    if (r && r.ok) toast('准备好了，去直播伴侣点开播');
+    if (r && r.ok) toast('准备好了（画面 ' + (d.actualSize || '') + '），去直播伴侣点开播');
     else toast('服务已开，但 OBS 没对齐：' + (d.reason || (r && r.reason) || '检查 OBS 是否打开'));
     load();
   } catch (e) { toast('启动失败：' + e.message); }
@@ -1431,7 +1431,11 @@ $('actAlign').onclick = async function () {
   try {
     var r = await api('/api/scene-window', { action: 'use-browser-source' });
     var d = (r && r.detail) || {};
-    if (r && r.ok) toast(d.verified === false ? ('已摆放，但 OBS 抓不到画面：' + (d.note || '')) : '已对齐');
+    if (r && r.ok) {
+      var extra = d.actualSize ? (' ' + d.actualSize) : '';
+      var cnt = d.aligned > 1 ? ('（' + d.aligned + ' 个源）') : '';
+      toast(d.problems && d.problems.length ? ('对齐有问题：' + d.problems[0]) : ('已对齐' + extra + cnt));
+    }
     else toast('对齐失败：' + (d.reason || (r && r.reason) || 'OBS 没开或没连上'));
     load();
   } catch (e) { toast('对齐失败：' + e.message); }
