@@ -328,7 +328,8 @@ function fit(){
   var v = applyLayout();
   var W = v ? 1080 : 1920;
   var H = v ? 1920 : 1080;
-  var s = Math.min(window.innerWidth / W, window.innerHeight / H);
+  // 铺满视口：用 max 而不是 min。用 min 时，视口比例不是 16:9 就会上下留黑，看着像「画面挪上去了」
+  var s = Math.max(window.innerWidth / W, window.innerHeight / H);
   stageEl.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
   updateDbg(v, W, H, s);
 }
