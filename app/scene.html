@@ -603,7 +603,7 @@ var ttsAudio = null;
   var songDucked = false;
   function duckSong() {
     if (!sg || sg.paused || !sg.currentSrc) return;
-    try { sg.volume = Math.min(SONG_VOL, 0.35); songDucked = true; } catch (e) {}
+    try { sg.volume = Math.min(SONG_VOL, 0.5); songDucked = true; } catch (e) {}
   }
   function unduckSong() {
     if (!songDucked) return;
@@ -645,7 +645,8 @@ function pumpSpeech(){
   var sp = speakQueue.shift();
   speaking = true;
   reportSpeech('start', sp.id);
-    duckSong();
+    // 浏览器自带语音会触发 Windows「通信活动降音」，再叠一层压低就几乎听不见了
+    if (sp && sp.tts) duckSong();
 
   if (sp.tts) {
     playServerTts(sp, function(ok){
@@ -710,6 +711,39 @@ function speak(text, emotion){
   clearTimeout(talkTimer);
   talkTimer = setTimeout(function(){ figEl.classList.remove('talking'); }, Math.max(1800, text.length * 260));
 }
+
+  // 歌放到一半卡住/没声：让服务端重解析地址，从当前位置续播
+  var songRecovering = false;
+  var songRecoverLast = 0;
+  function recoverSong(reason) {
+    if (songRecovering) return;
+    if (Date.now() - songRecoverLast < 20000) return;
+    if (!sg || !sg.currentSrc) return;
+    songRecoverLast = Date.now();
+    songRecovering = true;
+    var at = Number(sg.currentTime || 0);
+    fetch('/api/song/retry', { method: 'POST' }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j || !j.ok) return;
+      var u = j.playing && j.playing.url;
+      if (!u) return;
+      curUrl = u;
+      sg.src = u;
+      sg.volume = SONG_VOL;
+      try { sg.currentTime = Math.max(0, at - 1); } catch (e) {}
+      var p = sg.play();
+      if (p && p.catch) p.catch(function () {});
+      console.log('[song] 重新取流：' + reason);
+    }).catch(function () {}).then(function () { songRecovering = false; });
+  }
+  if (sg) {
+    sg.addEventListener('stalled', function () { if (!sg.paused) recoverSong('stalled'); });
+    sg.addEventListener('error', function () { recoverSong('error'); });
+    setInterval(function () {
+      if (!sg || sg.paused || !sg.currentSrc || sg.ended) return;
+      if (sg.readyState < 3) recoverSong('readyState=' + sg.readyState);
+    }, 8000);
+  }
+
 
 // ── 事件渲染 ──
   // ── 视频（B站点播）──
