@@ -1434,7 +1434,8 @@ $('actAlign').onclick = async function () {
     if (r && r.ok) {
       var extra = d.actualSize ? (' ' + d.actualSize) : '';
       var cnt = d.aligned > 1 ? ('（' + d.aligned + ' 个源）') : '';
-      toast(d.problems && d.problems.length ? ('对齐有问题：' + d.problems[0]) : ('已对齐' + extra + cnt));
+      var rm = (d.removed && d.removed.length) ? ('，清掉旧采集源 ' + d.removed.length + ' 个') : '';
+      toast(d.problems && d.problems.length ? ('对齐有问题：' + d.problems[0]) : ('已对齐' + extra + cnt + rm));
     }
     else toast('对齐失败：' + (d.reason || (r && r.reason) || 'OBS 没开或没连上'));
     load();
