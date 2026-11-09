@@ -769,6 +769,10 @@ function speak(text, emotion){
           volume: sg.volume,
           readyState: sg.readyState,
           err: sg.error ? sg.error.code : null,
+          vw: window.innerWidth,
+          vh: window.innerHeight,
+          dpr: window.devicePixelRatio || 1,
+          scale: (function(){ var m = /scale\(([0-9.]+)\)/.exec(document.getElementById("stage").style.transform || ""); return m ? Number(m[1]) : null; })(),
           src: (sg.currentSrc || '').slice(0, 120),
           ducked: typeof songDucked !== 'undefined' ? songDucked : null,
           vidPlaying: Boolean(vidPlaying)
