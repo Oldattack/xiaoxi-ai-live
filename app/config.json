@@ -143,6 +143,12 @@
     "maxQueue": 8
   },
   "avatar": {
+    "kind": "default",
+    "model": "",
+    "video": "",
+    "mh": 560,
+    "mb": 206,
+    "mx": 0,
     "height": 520,
     "heightPortrait": 700,
     "glow": true,

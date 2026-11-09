@@ -50,6 +50,8 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   filter:blur(12px);animation:breathe 5s ease-in-out infinite}
 @keyframes breathe{50%{opacity:.7;transform:translateX(-50%) scale(1.07)}}
 
+  .figvid{display:none;height:var(--fig-h,520px);width:auto;object-fit:contain;image-rendering:auto;border-radius:6px}
+  #stage.v .figvid{height:var(--fig-hp,700px)}
 .fig{position:relative;display:block;height:var(--fig-h,520px);width:auto;image-rendering:auto;
   filter:
     drop-shadow(1.2px 0 0 rgba(12,9,20,.9)) drop-shadow(-1.2px 0 0 rgba(12,9,20,.9))
@@ -286,6 +288,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   <div class="pet">
     <div class="halo"></div>
     <img class="fig" id="fig" src="sprites_hd/idle.png" alt="小汐">
+    <video id="petVid" class="figvid" muted loop playsinline preload="auto"></video>
     <div class="emo" id="emo">开心</div>
   </div>
 
@@ -423,6 +426,7 @@ var AVATAR = { sources: {}, height: 520, heightPortrait: 700, glow: true };
 
 function spriteUrl(name){
   var custom = AVATAR.sources && AVATAR.sources[name];
+  if (name === 'idle' && AVATAR.kind === 'image' && AVATAR.model) return AVATAR.model;
   return custom || ('sprites_hd/' + name + '.png');
 }
 
@@ -438,6 +442,23 @@ function applyAvatar(a){
   if (figNow) {
     var emo = figNow.dataset.emo || 'idle';
     figNow.src = spriteUrl(emo);
+  // 人物：整图 / 动作视频 / 位置
+  var petEl = document.querySelector('.pet');
+  if (petEl) {
+    petEl.style.bottom = (AVATAR.mb === undefined ? 206 : AVATAR.mb) + 'px';
+    petEl.style.marginLeft = (AVATAR.mx || 0) + 'px';
+  }
+  var vidEl = document.getElementById('petVid');
+  var figEl2 = document.getElementById('fig');
+  if (AVATAR.kind === 'video' && AVATAR.video && vidEl) {
+    if (vidEl.getAttribute('src') !== AVATAR.video) vidEl.src = AVATAR.video;
+    vidEl.style.display = 'block';
+    if (figEl2) figEl2.style.display = 'none';
+    try { vidEl.play(); } catch (e) {}
+  } else {
+    if (vidEl) { try { vidEl.pause(); } catch (e) {} vidEl.style.display = 'none'; }
+    if (figEl2) { figEl2.style.display = ''; figEl2.src = spriteUrl(figEl2.dataset.emo || 'idle'); }
+  }
   }
 }
 
@@ -523,6 +544,8 @@ function setSong(d){
     if (sg) { try { sg.pause(); sg.removeAttribute('src'); } catch (e) {} }
     try { vizStop(); } catch (e) { /* ignore */ }
       try { sg.volume = 0.9; } catch (e) {} songDucked = false;
+      try { sg.muted = false; } catch (e) {}
+      try { sg.volume = SONG_VOL || 0.9; } catch (e) {}
     curUrl = '';
     return;
   }
@@ -822,7 +845,13 @@ function speak(text, emotion){
           scale: (function(){ var m = /scale\(([0-9.]+)\)/.exec(document.getElementById("stage").style.transform || ""); return m ? Number(m[1]) : null; })(),
           src: (sg.currentSrc || '').slice(0, 120),
           ducked: typeof songDucked !== 'undefined' ? songDucked : null,
-          vidPlaying: Boolean(vidPlaying)
+          vidPlaying: Boolean(vidPlaying),
+            muted: sg.muted,
+            ctx: (viz && viz.audio) ? viz.audio.state : 'none',
+            vidVol: vidEl ? vidEl.volume : null,
+            vidMuted: vidEl ? vidEl.muted : null,
+            vidReady: vidEl ? vidEl.readyState : null,
+            vidErr: vidEl && vidEl.error ? vidEl.error.code : null
         })
       }).catch(function () {});
     } catch (e) {}
@@ -1027,8 +1056,31 @@ function speak(text, emotion){
   setInterval(enforceMutex, 1000);
 
   // 看门狗：保证放歌时一定在动，停歌/暂停时一定停
+  // 声音自检：播 1.2 秒 440Hz，用来确认系统/直播伴侣是否收到声音
+  function playTestTone() {
+    window.__tone = (window.__tone || 0) + 1;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (viz && !viz.audio) viz.audio = new AC();
+      var ctx2 = (viz && viz.audio) ? viz.audio : new AC();
+      if (ctx2.state === 'suspended') ctx2.resume();
+      var osc = ctx2.createOscillator();
+      var gain = ctx2.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 440;
+      gain.gain.setValueAtTime(0.0001, ctx2.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.22, ctx2.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx2.currentTime + 1.15);
+      osc.connect(gain);
+      gain.connect(ctx2.destination);
+      osc.start();
+      osc.stop(ctx2.currentTime + 1.2);
+    } catch (e) { /* ignore */ }
+  }
+
   var vizWatch = setInterval(function () {
     try {
+    if (viz.audio && viz.audio.state !== 'running') { try { viz.audio.resume(); } catch (e) {} }
       if (!vizCfg.enabled) { if (viz.raf) vizStop(); return; }
       var playing = sg && !sg.paused && sg.currentSrc;
       if (playing && !viz.raf) vizStart();
@@ -1038,6 +1090,36 @@ function speak(text, emotion){
 
   function pauseSongForVideo() {
     if (sg && !sg.paused && sg.currentSrc) {
+  // ── 音频卡顿自愈 ──
+  var audioWatch = { songT: -1, songTry: 0, vidT: -1, vidTry: 0 };
+  setInterval(function () {
+    try {
+      if (sg && !sg.paused && sg.currentSrc) {
+        var t = sg.currentTime;
+        if (Math.abs(t - audioWatch.songT) < 0.15 && sg.readyState < 3) {
+          audioWatch.songTry++;
+          if (audioWatch.songTry >= 2) {
+            audioWatch.songTry = 0;
+            try { sg.load(); sg.play(); } catch (e) {}
+          }
+        } else audioWatch.songTry = 0;
+        audioWatch.songT = t;
+      }
+      var vEl = document.getElementById('vid');
+      if (vEl && !vEl.paused && vEl.currentSrc && vEl.readyState < 3) {
+        var vt = vEl.currentTime;
+        if (Math.abs(vt - audioWatch.vidT) < 0.15) {
+          audioWatch.vidTry++;
+          if (audioWatch.vidTry >= 2) {
+            audioWatch.vidTry = 0;
+            try { vEl.load(); vEl.play(); } catch (e) {}
+          }
+        } else audioWatch.vidTry = 0;
+        audioWatch.vidT = vt;
+      }
+    } catch (e) { /* ignore */ }
+  }, 5000);
+
       try { sg.pause(); songFrozenForVideo = true; } catch (e) {}
     }
   }
@@ -1055,6 +1137,7 @@ function speak(text, emotion){
     document.getElementById('vidTitle').textContent = d.title || '';
     document.getElementById('vidBy').textContent = d.owner ? ('@' + d.owner) : '';
     vidEl.src = d.url;
+    try { vidEl.muted = false; vidEl.volume = 1; } catch (e) {}
     vidEl.currentTime = 0;
     var p = vidEl.play();
     if (p && p.catch) p.catch(function () { /* 自动播放被拦，等用户交互 */ });
@@ -1112,6 +1195,7 @@ function speak(text, emotion){
       if (replay && !stateKinds[d.kind] && d.at <= lastSeenAt) return;
       if (d.at > lastSeenAt) lastSeenAt = d.at;
     }
+  if (d.kind === 'soundtest') { playTestTone(); return; }
   if (d.kind === 'chat') {
     addLine('', d.user, d.text);
   } else if (d.kind === 'gift') {
