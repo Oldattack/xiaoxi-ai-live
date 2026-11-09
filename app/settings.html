@@ -719,6 +719,17 @@
 
     <!-- ══════ 运行状态 ══════ -->
     <div class="pane" id="p4">
+<div class="card">
+          <h3>OBS 诊断<span class="live">排查用</span></h3>
+          <p class="sub">画面没铺满、或者没声音的时候，点一下，把结果整段发我。</p>
+          <div class="row"><label></label><div style="display:flex;gap:8px">
+            <button class="btn pri" id="obsDiagBtn">诊断 OBS</button>
+            <button class="btn" id="obsDiagCopy">复制结果</button>
+          </div></div>
+          <pre id="obsDiagOut" class="mini" style="white-space:pre-wrap;word-break:break-all;max-height:260px;overflow:auto;background:rgba(127,127,127,.08);padding:10px;border-radius:10px;margin-top:8px">还没有诊断</pre>
+        </div>
+
+        
       <div class="card">
         <h3>版本与更新<span class="live">自动同步</span></h3>
         <p class="sub">有新版本会在这里提示，点一下就能升级；升级不会覆盖你的配置。</p>
@@ -1790,6 +1801,30 @@ if ($('btnMock')) $('btnMock').onclick = mockToggle;
 
 /* 统一按钮类型：避免任何按钮触发默认行为 */
 document.querySelectorAll('button:not([type])').forEach(function (b) { b.type = 'button'; });
+/* ─────────── OBS 诊断 ─────────── */
+if ($('obsDiagBtn')) {
+  $('obsDiagBtn').onclick = async function () {
+    var btn = this;
+    btn.disabled = true; btn.textContent = '诊断中…';
+    try {
+      var r = await api('/api/obs/diag', {});
+      var txt = r.ok ? JSON.stringify(r, null, 2) : ('诊断失败：' + (r.error || '未知'));
+      $('obsDiagOut').textContent = txt;
+      toast(r.ok ? '诊断完成，可复制结果' : ('诊断失败：' + (r.error || '')));
+    } catch (e) {
+      $('obsDiagOut').textContent = '诊断失败：' + e.message;
+      toast('诊断失败：' + e.message);
+    }
+    btn.disabled = false; btn.textContent = '诊断 OBS';
+  };
+}
+if ($('obsDiagCopy')) {
+  $('obsDiagCopy').onclick = function () {
+    var t = $('obsDiagOut').textContent || '';
+    navigator.clipboard?.writeText(t).then(function () { toast('已复制'); }, function () { toast('复制失败，手动选中复制'); });
+  };
+}
+
 /* ─────────── 启动 ─────────── */
 load();
 loadTts();
