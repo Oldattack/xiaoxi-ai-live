@@ -580,6 +580,9 @@ if (window.speechSynthesis) {
 var speakQueue = [];
 var speaking = false;
 
+  // 预览窗口（场景窗口 / 独立窗口）不出声，声音只从 OBS 浏览器源走
+  var MUTE = /[?&]mute=1/.test(location.search);
+
 function reportSpeech(type, id){
   try {
     fetch('/api/speech-event', {
@@ -663,6 +666,7 @@ function speakWithBrowser(sp){
 }
 
 function speakOut(sp){
+    if (MUTE) { if (sp && sp.id) reportSpeech('end', sp.id); return; }
   if (!sp || !sp.text) return;
   if (sp.enabled === false || sp.muted) {
     reportSpeech('end', sp.id);   // 静音也要放行，别把队列卡死
@@ -765,14 +769,24 @@ function speak(text, emotion){
     }
   }).catch(function () {});
 
-function handle(d){
+  var spokenAt = {};
+  function alreadySpoken(at) {
+    if (!at) return false;
+    var now = Date.now();
+    if (spokenAt[at]) return true;
+    spokenAt[at] = now;
+    Object.keys(spokenAt).forEach(function (k) { if (now - spokenAt[k] > 120000) delete spokenAt[k]; });
+    return false;
+  }
+
+  function handle(d, replay){
   if (d.kind === 'chat') {
     addLine('', d.user, d.text);
   } else if (d.kind === 'gift') {
     addLine('gift', d.user, '送出 ' + d.text);
   } else if (d.kind === 'enter') {
     // 只显示通过服务端节流的进场，否则热门直播间会被进场消息刷屏
-    if (d.welcome) {
+    if (d.welcome && !replay) {
       addLine('enter', d.user, '进入直播间');
       welcome(d.user);
     }
@@ -786,17 +800,21 @@ function handle(d){
     if (d.scene && d.scene.layout) { layoutMode = d.scene.layout; fit(); }
   } else if (d.kind === 'backlog') {
     // 刚连上时补发最近的消息，OBS 重启 / 刷新不会一片空白
-    (d.items || []).forEach(function(it){ handle(it); });
-  } else if (d.kind === 'video') {
-    if (d.action === 'play') playVideo(d);
-    else if (d.action === 'stop') stopVideo();
-  } else if (d.kind === 'video-state') {
-    if (!d.playing) stopVideo();
-    else if (!vidPlaying) playVideo({ url: '/media/' + d.playing.file + '?v=' + Date.now(), title: d.playing.title, owner: d.playing.owner, bvid: d.playing.bvid });
-  } else if (d.kind === 'reply') {
-    addLine('me', '[我]', d.text);
-    speak(d.text, d.emotion);
-    if (d.speech) speakOut(d.speech);
+    (d.items || []).forEach(function(it){ handle(it, true); });
+    } else if (d.kind === 'video') {
+      if (!replay) {
+        if (d.action === 'play') playVideo(d);
+        else if (d.action === 'stop') stopVideo();
+      }
+    } else if (d.kind === 'video-state') {
+      if (!d.playing) stopVideo();
+      else if (!vidPlaying) playVideo({ url: '/media/' + d.playing.file + '?v=' + Date.now(), title: d.playing.title, owner: d.playing.owner, bvid: d.playing.bvid });
+    } else if (d.kind === 'reply') {
+      addLine('me', '[我]', d.text);
+      if (replay) return;                       // 回放旧消息：不出声，避免重复说话
+      if (alreadySpoken(d.at)) return;          // 同一条只念一次
+      speak(d.text, d.emotion);
+      if (d.speech) speakOut(d.speech);
   } else if (d.kind === 'stats') {
     setTxt('online', Number(d.online).toLocaleString());
     setTxt('recv', d.received);
