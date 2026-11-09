@@ -724,6 +724,13 @@
     <!-- ══════ 运行状态 ══════ -->
     <div class="pane" id="p4">
 <div class="card">
+          <h3>各项状态<span class="live">自检</span></h3>
+          <p class="sub">每项功能现在到底能不能用，这里直接给结果。</p>
+          <div id="hcList" class="mini" style="display:flex;flex-direction:column;gap:6px;margin:4px 0 10px">正在检查…</div>
+          <div class="row"><label></label><div><button class="btn" id="hcRefresh">刷新状态</button></div></div>
+        </div>
+
+<div class="card">
           <h3>OBS 诊断<span class="live">排查用</span></h3>
           <p class="sub">画面没铺满、或者没声音的时候，点一下，把结果整段发我。</p>
           <div class="row"><label></label><div style="display:flex;gap:8px">
@@ -989,8 +996,8 @@ function renderHome(st) {
       var msgCount = (st && st.source && st.source.messages) || 0;
       if (realInfo.running) {
         dySt.textContent = realInfo.connected
-          ? ('已连接 · 收到 ' + msgCount + ' 条' + (realInfo.note ? (' · ' + realInfo.note) : ''))
-          : ('未连上 · ' + (realInfo.error || realInfo.note || '正在连接…'));
+          ? ('✅ 连接成功 · 收到 ' + msgCount + ' 条' + (realInfo.note ? (' · ' + realInfo.note) : ''))
+          : ('❌ 连接失败 · ' + (realInfo.error || realInfo.note || '正在连接…'));
         dySt.style.color = realInfo.connected ? '#0f7a55' : '#c0392b';
       } else {
         dySt.textContent = '未连接';
@@ -1432,11 +1439,18 @@ $('homeStart').onclick = async function () {
     return;
   }
   b.disabled = true; b.textContent = '正在准备…';
+  // 开始直播前先关掉演示弹幕（假观众会点歌）
+  var mockWasOn = Boolean(ST && ST.sources && ST.sources.mock && ST.sources.mock.running);
+  if (mockWasOn) { try { await api('/api/mock', { enabled: false }); } catch (e) {} }
   try {
     var r = await api('/api/scene-window', { action: 'use-browser-source' });
+  // 还没连直播间就顺手连上（开始直播 = 一步到位）
+  if (!(ST && ST.sources && ST.sources.real && ST.sources.real.running)) {
+    try { await api('/api/source', { action: 'start', type: 'douyin' }); } catch (e) {}
+  }
     await api('/api/config', { gate: { enabled: true } });
     var d = (r && r.detail) || {};
-    if (r && r.ok) toast('准备好了（画面 ' + (d.actualSize || '') + '），去直播伴侣点开播');
+    if (r && r.ok) toast('准备好了（画面 ' + (d.actualSize || '') + '），去直播伴侣点开播' + (mockWasOn ? '（已关掉演示弹幕）' : '') + '');
     else toast('服务已开，但 OBS 没对齐：' + (d.reason || (r && r.reason) || '检查 OBS 是否打开'));
     load();
   } catch (e) { toast('启动失败：' + e.message); }
@@ -1813,6 +1827,32 @@ if ($('btnMock')) $('btnMock').onclick = mockToggle;
 /* 统一按钮类型：避免任何按钮触发默认行为 */
 document.querySelectorAll('button:not([type])').forEach(function (b) { b.type = 'button'; });
 /* ─────────── OBS 诊断 ─────────── */
+function hcRow(it) {
+  var ok = it.ok;
+  var color = ok ? '#0f7a55' : '#c0392b';
+  var mark = ok ? '✅' : '❌';
+  return '<div style="display:flex;gap:8px;align-items:baseline">' +
+    '<span>' + mark + '</span>' +
+    '<b style="min-width:78px;display:inline-block">' + it.name + '</b>' +
+    '<span style="color:' + color + '">' + (it.detail || (ok ? '正常' : '异常')) + '</span>' +
+  '</div>';
+}
+async function loadHealth() {
+  var box = $('hcList');
+  if (!box) return;
+  box.textContent = '正在检查…';
+  try {
+    var r = await api('/api/healthcheck', {});
+    var items = (r && r.items) || [];
+    box.innerHTML = items.length ? items.map(hcRow).join('') : '没有检查到项目';
+  } catch (e) {
+    box.textContent = '检查失败：' + e.message;
+  }
+}
+if ($('hcRefresh')) { $('hcRefresh').onclick = loadHealth; }
+loadHealth();
+setInterval(loadHealth, 30000);
+
 if ($('obsDiagBtn')) {
   $('obsDiagBtn').onclick = async function () {
     var btn = this;
