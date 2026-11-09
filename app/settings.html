@@ -1806,16 +1806,27 @@ if ($('obsDiagBtn')) {
   $('obsDiagBtn').onclick = async function () {
     var btn = this;
     btn.disabled = true; btn.textContent = '诊断中…';
+    var ac = new AbortController();
+    var timer = setTimeout(function () { try { ac.abort(); } catch (e) {} }, 20000);
     try {
-      var r = await api('/api/obs/diag', {});
+      var res = await fetch('/api/obs/diag', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: '{}',
+        signal: ac.signal
+      });
+      var r = await res.json();
       var txt = r.ok ? JSON.stringify(r, null, 2) : ('诊断失败：' + (r.error || '未知'));
       $('obsDiagOut').textContent = txt;
       toast(r.ok ? '诊断完成，可复制结果' : ('诊断失败：' + (r.error || '')));
     } catch (e) {
-      $('obsDiagOut').textContent = '诊断失败：' + e.message;
-      toast('诊断失败：' + e.message);
+      var why = (e && e.name === 'AbortError') ? '20 秒没返回（服务可能卡住或已退出）' : (e && e.message) || '请求失败';
+      $('obsDiagOut').textContent = '诊断失败：' + why;
+      toast('诊断失败：' + why);
+    } finally {
+      clearTimeout(timer);
+      btn.disabled = false; btn.textContent = '诊断 OBS';
     }
-    btn.disabled = false; btn.textContent = '诊断 OBS';
   };
 }
 if ($('obsDiagCopy')) {
