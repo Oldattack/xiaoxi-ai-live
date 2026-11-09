@@ -187,10 +187,6 @@ window.__ModuleLoader__.load({
           h('style', null, CSS),
           h('div', { className: 'dsh-la-bar' },
             h('div', { className: 'dsh-la-badge' }, h(Glyph, { size: 18 })),
-            h('div', null,
-              h('div', { className: 'dsh-la-title' }, t('page.title')),
-              h('div', { className: 'dsh-la-sub' }, t('page.subtitle'), ' · 作者 ', h('span', { style: { fontWeight: 600, color: 'var(--dsw-alias-label-primary)' } }, AUTHOR)),
-            ),
             h('div', { className: 'dsh-la-spacer' }),
             stats ? h('span', { className: 'dsh-la-pill' },
               '收到 ' + stats.received + ' · 已回 ' + stats.replied + ' · 平均 ' + (stats.avg ? stats.avg + 'ms' : '—')
@@ -227,14 +223,7 @@ window.__ModuleLoader__.load({
                 },
               }, '新版本 v' + upd.latest + '：' + upd.notes)
             : null,
-            h('div', { className: 'dsh-la-foot' },
-              h(Glyph, { size: 13 }),
-              h('span', null, '小汐AI直播平台'),
-              h('span', { className: 'sep' }, '·'),
-              h('span', null, '作者 ', h('b', null, AUTHOR)),
-              h('span', { className: 'sep' }, '·'),
-              h('span', null, 'v' + (ver || PLUGIN_VERSION)),
-            ),
+            
           h('div', { className: 'dsh-la-body' },
             status === 'offline'
               ? h('div', { className: 'dsh-la-offline' },
