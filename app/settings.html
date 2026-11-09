@@ -1380,6 +1380,13 @@ $('updApply').onclick = async function () {
 /* ─────────── 主页按钮 ─────────── */
 $('homeStart').onclick = async function () {
   var b = this;
+    var rid = (ST && ST.config && ST.config.douyin && ST.config.douyin.webRid) || '';
+    if (!rid) {
+      toast('还没填直播间号，先去「抖音接入」填上');
+      var navP3 = document.querySelector('.nav a[data-p="p3"]');
+      if (navP3) navP3.click();
+      return;
+    }
   b.disabled = true; b.textContent = '正在准备…';
   try {
     await api('/api/scene-window', { action: 'use-browser-source' });

@@ -36,12 +36,13 @@
     "timeoutMs": 8000,
     "maxTokens": 200,
     "fastMode": true,
-    "bufferLine": "这个我想想啊…"
+    "bufferLine": "这个我想想啊…",
+    "apiKey": ""
   },
   "tts": {
-    "provider": "custom",
+    "provider": "none",
     "enabled": true,
-    "voice": "zh_female_tianmeixiaoyuan_moon_bigtts",
+    "voice": "",
     "rate": 8,
     "pitch": 0,
     "volume": 0,
@@ -51,10 +52,10 @@
     "quietTo": "",
     "endpoint": "",
     "apiKeyEnv": "",
-    "appId": "1234567",
+    "appId": "",
     "token": "",
     "apiKey": "",
-    "baseUrl": "http://127.0.0.1:9799/tts",
+    "baseUrl": "",
     "cluster": "volcano_tts",
     "speed": 1,
     "pitchRatio": 1,
@@ -68,10 +69,10 @@
   },
   "scene": {
     "layout": "landscape",
-    "autoOpen": true,
+    "autoOpen": false,
     "obsMode": "browser",
     "autoReloadSource": true,
-    "autoSyncObs": true
+    "autoSyncObs": false
   },
   "quick": {
     "enabled": true,
@@ -116,8 +117,8 @@
     "maxQueue": 3
   },
   "douyin": {
-    "webRid": "111181888150",
-    "autoConnect": true
+    "webRid": "",
+    "autoConnect": false
   },
   "song": {
     "enabled": true,
