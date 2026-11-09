@@ -74,7 +74,8 @@
     "autoOpen": false,
     "obsMode": "browser",
     "autoReloadSource": true,
-    "autoSyncObs": false
+    "autoSyncObs": false,
+    "obsScale": 2
   },
   "quick": {
     "enabled": true,
