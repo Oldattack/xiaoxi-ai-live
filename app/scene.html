@@ -470,6 +470,7 @@ function setSong(d){
     document.getElementById('sDur').textContent = '0:00';
     renderQueue(d.queue || []);
     if (sg) { try { sg.pause(); sg.removeAttribute('src'); } catch (e) {} }
+      try { sg.volume = 0.9; } catch (e) {} songDucked = false;
     curUrl = '';
     return;
   }
@@ -596,6 +597,19 @@ function reportSpeech(type, id){
 // 服务端语音：优先拿音频文件来播，失败再退回浏览器朗读
 var ttsAudio = null;
   // 视频在放时把她的语音压低，别盖住视频声音
+  // 她说话时把音乐压低（不是停掉），说完恢复
+  var SONG_VOL = 0.9;
+  var songDucked = false;
+  function duckSong() {
+    if (!sg || sg.paused || !sg.currentSrc) return;
+    try { sg.volume = Math.min(SONG_VOL, 0.35); songDucked = true; } catch (e) {}
+  }
+  function unduckSong() {
+    if (!songDucked) return;
+    songDucked = false;
+    try { sg.volume = SONG_VOL; } catch (e) {}
+  }
+
   function speechVolume(){ return vidPlaying ? 0.35 : 1; }
 
 function playServerTts(sp, onDone){
@@ -630,10 +644,11 @@ function pumpSpeech(){
   var sp = speakQueue.shift();
   speaking = true;
   reportSpeech('start', sp.id);
+    duckSong();
 
   if (sp.tts) {
     playServerTts(sp, function(ok){
-      if (ok) { speaking = false; reportSpeech('end', sp.id); pumpSpeech(); return; }
+      if (ok) { speaking = false; if (!speakQueue.length) unduckSong(); reportSpeech('end', sp.id); pumpSpeech(); return; }
       // 服务端合成失败：退回浏览器语音，别让直播没声音
       speaking = false;
       speakWithBrowser(sp);
@@ -656,8 +671,8 @@ function speakWithBrowser(sp){
     var byName = ttsVoices.filter(function (v) { return v.name === sp.voice; })[0];
     var zh = ttsVoices.filter(function (v) { return /^zh/i.test(v.lang); });
     u.voice = byName || zh[0] || ttsVoices[0] || null;
-    u.onend = function(){ speaking = false; reportSpeech('end', sp.id); pumpSpeech(); };
-    u.onerror = function(){ speaking = false; reportSpeech('end', sp.id); pumpSpeech(); };
+    u.onend = function(){ speaking = false; if (!speakQueue.length) unduckSong(); reportSpeech('end', sp.id); pumpSpeech(); };
+    u.onerror = function(){ speaking = false; if (!speakQueue.length) unduckSong(); reportSpeech('end', sp.id); pumpSpeech(); };
     speechSynthesis.speak(u);
   } catch (e) {
     speaking = false;
