@@ -582,6 +582,54 @@
 
       <div class="pane" id="p15">
         <div class="card">
+          <h3>画面预览<span class="live">实时</span></h3>
+          <div class="pv" style="max-width:920px"><iframe id="stgPv" src="/?clean=1&mute=1" scrolling="no"></iframe></div>
+        </div>
+
+<div class="card">
+          <h3>舞台背景<span class="live">换背景 / 换颜色</span></h3>
+          <p class="sub">改完点「保存背景」，画面立即生效（OBS 不用动）。</p>
+          <div class="row"><label>类型</label><div style="display:flex;gap:8px">
+            <button class="btn sm" data-bgkind="gradient">渐变</button>
+            <button class="btn sm" data-bgkind="color">纯色</button>
+            <button class="btn sm" data-bgkind="image">图片</button>
+          </div></div>
+          <div id="bgGradBox">
+            <div class="row"><label>预设</label><div id="bgPresets" style="display:flex;flex-wrap:wrap;gap:8px">
+              <button class="btn sm" data-bgpreset="aurora">极光紫</button>
+              <button class="btn sm" data-bgpreset="midnight">午夜蓝</button>
+              <button class="btn sm" data-bgpreset="sakura">樱花粉</button>
+              <button class="btn sm" data-bgpreset="ocean">深海青</button>
+              <button class="btn sm" data-bgpreset="sunset">日落橙</button>
+              <button class="btn sm" data-bgpreset="forest">森林绿</button>
+              <button class="btn sm" data-bgpreset="mono">灰调</button>
+              <button class="btn sm" data-bgpreset="custom">自定义</button>
+            </div></div>
+            <div class="row" id="bgCustomRow"><label>两个颜色</label><div style="display:flex;gap:8px;align-items:center">
+              <input type="color" id="bgColor1" style="width:52px;height:34px;border:0;background:none">
+              <input type="color" id="bgColor2" style="width:52px;height:34px;border:0;background:none">
+            </div></div>
+          </div>
+          <div id="bgColorBox" style="display:none">
+            <div class="row"><label>颜色</label><div><input type="color" id="bgSolid" style="width:52px;height:34px;border:0;background:none"></div></div>
+          </div>
+          <div id="bgImageBox" style="display:none">
+            <div class="row"><label>背景图</label><div style="display:flex;gap:8px;align-items:center">
+              <button class="btn sm" id="bgPick">选择图片</button>
+              <button class="btn sm" id="bgClear">清除</button>
+              <span class="mini" id="bgFileName">未选择</span>
+              <input type="file" id="bgFile" accept="image/png,image/jpeg,image/webp" style="display:none">
+            </div></div>
+            <div id="bgPreview" style="width:260px;height:146px;border-radius:10px;background:rgba(127,127,127,.12);background-size:cover;background-position:center;margin:4px 0 6px"></div>
+          </div>
+          <div class="row"><label>暗化</label><div><input class="inp" id="bgDim" type="range" min="0" max="80" step="5"><div class="hint" id="bgDimHint">0%</div></div></div>
+          <div class="row"><label>模糊</label><div><input class="inp" id="bgBlur" type="range" min="0" max="40" step="2"><div class="hint" id="bgBlurHint">0px（仅图片）</div></div></div>
+          <div class="row"><label>音乐可视化</label><div>
+            <label class="sw"><input type="checkbox" id="vizEnabled"><span class="tr"></span><span class="t">放歌时跟着节奏动<i>随机：底部频谱 / 人物圆环 / 漂浮粒子，只在放歌时出现</i></span></label>
+          </div></div>
+          <div class="row"><label></label><div><button class="btn pri" id="bgSave">保存背景</button></div></div>
+        </div>
+        <div class="card">
           <h3>舞台后台<span class="live">打字就能控</span></h3>
           <p class="sub">输入指令直接改舞台：换背景、放歌、说话、切横竖屏、开关可视化。</p>
           <div class="row"><label>指令</label><div style="display:flex;gap:8px">
@@ -732,49 +780,6 @@
           <div class="row"><label></label><div class="hint" id="obsFitHint">画布尺寸会自动读取 OBS</div></div>
         </div>
 
-<div class="card">
-          <h3>舞台背景<span class="live">换背景 / 换颜色</span></h3>
-          <p class="sub">改完点「保存背景」，画面立即生效（OBS 不用动）。</p>
-          <div class="row"><label>类型</label><div style="display:flex;gap:8px">
-            <button class="btn sm" data-bgkind="gradient">渐变</button>
-            <button class="btn sm" data-bgkind="color">纯色</button>
-            <button class="btn sm" data-bgkind="image">图片</button>
-          </div></div>
-          <div id="bgGradBox">
-            <div class="row"><label>预设</label><div id="bgPresets" style="display:flex;flex-wrap:wrap;gap:8px">
-              <button class="btn sm" data-bgpreset="aurora">极光紫</button>
-              <button class="btn sm" data-bgpreset="midnight">午夜蓝</button>
-              <button class="btn sm" data-bgpreset="sakura">樱花粉</button>
-              <button class="btn sm" data-bgpreset="ocean">深海青</button>
-              <button class="btn sm" data-bgpreset="sunset">日落橙</button>
-              <button class="btn sm" data-bgpreset="forest">森林绿</button>
-              <button class="btn sm" data-bgpreset="mono">灰调</button>
-              <button class="btn sm" data-bgpreset="custom">自定义</button>
-            </div></div>
-            <div class="row" id="bgCustomRow"><label>两个颜色</label><div style="display:flex;gap:8px;align-items:center">
-              <input type="color" id="bgColor1" style="width:52px;height:34px;border:0;background:none">
-              <input type="color" id="bgColor2" style="width:52px;height:34px;border:0;background:none">
-            </div></div>
-          </div>
-          <div id="bgColorBox" style="display:none">
-            <div class="row"><label>颜色</label><div><input type="color" id="bgSolid" style="width:52px;height:34px;border:0;background:none"></div></div>
-          </div>
-          <div id="bgImageBox" style="display:none">
-            <div class="row"><label>背景图</label><div style="display:flex;gap:8px;align-items:center">
-              <button class="btn sm" id="bgPick">选择图片</button>
-              <button class="btn sm" id="bgClear">清除</button>
-              <span class="mini" id="bgFileName">未选择</span>
-              <input type="file" id="bgFile" accept="image/png,image/jpeg,image/webp" style="display:none">
-            </div></div>
-            <div id="bgPreview" style="width:260px;height:146px;border-radius:10px;background:rgba(127,127,127,.12);background-size:cover;background-position:center;margin:4px 0 6px"></div>
-          </div>
-          <div class="row"><label>暗化</label><div><input class="inp" id="bgDim" type="range" min="0" max="80" step="5"><div class="hint" id="bgDimHint">0%</div></div></div>
-          <div class="row"><label>模糊</label><div><input class="inp" id="bgBlur" type="range" min="0" max="40" step="2"><div class="hint" id="bgBlurHint">0px（仅图片）</div></div></div>
-          <div class="row"><label>音乐可视化</label><div>
-            <label class="sw"><input type="checkbox" id="vizEnabled"><span class="tr"></span><span class="t">放歌时跟着节奏动<i>随机：底部频谱 / 人物圆环 / 漂浮粒子，只在放歌时出现</i></span></label>
-          </div></div>
-          <div class="row"><label></label><div><button class="btn pri" id="bgSave">保存背景</button></div></div>
-        </div>
 
       <div class="card">
         <h3>OBS 对齐</h3>
