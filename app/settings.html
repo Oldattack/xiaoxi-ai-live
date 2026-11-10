@@ -825,11 +825,6 @@
             </label>
             <div class="hint">推流时电脑吃力的话可以关掉，省一点显卡</div>
           </div>
-          <div class="row"><label>画面预览</label><div><select class="inp" id="pvMode">
-            <option value="home">只在主页显示</option>
-            <option value="always">每个页面都显示</option>
-            <option value="off">隐藏</option>
-          </select><div class="hint">右侧那块实时画面预览，不需要可以收起来。</div></div></div>
         </div>
       </div>
 
@@ -997,14 +992,6 @@ async function api(path, body) {
   return j;
 }
 
-  /* 预览面板显示策略：home / always / off */
-  var PV_MODE = 'home';
-  function paintPreview(pane) {
-    var card = document.getElementById('pvCard');
-    if (!card) return;
-    var show = PV_MODE === 'always' || (PV_MODE === 'home' && pane === 'p0');
-    card.style.display = show ? '' : 'none';
-  }
 
 
 /* ─────────── 导航 ─────────── */
@@ -1022,7 +1009,6 @@ document.querySelectorAll('.nav a').forEach(function (a) {
     } else {
       document.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.id === a.dataset.p); });
     }
-    paintPreview(a.dataset.p);
     if (a.dataset.p === 'p10') loadModules();
     if (a.dataset.p === 'p4') loadVersion();
     if (a.dataset.p === 'p11') loadAvatar();
@@ -1035,9 +1021,6 @@ document.querySelectorAll('.nav a').forEach(function (a) {
 function fill(st) {
   CFG = st.config || {};
   var g = CFG.gate || {}, q = CFG.quick || {}, l = CFG.llm || {}, t = CFG.tts || {};
-  PV_MODE = (CFG.appearance && CFG.appearance.preview) || 'home';
-  if ($('pvMode')) $('pvMode').value = PV_MODE;
-  paintPreview((document.querySelector('.pane.on') || {}).id || 'p0');
   var w = CFG.welcome || {}, sp = CFG.speech || {}, song = CFG.song || {}, idle = CFG.idle || {};
   var sc = CFG.scene || {}, dy = CFG.douyin || {}, av = CFG.avatar || {};
 
@@ -2145,12 +2128,6 @@ var themeQuickEl = document.getElementById('themeQuick');
 if (themeQuickEl) themeQuickEl.onclick = function () {
   var real = themeReal(THEME);
   applyTheme(real === 'dark' ? 'light' : 'dark');
-};
-if ($('pvMode')) $('pvMode').onchange = function () {
-  PV_MODE = this.value;
-  api('/api/config', { appearance: { preview: PV_MODE } }).catch(function () {});
-  paintPreview((document.querySelector('.pane.on') || {}).id || 'p0');
-  toast(PV_MODE === 'off' ? '已隐藏画面预览' : (PV_MODE === 'always' ? '每个页面都显示预览' : '只在主页显示预览'));
 };
 var glassEl2 = document.getElementById('glassOn');
 if (glassEl2) glassEl2.onchange = function () {
