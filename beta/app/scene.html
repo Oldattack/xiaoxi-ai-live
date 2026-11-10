@@ -728,7 +728,7 @@ function pumpSpeech(){
   speaking = true;
   reportSpeech('start', sp.id);
     // 浏览器自带语音会触发 Windows「通信活动降音」，再叠一层压低就几乎听不见了
-    if (sp && sp.tts) duckSong();
+    duckSong();   // 不管服务端还是浏览器语音，说话时都压低音乐
 
   if (sp.tts) {
     playServerTts(sp, function(ok){
