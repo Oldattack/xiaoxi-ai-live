@@ -503,10 +503,11 @@
         <div class="row"><label>API 密钥</label>
           <div>
             <div style="display:flex;gap:8px">
-              <input class="inp" id="ttsKey" placeholder="豆包 AppID:Token / sk-xxx / http://自建接口">
+              <input class="inp" id="ttsKey" placeholder="语音 API Key（UUID）/ AppID:Token / sk-xxx / http://自建">
               <button class="btn pri" id="ttsConnect">接入</button>
             </div>
             <div class="hint" id="ttsState">当前：系统语音</div>
+            <div class="hint">支持：语音 API Key（UUID）、AppID:Token、sk- 开头、http:// 自建；方舟 ark- 大模型 Key 不能用于语音</div>
           </div></div>
         <div class="row"><label></label>
           <div style="display:flex;gap:8px">
@@ -1463,9 +1464,18 @@ $('ttsConnect').onclick = async function () {
   try {
     var r = await api('/api/tts', { credential: key });
     if (r.ok) { toast('接入成功：' + r.providerName); $('ttsKey').value = ''; }
-    else toast(r.error || '接入失败');
+    else {
+        var em = r.error || '接入失败';
+        toast(em);
+        var st2 = $('ttsState');
+        if (st2) { st2.textContent = '接入失败：' + em; st2.style.color = '#c0392b'; }
+      }
     loadTts(); load();
-  } catch (e) { toast('接入失败：' + e.message); }
+  } catch (e) {
+      toast('接入失败：' + e.message);
+      var st3 = $('ttsState');
+      if (st3) { st3.textContent = '接入失败：' + e.message; st3.style.color = '#c0392b'; }
+    }
   this.disabled = false; this.textContent = '接入';
 };
 $('ttsTest').onclick = async function () {
