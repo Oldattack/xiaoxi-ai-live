@@ -1928,8 +1928,9 @@ async function loadModules() {
       UPD_INFO.stable = pair[0];
       UPD_INFO.beta = pair[1];
     paintUpdRows();
-    var b = UPD_INFO.beta;
-    var txt = '测试版：' + (b && b.ok ? (b.hasUpdate ? '有新版 ' + b.latest : '已最新') : '检查失败');
+    var s1 = UPD_INFO.stable, b = UPD_INFO.beta;
+    var txt = '稳定版：' + (s1 && s1.ok ? (s1.hasUpdate ? '有新版 ' + s1.latest : '已最新') : '检查失败')
+      + ' · 测试版：' + (b && b.ok ? (b.hasUpdate ? '有新版 ' + b.latest : '已最新') : '检查失败');
     $('updState').textContent = txt;
     $('updState').style.color = ((s1 && s1.hasUpdate) || (b && b.hasUpdate)) ? '#0f7a55' : '';
   }
