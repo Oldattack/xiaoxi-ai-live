@@ -47,7 +47,7 @@
   .btn:disabled{opacity:.5;cursor:not-allowed}
 
   /* 布局 */
-  .wrap{display:grid;grid-template-columns:212px minmax(0,1fr);gap:20px;padding:20px 24px 60px;max-width:1560px;margin:0 auto;align-items:start}
+  .wrap{display:grid;grid-template-columns:212px minmax(0,1fr) 440px;gap:20px;padding:20px 24px 60px;max-width:1560px;margin:0 auto;align-items:start}
   .nav{position:sticky;top:78px;display:flex;flex-direction:column;gap:1px}
   .nav .grp{font-size:11px;color:#b3aabd;padding:14px 10px 6px;letter-spacing:.06em}
   .nav .grp:first-child{padding-top:2px}
@@ -117,11 +117,6 @@
   .side-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px}
   .side-card h4{font-size:12.5px;color:var(--ink2);font-weight:600;margin-bottom:10px}
   .pv{border-radius:12px;overflow:hidden;background:#14101f;aspect-ratio:16/9}
-.side-wrap{display:none}
-.wrap.side-mode{grid-template-columns:212px minmax(0,1fr)}
-.wrap.side-mode > div:nth-child(2){display:none}
-.wrap.side-mode .side-wrap{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
-@media (max-width:1180px){.wrap.side-mode .side-wrap{grid-template-columns:1fr}}
 .pv-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .pv-modal{position:fixed;inset:0;background:rgba(8,6,14,.82);backdrop-filter:blur(6px);z-index:9999;display:none;place-items:center}
 .pv-modal.on{display:grid}
@@ -360,30 +355,23 @@
 </div>
 
 <div class="wrap">
-    <div class="nav">
-      <div class="grp">日常</div>
-      <a class="on" data-p="p0">主页</a>
-      <a data-p="p14">预览与互动</a>
-      <div class="grp">连接</div>
-      <a data-p="p3">抖音接入</a>
-      <div class="grp">互动</div>
-      <a data-p="p1">弹幕回复</a>
-      <a data-p="p2">欢迎与热场</a>
-      <a data-p="p6">声音与说话</a>
-      <div class="grp">主播</div>
-      <a data-p="p5">AI 大脑</a>
-      <a data-p="p11">形象</a>
-      <div class="grp">画面</div>
-      <a data-p="p9">直播画面</a>
-      <a data-p="p12">界面外观</a>
-      <a data-p="p15">舞台后台</a>
-      <div class="grp">内容</div>
-      <a data-p="p8">点歌台</a>
-      <a data-p="p13">视频点播</a>
-      <div class="grp">系统</div>
-      <a data-p="p10">插件与模块</a>
-      <a data-p="p4">状态与更新</a>
-
+  <div class="nav">
+    <div class="grp">日常</div>
+    <a class="on" data-p="p0">主页</a>
+    <a data-p="p1">弹幕与回复</a>
+    <a data-p="p3">抖音接入</a>
+    <a data-p="p6">说话方式</a>
+    <a data-p="p2">进场欢迎</a>
+    <a data-p="p8">点歌台</a>
+    <a data-p="p13">视频点播</a>
+    <div class="grp">主播</div>
+    <a data-p="p11">形象</a>
+    <a data-p="p9">直播画面</a>
+    <a data-p="p5">AI 大脑</a>
+    <div class="grp">其他</div>
+        <a data-p="p12">外观设定</a>
+    <a data-p="p10">插件</a>
+    <a data-p="p4">运行状态</a>
       <div style="margin-top:18px;padding:10px 10px 0;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink3);line-height:1.7">
         小汐AI直播平台<br>作者 <b style="color:var(--ink2);font-weight:600">Oldattack</b>
       </div>
@@ -409,7 +397,7 @@
         </div>
       </div>
 
-      <div class="upd-bar" id="updNotice" style="display:none">
+      <div class="upd-bar" id="updBar" style="display:none">
         <span class="dot"></span>
         <span id="updBarText">有新版本可用</span>
         <button class="btn sm" id="updBarGo">去更新</button>
@@ -577,30 +565,6 @@
         <div class="row"><label>说这些</label><div><textarea class="inp" id="idleLines" rows="4" placeholder="每行一句"></textarea></div></div>
       </div>
     </div>
-
-      <!-- ══════ 舞台后台 ══════ -->
-
-      <div class="pane" id="p15">
-        <div class="card">
-          <h3>舞台后台<span class="live">打字就能控</span></h3>
-          <p class="sub">输入指令直接改舞台：换背景、放歌、说话、切横竖屏、开关可视化。</p>
-          <div class="row"><label>指令</label><div style="display:flex;gap:8px">
-            <input class="inp" id="stageCmd" placeholder="例如：换背景 樱花 / 放歌 晴天 / 说 大家好">
-            <button class="btn pri" id="stageSend">发送</button>
-          </div></div>
-          <div class="chat-quick" id="stageQuick">
-            <button data-cmd="换背景 樱花">樱花背景</button>
-            <button data-cmd="换背景 海洋">海洋背景</button>
-            <button data-cmd="放歌 晴天">放歌晴天</button>
-            <button data-cmd="说 大家好呀，我是小汐">说句话</button>
-            <button data-cmd="横屏">横屏</button>
-            <button data-cmd="竖屏">竖屏</button>
-            <button data-cmd="可视化关">关可视化</button>
-            <button data-cmd="帮助">帮助</button>
-          </div>
-          <div id="stageLog" class="mini" style="margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto">还没有指令</div>
-        </div>
-      </div>
 
     <!-- ══════ 点歌台 ══════ -->
     <div class="pane" id="p8">
@@ -907,7 +871,8 @@
         <p class="sub">有新版本会在这里提示，点一下就能升级；升级不会覆盖你的配置。</p>
           <div class="row"><label>当前版本</label><div><b id="appVer">—</b></div></div>
           <div class="row"><label>更新渠道</label><div>
-            <div class="kv"><span>测试版（默认）</span><b id="updBetaVer">—</b><button class="btn sm" id="updBetaBtn" style="margin-left:8px">更新</button></div>
+            <div class="kv"><span>稳定版</span><b id="updStableVer">—</b><button class="btn sm" id="updStableBtn" style="margin-left:8px">更新</button></div>
+            <div class="kv"><span>测试版</span><b id="updBetaVer">—</b><button class="btn sm" id="updBetaBtn" style="margin-left:8px">更新</button></div>
             <div class="hint">稳定版只推正式版；测试版是内测，版本号更高。升级不会覆盖配置。</div>
           </div></div>
           <div class="row"><label></label><div style="display:flex;gap:10px;align-items:center">
@@ -929,8 +894,8 @@
     </div>
   </div>
 
-  <div class="side-wrap" id="sideWrap">
-    <div class="side-card" id="pvCard">
+  <div>
+    <div class="side-card">
       <div class="pv-head"><h4>画面预览</h4><button class="btn sm" id="pvZoom">放大</button></div>
       <div class="pv"><iframe id="pv" src="/?clean=1&mute=1" scrolling="no"></iframe></div>
     </div>
@@ -1016,23 +981,12 @@ async function api(path, body) {
   return j;
 }
 
-
-
 /* ─────────── 导航 ─────────── */
 document.querySelectorAll('.nav a').forEach(function (a) {
   a.onclick = function () {
     document.querySelectorAll('.nav a').forEach(function (x) { x.classList.remove('on'); });
     a.classList.add('on');
-    var sideMode = a.dataset.p === 'p14';
-    var wrapEl = document.querySelector('.wrap');
-    if (wrapEl) wrapEl.classList.toggle('side-mode', sideMode);
-    if (sideMode) {
-      document.querySelectorAll('.pane').forEach(function (p) { p.classList.remove('on'); });
-      var pvc0 = document.getElementById('pvCard');
-      if (pvc0) pvc0.style.display = '';
-    } else {
-      document.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.id === a.dataset.p); });
-    }
+    document.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.id === a.dataset.p); });
     if (a.dataset.p === 'p10') loadModules();
     if (a.dataset.p === 'p4') loadVersion();
     if (a.dataset.p === 'p11') loadAvatar();
@@ -1906,7 +1860,7 @@ async function loadModules() {
   }
   function chName(ch) { return ch === 'beta' ? '测试版' : '稳定版'; }
   function paintUpdRows() {
-    var pairs = [['beta', 'updBetaVer', 'updBetaBtn']];
+    var pairs = [['stable', 'updStableVer', 'updStableBtn'], ['beta', 'updBetaVer', 'updBetaBtn']];
     pairs.forEach(function (p) {
       var info = UPD_INFO[p[0]], el = $(p[1]), btn = $(p[2]);
       if (!el || !btn) return;
@@ -1921,14 +1875,17 @@ async function loadModules() {
     catch (e) { return { ok: false, reason: e.message }; }
   }
   async function checkBothChannels() {
-    $('updState').textContent = '正在检查测试版…';
+    $('updState').textContent = '正在检查两个渠道…';
     $('updState').style.color = '';
-    UPD_INFO.beta = await peekChannel('beta');
+    var pair = await Promise.all([peekChannel('stable'), peekChannel('beta')]);
+    UPD_INFO.stable = pair[0];
+    UPD_INFO.beta = pair[1];
     paintUpdRows();
-    var b = UPD_INFO.beta;
-    var txt = '测试版：' + (b && b.ok ? (b.hasUpdate ? '有新版 ' + b.latest : '已最新') : '检查失败');
+    var s = UPD_INFO.stable, b = UPD_INFO.beta;
+    var txt = '稳定版：' + (s.ok ? (s.hasUpdate ? '有新版 ' + s.latest : '已最新') : '检查失败')
+      + ' · 测试版：' + (b.ok ? (b.hasUpdate ? '有新版 ' + b.latest : '已最新') : '检查失败');
     $('updState').textContent = txt;
-    $('updState').style.color = (b && b.hasUpdate) ? '#0f7a55' : '';
+    $('updState').style.color = (s.hasUpdate || (b && b.hasUpdate)) ? '#0f7a55' : '';
   }
   async function loadVersion() {
     try {
@@ -1962,8 +1919,8 @@ async function loadModules() {
       toast('更新失败');
     }
   }
-  ['beta'].forEach(function (ch) {
-    var btn = $('updBetaBtn');
+  ['stable', 'beta'].forEach(function (ch) {
+    var btn = $(ch === 'stable' ? 'updStableBtn' : 'updBetaBtn');
     if (!btn) return;
     btn.onclick = function () {
       if (armCh !== ch) {
@@ -2047,40 +2004,6 @@ $('actSay').onclick = async function () {
   try { await fetch('/say?text=' + encodeURIComponent('大家好呀，我是小汐') + '&emotion=' + encodeURIComponent('开心')); toast('已发出'); }
   catch (e) { toast('失败：' + e.message); }
 };
-
-/* ─────────── 舞台后台 ─────────── */
-function stageLogLine(text, cls) {
-  var box = document.getElementById('stageLog');
-  if (!box) return;
-  if (box.textContent === '还没有指令') box.innerHTML = '';
-  var d = document.createElement('div');
-  d.textContent = text;
-  d.style.cssText = 'padding:6px 8px;border-radius:8px;line-height:1.5;background:' + (cls === 'bad' ? 'rgba(192,57,43,.10)' : (cls === 'ok' ? 'rgba(15,122,85,.10)' : 'rgba(127,127,127,.08)'));
-  box.appendChild(d);
-  box.scrollTop = box.scrollHeight;
-}
-async function stageSend() {
-  var inp = document.getElementById('stageCmd');
-  if (!inp) return;
-  var text = inp.value.trim();
-  if (!text) { toast('先输入指令'); return; }
-  stageLogLine('你：' + text, 'me');
-  try {
-    var r = await api('/api/stage/command', { text: text });
-    stageLogLine((r && r.ok ? '✅ ' : '❌ ') + ((r && (r.detail || r.error)) || '执行失败'), r && r.ok ? 'ok' : 'bad');
-    if (r && r.ok) toast(r.detail || '已执行');
-    else toast((r && r.error) || '指令失败');
-  } catch (e) { stageLogLine('❌ ' + e.message, 'bad'); toast('执行失败'); }
-  inp.value = '';
-  try { await load(); } catch (e) {}
-}
-if (document.getElementById('stageSend')) {
-  document.getElementById('stageSend').onclick = stageSend;
-  document.getElementById('stageCmd').onkeydown = function (e) { if (e.key === 'Enter') stageSend(); };
-}
-document.querySelectorAll('#stageQuick [data-cmd]').forEach(function (b) {
-  b.onclick = function () { document.getElementById('stageCmd').value = b.dataset.cmd; stageSend(); };
-});
 
 /* ─────────── 自动刷新 ─────────── */
 setInterval(function () {
@@ -2518,7 +2441,7 @@ var UPD_LATEST = null;
 function paintVer(version, info) {
   var el = document.getElementById("pVer");
   if (el) el.textContent = "v" + (version || "—");
-  var bar = document.getElementById("updNotice");
+  var bar = document.getElementById("updBar");
   if (!bar) return;
   if (info && info.ok && info.hasUpdate) {
     bar.style.display = "flex";

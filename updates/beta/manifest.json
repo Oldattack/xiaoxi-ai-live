@@ -2,9 +2,9 @@
   "version": "2.6.13",
   "notes": "修复启动脚本行尾问题；插件安装改为正确的 DSH 注册方式；更新入口整合到主页与顶栏",
   "package": "xiaoxi-ai-live-2.6.13.zip",
-  "size": 3910481,
-  "sha256": "0806b921dee1dc36b1385a435c7787b7a01bf57f13f2b53eb109b9283ee83c73",
-  "publishedAt": "2026-11-10T13:07:20.091Z",
+  "size": 3910466,
+  "sha256": "fbdb62afc3c050a5085da892ef10426157d65717dbb00029ba2e07f9b29b9308",
+  "publishedAt": "2026-11-10T13:12:18.682Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -145,8 +145,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 252307,
-      "sha256": "977cc854e31270c740402c35d1a0797c65fe1b281d88e22d705b9e4397173528"
+      "size": 252202,
+      "sha256": "e629300344ac34a692f7729c5569b0281c4f31011d9cd3081119bc7ffbc6a507"
     }
   ]
 }
