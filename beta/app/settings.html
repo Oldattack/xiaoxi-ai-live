@@ -47,7 +47,7 @@
   .btn:disabled{opacity:.5;cursor:not-allowed}
 
   /* 布局 */
-  .wrap{display:grid;grid-template-columns:212px minmax(0,1fr) 440px;gap:20px;padding:20px 24px 60px;max-width:1560px;margin:0 auto;align-items:start}
+  .wrap{display:grid;grid-template-columns:212px minmax(0,1fr);gap:20px;padding:20px 24px 60px;max-width:1560px;margin:0 auto;align-items:start}
   .nav{position:sticky;top:78px;display:flex;flex-direction:column;gap:1px}
   .nav .grp{font-size:11px;color:#b3aabd;padding:14px 10px 6px;letter-spacing:.06em}
   .nav .grp:first-child{padding-top:2px}
@@ -117,6 +117,8 @@
   .side-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px}
   .side-card h4{font-size:12.5px;color:var(--ink2);font-weight:600;margin-bottom:10px}
   .pv{border-radius:12px;overflow:hidden;background:#14101f;aspect-ratio:16/9}
+.p14-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:1180px){.p14-grid{grid-template-columns:1fr}}
 .pv-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .pv-modal{position:fixed;inset:0;background:rgba(8,6,14,.82);backdrop-filter:blur(6px);z-index:9999;display:none;place-items:center}
 .pv-modal.on{display:grid}
@@ -358,6 +360,7 @@
     <div class="nav">
       <div class="grp">日常</div>
       <a class="on" data-p="p0">主页</a>
+      <a data-p="p14">预览与互动</a>
       <div class="grp">连接</div>
       <a data-p="p3">抖音接入</a>
       <div class="grp">互动</div>
@@ -819,11 +822,7 @@
             </label>
             <div class="hint">推流时电脑吃力的话可以关掉，省一点显卡</div>
           </div>
-          <div class="row"><label>画面预览</label><div><select class="inp" id="pvMode">
-            <option value="home">只在主页显示</option>
-            <option value="always">每个页面都显示</option>
-            <option value="off">隐藏</option>
-          </select><div class="hint">右侧那块实时画面预览，不需要可以收起来。</div></div></div>
+          </div>
         </div>
       </div>
 
@@ -904,45 +903,6 @@
     </div>
   </div>
 
-  <div>
-    <div class="side-card" id="pvCard">
-      <div class="pv-head"><h4>画面预览</h4><button class="btn sm" id="pvZoom">放大</button></div>
-      <div class="pv"><iframe id="pv" src="/?clean=1&mute=1" scrolling="no"></iframe></div>
-    </div>
-    <div class="side-card">
-      <h4>实时</h4>
-      <div class="kv"><span>收到</span><b id="sideRecv">0</b></div>
-      <div class="kv"><span>已回</span><b id="sideRep">0</b></div>
-      <div class="kv"><span>丢弃</span><b id="sideDrop">0</b></div>
-      <div class="kv"><span>运行</span><b id="sideUp">—</b></div>
-    </div>
-      <div class="side-card">
-        <h4>试聊<span style="font-weight:400;color:var(--ink3);font-size:10.5px;margin-left:6px">不会发到直播间</span></h4>
-        <div class="chat-box">
-          <div class="chat-log" id="chatLog"><div class="empty">试一句「今天播到几点呀」，看她怎么回。</div></div>
-          <div class="chat-quick">
-            <button data-say="今天播到几点呀">播到几点</button>
-            <button data-say="点歌 晴天">点歌</button>
-            <button data-say="夸夸我">夸夸我</button>
-            <button data-say="讲个笑话">讲个笑话</button>
-          </div>
-          <div class="chat-in">
-            <input class="inp" id="chatInput" placeholder="说点什么…">
-            <button class="btn pri" id="chatSend">发送</button>
-          </div>
-        </div>
-      </div>
-      <div class="side-card">
-        <h4>事件流</h4>
-        <div class="ev-filters" id="evFilters">
-          <button class="on" data-k="all">全部</button>
-          <button data-k="reply">回复</button>
-          <button data-k="skip">跳过</button>
-          <button data-k="song">点歌</button>
-        </div>
-        <div class="ev-list" id="evList"><div class="mini">还没有事件</div></div>
-      </div>
-  </div>
 </div>
 
 <div class="pv-modal" id="pvModal">
@@ -959,6 +919,54 @@
     </div>
     <div style="margin-top:18px;font-size:12.5px;color:#b3aabd">想再开：双击「启动.cmd」</div>
   </div>
+      <!-- ══════ 预览与互动 ══════ -->
+
+      <div class="pane" id="p14">
+        <div class="p14-grid">
+          <div>
+      <div class="side-card" id="pvCard">
+        <div class="pv-head"><h4>画面预览</h4><button class="btn sm" id="pvZoom">放大</button></div>
+        <div class="pv"><iframe id="pv" src="/?clean=1&mute=1" scrolling="no"></iframe></div>
+      </div>
+          </div>
+          <div>
+      <div class="side-card">
+        <h4>实时</h4>
+        <div class="kv"><span>收到</span><b id="sideRecv">0</b></div>
+        <div class="kv"><span>已回</span><b id="sideRep">0</b></div>
+        <div class="kv"><span>丢弃</span><b id="sideDrop">0</b></div>
+        <div class="kv"><span>运行</span><b id="sideUp">—</b></div>
+      </div>
+        <div class="side-card">
+          <h4>试聊<span style="font-weight:400;color:var(--ink3);font-size:10.5px;margin-left:6px">不会发到直播间</span></h4>
+          <div class="chat-box">
+            <div class="chat-log" id="chatLog"><div class="empty">试一句「今天播到几点呀」，看她怎么回。</div></div>
+            <div class="chat-quick">
+              <button data-say="今天播到几点呀">播到几点</button>
+              <button data-say="点歌 晴天">点歌</button>
+              <button data-say="夸夸我">夸夸我</button>
+              <button data-say="讲个笑话">讲个笑话</button>
+            </div>
+            <div class="chat-in">
+              <input class="inp" id="chatInput" placeholder="说点什么…">
+              <button class="btn pri" id="chatSend">发送</button>
+            </div>
+          </div>
+        </div>
+        <div class="side-card">
+          <h4>事件流</h4>
+          <div class="ev-filters" id="evFilters">
+            <button class="on" data-k="all">全部</button>
+            <button data-k="reply">回复</button>
+            <button data-k="skip">跳过</button>
+            <button data-k="song">点歌</button>
+          </div>
+          <div class="ev-list" id="evList"><div class="mini">还没有事件</div></div>
+        </div>
+          </div>
+        </div>
+      </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -991,14 +999,6 @@ async function api(path, body) {
   return j;
 }
 
-  /* 预览面板显示策略：home / always / off */
-  var PV_MODE = 'home';
-  function paintPreview(pane) {
-    var card = document.getElementById('pvCard');
-    if (!card) return;
-    var show = PV_MODE === 'always' || (PV_MODE === 'home' && pane === 'p0');
-    card.style.display = show ? '' : 'none';
-  }
 
 
 /* ─────────── 导航 ─────────── */
@@ -1007,7 +1007,6 @@ document.querySelectorAll('.nav a').forEach(function (a) {
     document.querySelectorAll('.nav a').forEach(function (x) { x.classList.remove('on'); });
     a.classList.add('on');
     document.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.id === a.dataset.p); });
-    paintPreview(a.dataset.p);
     if (a.dataset.p === 'p10') loadModules();
     if (a.dataset.p === 'p4') loadVersion();
     if (a.dataset.p === 'p11') loadAvatar();
@@ -1020,9 +1019,6 @@ document.querySelectorAll('.nav a').forEach(function (a) {
 function fill(st) {
   CFG = st.config || {};
   var g = CFG.gate || {}, q = CFG.quick || {}, l = CFG.llm || {}, t = CFG.tts || {};
-  PV_MODE = (CFG.appearance && CFG.appearance.preview) || 'home';
-  if ($('pvMode')) $('pvMode').value = PV_MODE;
-  paintPreview((document.querySelector('.pane.on') || {}).id || 'p0');
   var w = CFG.welcome || {}, sp = CFG.speech || {}, song = CFG.song || {}, idle = CFG.idle || {};
   var sc = CFG.scene || {}, dy = CFG.douyin || {}, av = CFG.avatar || {};
 
@@ -2130,12 +2126,6 @@ var themeQuickEl = document.getElementById('themeQuick');
 if (themeQuickEl) themeQuickEl.onclick = function () {
   var real = themeReal(THEME);
   applyTheme(real === 'dark' ? 'light' : 'dark');
-};
-if ($('pvMode')) $('pvMode').onchange = function () {
-  PV_MODE = this.value;
-  api('/api/config', { appearance: { preview: PV_MODE } }).catch(function () {});
-  paintPreview((document.querySelector('.pane.on') || {}).id || 'p0');
-  toast(PV_MODE === 'off' ? '已隐藏画面预览' : (PV_MODE === 'always' ? '每个页面都显示预览' : '只在主页显示预览'));
 };
 var glassEl2 = document.getElementById('glassOn');
 if (glassEl2) glassEl2.onchange = function () {
