@@ -1,0 +1,1305 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>直播场景 · OBS 采集</title>
+<style>
+:root{
+  --w:1920; --h:1080;
+  --ink:#f2f4ff;
+  --mint:#5ee6c0;
+  --gold:#ffcb6b;
+  --dim:#8f9ab5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#05060a;overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased}
+
+#stage{
+  position:absolute;left:50%;top:50%;
+  width:1920px;height:1080px;
+  transform-origin:center center;
+  background:
+    radial-gradient(900px 700px at 22% 18%, #2a2350 0%, transparent 62%),
+    radial-gradient(1100px 800px at 82% 78%, #14364a 0%, transparent 60%),
+    radial-gradient(700px 600px at 62% 12%, #3a2a55 0%, transparent 65%),
+    linear-gradient(160deg,#0d0b18 0%,#0a0d16 55%,#080a10 100%);
+  overflow:hidden;
+}
+  /* 舞台背景：图片层 / 暗化层 */
+  .bgimg{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0;transition:opacity .35s;z-index:0}
+  .bgdim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:1}
+
+#stage::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 80% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%);
+}
+.grain{position:absolute;inset:0;opacity:.05;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='.5'/></svg>")}
+
+/* 地面光 */
+.floor{position:absolute;left:50%;bottom:-160px;width:1400px;height:420px;transform:translateX(-50%);
+  background:radial-gradient(50% 50% at 50% 50%, rgba(120,90,255,.30), transparent 70%);filter:blur(20px)}
+
+/* ── 模型区（正面立绘，像素风） ── */
+.pet{position:absolute;left:50%;bottom:206px;transform:translateX(-50%);width:440px;height:600px;
+  display:flex;align-items:flex-end;justify-content:center}
+.pet .halo{position:absolute;left:50%;bottom:40px;width:420px;height:420px;transform:translateX(-50%);
+  border-radius:99px;background:radial-gradient(50% 50% at 50% 50%, rgba(150,110,255,.28), transparent 70%);
+  filter:blur(12px);animation:breathe 5s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.7;transform:translateX(-50%) scale(1.07)}}
+
+  .figvid{display:none;height:var(--fig-h,520px);width:auto;object-fit:contain;image-rendering:auto;border-radius:6px}
+  #stage.v .figvid{height:var(--fig-hp,700px)}
+.fig{position:relative;display:block;height:var(--fig-h,520px);width:auto;image-rendering:auto;
+  filter:
+    drop-shadow(1.2px 0 0 rgba(12,9,20,.9)) drop-shadow(-1.2px 0 0 rgba(12,9,20,.9))
+    drop-shadow(0 1.2px 0 rgba(12,9,20,.9)) drop-shadow(0 -1.2px 0 rgba(12,9,20,.9))
+    drop-shadow(0 22px 46px rgba(70,30,150,.5));
+  animation:bob 4.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-9px)}}
+.fig.talking{animation:talkpulse .3s infinite alternate}
+@keyframes talkpulse{from{transform:translateY(0) scale(1)}to{transform:translateY(-4px) scale(1.014)}}
+
+/* ── 视频层（B站点播：视频居中，立绘让到右下）── */
+#vidLayer{position:absolute;left:50%;top:46%;width:1200px;height:675px;transform:translate(-50%,-50%) scale(.96);
+  border-radius:26px;overflow:hidden;background:#000;opacity:0;pointer-events:none;z-index:6;
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 60px 120px -60px #000, inset 0 0 0 1px rgba(255,255,255,.05);
+  transition:opacity .3s ease, transform .3s ease}
+#vidLayer.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#vid{width:100%;height:100%;display:block;object-fit:contain;background:#000}
+#stage.video .pet{left:auto;right:96px;bottom:118px;width:300px;height:410px;transform:none;
+  border-radius:24px;overflow:hidden;
+  background:radial-gradient(220px 160px at 50% 100%, rgba(255,122,77,.45), rgba(255,122,77,0) 74%), rgba(10,8,14,.9);
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 40px 80px -40px #000, 0 0 60px rgba(255,106,61,.16);
+  transition:all .4s cubic-bezier(.3,.9,.3,1)}
+#stage.video .pet::before{content:"ON AIR";position:absolute;right:12px;top:12px;z-index:9;
+  font-size:11px;letter-spacing:.16em;color:#ffd0bd;padding:4px 9px;border-radius:6px;
+  background:rgba(255,106,61,.24);border:1px solid rgba(255,106,61,.5)}
+#stage.video .pet::after{content:"陪你一起看";position:absolute;left:12px;bottom:10px;z-index:9;
+  font-size:11px;color:#cfc6dd;padding:3px 8px;border-radius:5px;background:rgba(0,0,0,.42)}
+#stage.video .pet .fig{height:382px;animation:none}
+#stage.video .pet .halo{opacity:0}
+#stage.video .pool{width:470px}
+#stage.video .songs{opacity:0;pointer-events:none;transition:opacity .3s}
+#stage.video .cap{left:auto;right:430px;bottom:250px;transform:none;text-align:right;max-width:640px;z-index:9}
+#stage.video .cap .bubble{text-align:left;border-radius:18px}
+.vid-tag{position:absolute;left:16px;top:16px;z-index:2;display:flex;align-items:center;gap:7px;
+  font-size:13px;letter-spacing:.1em;color:#ffd0bd;padding:4px 10px;border-radius:7px;
+  background:rgba(255,106,61,.22);border:1px solid rgba(255,106,61,.45);backdrop-filter:blur(6px)}
+.vid-tag i{width:6px;height:6px;border-radius:50%;background:#ff8a5c;box-shadow:0 0 10px 2px rgba(255,138,92,.9)}
+.vid-info{position:absolute;left:16px;bottom:14px;right:16px;z-index:2;display:flex;align-items:center;gap:10px;
+  font-size:14px;color:#e8dff4;text-shadow:0 2px 10px #000}
+.vid-info .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vid-info .by{margin-left:auto;flex:none;font-size:12px;color:#c9bfdc;padding:3px 9px;border-radius:6px;background:rgba(0,0,0,.45)}
+
+
+/* ── 弹幕池 ── */
+.pool{position:absolute;left:72px;top:80px;width:700px;display:flex;flex-direction:column;gap:11px}
+.pool .line{
+  display:flex;align-items:baseline;gap:12px;font-size:28px;line-height:1.35;color:#e9ecf8;
+  text-shadow:0 2px 12px rgba(0,0,0,.75);
+  animation:slideIn .32s cubic-bezier(.2,.9,.3,1) both;
+}
+.pool .line .u{color:#a9b4d8;flex:none;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pool .line.gift{color:var(--gold)}
+.pool .line.gift .u{color:#e8b96a}
+.pool .line.enter{color:#9aa6c6;font-size:26px}
+.pool .line.me{color:var(--mint)}
+.pool .line.me .u{color:#3fd6aa}
+@keyframes slideIn{from{opacity:0;transform:translateX(-24px)}}
+
+/* ── 字幕 ── */
+.cap{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);max-width:1400px;text-align:center;opacity:0;transition:opacity .3s}
+.cap.on{opacity:1}
+.cap .bubble{
+  display:inline-block;padding:20px 40px;border-radius:24px;
+  background:rgba(10,12,20,.72);border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(10px);
+  font-size:46px;line-height:1.4;color:#fff;letter-spacing:.5px;
+  box-shadow:0 20px 60px -20px rgba(0,0,0,.9);
+  max-width:1400px;
+}
+.cap .who{display:block;font-size:20px;color:var(--mint);letter-spacing:2px;margin-bottom:2px}
+
+/* ── 角标 ── */
+.badge{position:absolute;right:52px;top:48px;display:flex;align-items:center;gap:10px;
+  font-size:20px;color:#cfd6ea;background:rgba(10,12,20,.55);border:1px solid rgba(255,255,255,.14);
+  border-radius:999px;padding:8px 18px;backdrop-filter:blur(8px)}
+.badge .dot{width:10px;height:10px;border-radius:99px;background:var(--mint);box-shadow:0 0 0 4px rgba(94,230,192,.18)}
+.badge.off .dot{background:#f2566b;box-shadow:0 0 0 4px rgba(242,86,107,.18)}
+
+.meta{position:absolute;left:72px;bottom:52px;display:flex;gap:26px;font-size:19px;color:#7d89a8;font-variant-numeric:tabular-nums}
+.meta b{color:#c3cbe4;font-weight:600}
+
+.emo{position:absolute;left:50%;top:-48px;transform:translateX(-50%) translateY(6px);
+  font-size:21px;color:#141020;background:var(--mint);border-radius:999px;padding:5px 18px;font-weight:700;
+  opacity:0;transition:.25s;white-space:nowrap}
+.emo.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font-size:15px;color:#4a5470}
+
+/* 调试角标：地址后加 ?debug=1 才显示，用来核对 OBS 实际渲染尺寸 */
+.dbg{position:fixed;right:10px;bottom:10px;z-index:999;display:none;
+  background:rgba(0,0,0,.78);color:#8fe6ff;border:1px solid rgba(143,230,255,.35);
+  font:12px/1.6 ui-monospace,Consolas,monospace;padding:7px 11px;border-radius:7px;
+  white-space:pre;pointer-events:none;letter-spacing:.3px}
+
+/* ══ 竖屏 9:16（1080 × 1920）══
+   窗口比例 < 1 时自动切（OBS 浏览器源设 1080×1920 就是竖屏） */
+#stage.v{width:1080px;height:1920px}
+#stage.v .badge{right:32px;top:58px;font-size:18px;padding:7px 15px;gap:8px}
+#stage.v .badge .dot{width:8px;height:8px}
+#stage.v .welcome{top:172px;font-size:23px;padding:12px 26px;gap:10px}
+#stage.v .welcome .sub{font-size:16px}
+#stage.v .welcome::before{inset:-16px}
+
+#stage.v .pool{left:40px;top:272px;width:604px;gap:9px}
+#stage.v .pool .line{font-size:28px;gap:9px}
+#stage.v .pool .line .u{max-width:180px}
+#stage.v .pool .line.enter{font-size:23px}
+
+#stage.v .songs{right:32px;top:272px;width:366px}
+#stage.v .songs .hd{font-size:15px;padding:9px 13px}
+#stage.v .songs .now{padding:11px 13px 8px;gap:10px}
+#stage.v .songs .art{width:44px;height:44px}
+#stage.v .songs .info b{font-size:17px}
+#stage.v .songs .info span{font-size:13px}
+#stage.v .songs .bar{margin:0 13px 10px}
+#stage.v .songs .queue{padding:0 13px 12px;gap:6px}
+#stage.v .songs .qi{font-size:14px}
+
+#stage.v .pet{bottom:432px;width:520px;height:800px}
+#stage.v .pet .halo{width:480px;height:480px}
+#stage.v .fig{height:var(--fig-hp,700px)}
+#stage.v .emo{top:-54px;font-size:19px;padding:4px 15px}
+
+#stage.v .cap{bottom:300px;max-width:940px}
+#stage.v .cap .bubble{font-size:40px;line-height:1.36;padding:16px 26px;max-width:940px;border-radius:20px}
+#stage.v .cap .who{font-size:18px;letter-spacing:1.5px}
+
+#stage.v .meta{left:40px;bottom:206px;font-size:17px;gap:20px}
+#stage.v .hint{display:none}
+#stage.v .floor{width:1000px;height:340px;bottom:-120px}
+
+/* ── 欢迎横幅（头顶） ── */
+.welcome{position:absolute;left:50%;top:118px;transform:translateX(-50%) translateY(-14px);
+  display:flex;align-items:center;gap:14px;
+  padding:14px 34px;border-radius:999px;
+  background:linear-gradient(120deg,rgba(120,90,255,.30),rgba(94,230,192,.20));
+  border:1px solid rgba(190,170,255,.45);
+  box-shadow:0 12px 40px -12px rgba(120,90,255,.8), inset 0 1px 0 rgba(255,255,255,.18);
+  backdrop-filter:blur(10px);
+  font-size:26px;color:#efeaff;letter-spacing:.5px;white-space:nowrap;
+  opacity:0;transition:opacity .3s, transform .3s;pointer-events:none}
+.welcome.on{opacity:1;animation:pop .5s cubic-bezier(.2,.9,.3,1) both}
+@keyframes pop{0%{transform:translateX(-50%) translateY(-16px) scale(.94);opacity:0}60%{transform:translateX(-50%) translateY(0) scale(1.035)}100%{transform:translateX(-50%) translateY(0) scale(1);opacity:1}}
+.welcome::before{content:'';position:absolute;inset:-20px;border-radius:99px;background:radial-gradient(50% 50% at 50% 50%,rgba(150,120,255,.40),transparent 72%);filter:blur(10px);z-index:-1}
+.welcome .star{font-size:24px;color:var(--gold);filter:drop-shadow(0 0 8px rgba(255,203,107,.8))}
+.welcome b{color:#fff;font-weight:700}
+.welcome .sub{font-size:18px;color:#b9b0e0;margin-left:4px}
+
+/* ── 点歌台（大封面卡）── */
+.songs{position:absolute;right:64px;top:150px;width:420px;
+  border-radius:22px;padding:16px 16px 14px;
+  background:linear-gradient(180deg,rgba(26,21,38,.94),rgba(18,15,30,.96));
+  border:1px solid rgba(167,139,250,.18);
+  box-shadow:0 30px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(16px)}
+#stage.v .songs{right:32px;top:236px;width:366px}
+
+.songs .tip{display:flex;align-items:center;gap:7px;margin-bottom:11px;
+  font-size:11.5px;color:#7d7398;letter-spacing:.10em}
+.songs .tip i{font-style:normal;color:#5ee6c0;font-size:12px}
+.songs .tip b{color:#a78bfa;font-weight:600}
+.songs .cover{width:100%;aspect-ratio:1;border-radius:16px;overflow:hidden;position:relative;
+  background:linear-gradient(135deg,#2a2244,#141020);box-shadow:0 16px 36px rgba(0,0,0,.5)}
+.songs .cover img{width:100%;height:100%;object-fit:cover;display:block}
+.songs .cover::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 58%,rgba(10,8,16,.5) 100%)}
+.songs .cover .ph{position:absolute;inset:0;display:grid;place-items:center;
+  font-size:13px;color:#6a6285;letter-spacing:.2em}
+
+.songs .meta{position:relative;top:auto;left:auto;right:auto;bottom:auto;display:flex;align-items:flex-start;gap:12px;margin-top:14px;font-size:inherit;color:inherit}
+.songs .meta .txt{flex:1;min-width:0}
+.songs .meta .t{font-size:19px;font-weight:700;color:#f2eefb;line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.songs .meta .ar{margin-top:4px;font-size:12.5px;color:#9d94bb;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.songs .meta .btn{width:42px;height:42px;border-radius:50%;flex:none;
+  background:#5ee6c0;display:grid;place-items:center;
+  box-shadow:0 8px 20px rgba(94,230,192,.32)}
+.songs .meta .btn svg{width:16px;height:16px;fill:#0d0a14;margin-left:2px}
+.songs .meta .btn .bars{display:none;align-items:flex-end;gap:2px;height:14px;margin:0}
+.songs.playing .meta .btn svg{display:none}
+.songs.playing .meta .btn .bars{display:flex}
+.songs .meta .btn .bars i{width:3px;background:#0d0a14;border-radius:1px;animation:eqb .8s ease-in-out infinite}
+.songs .meta .btn .bars i:nth-child(1){height:50%}
+.songs .meta .btn .bars i:nth-child(2){height:100%;animation-delay:.15s}
+.songs .meta .btn .bars i:nth-child(3){height:70%;animation-delay:.3s}
+
+.songs .bar{height:4px;margin-top:14px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
+.songs .bar i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,#a78bfa,#5ee6c0);transition:width .35s linear}
+.songs .times{position:relative;display:flex;justify-content:space-between;margin-top:7px;font-size:10.5px;
+  color:#6a6285;font-family:ui-monospace,Consolas,monospace}
+
+.songs .qhead{display:flex;justify-content:space-between;margin-top:16px;padding-bottom:8px;
+  border-bottom:1px solid rgba(255,255,255,.06);font-size:10px;letter-spacing:.24em;
+  color:#6a6285;font-family:ui-monospace,Consolas,monospace;text-transform:uppercase}
+.songs .queue{display:flex;flex-direction:column;margin-top:2px}
+.songs .qi{display:flex;align-items:center;gap:10px;padding:7px 0;
+  border-bottom:1px solid rgba(255,255,255,.045)}
+.songs .qi:last-child{border-bottom:0}
+.songs .qi .n{width:18px;font-size:10.5px;color:#6a6285;font-family:ui-monospace,Consolas,monospace}
+.songs .qi .m{flex:1;min-width:0}
+.songs .qi .m b{display:block;font-size:13px;color:#ded9ee;font-weight:500;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.songs .qi .m span{font-size:10.5px;color:#6a6285}
+.songs .qi .u{font-size:10.5px;color:#9d94bb;white-space:nowrap}
+.songs .notice{min-height:16px;margin-top:6px;font-size:12px;line-height:1.4;
+  color:#8f86ad;opacity:0;transition:opacity .25s ease}
+.songs .notice.on{opacity:1}
+.songs .notice.ok{color:#5ee6c0}
+.songs .notice.bad{color:#ffb37a}
+.songs .empty{font-size:12px;color:#5f5a7d;padding:10px 0 4px}
+</style>
+</head>
+<body>
+
+<div class="dbg" id="dbg"></div>
+<div id="stage">
+    <div class="bgimg" id="bgImg"></div>
+    <div class="bgdim" id="bgDim"></div>
+  <div class="grain"></div>
+  <div class="floor"></div>
+
+  <div id="vidLayer">
+    <video id="vid" playsinline preload="auto"></video>
+    <div class="vid-tag"><i></i>一起看</div>
+    <div class="vid-info"><span class="t" id="vidTitle"></span><span class="by" id="vidBy"></span></div>
+  </div>
+
+  <div class="pool" id="pool"></div>
+
+  <div class="pet">
+    <div class="halo"></div>
+    <img class="fig" id="fig" src="sprites_hd/idle.png" alt="小汐">
+    <video id="petVid" class="figvid" muted loop playsinline preload="auto"></video>
+    <div class="emo" id="emo">开心</div>
+  </div>
+
+  <div class="cap" id="cap"><div class="bubble"><span class="who" id="who">小汐</span><span id="say"></span></div></div>
+
+  <div class="welcome" id="welcome"><span class="star">✦</span>欢迎 <b id="wName">小鱼干</b><span class="sub">进入直播间</span></div>
+
+  <div class="songs" id="songs">
+    <div class="tip"><i>♪</i>点歌方式：<b>点歌</b> + 歌名</div>
+    <div class="cover" id="sCover"><span class="ph">暂无封面</span></div>
+    <div class="meta">
+      <div class="txt">
+        <div class="t" id="sName">还没人点歌</div>
+        <div class="ar" id="sArtist">发「点歌 歌名」点一首</div>
+      </div>
+      <div class="btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span class="bars"><i></i><i></i><i></i></span></div>
+    </div>
+    <div class="bar"><i id="sBar"></i></div>
+    <div class="times"><span id="sCur">0:00</span><span id="sDur">0:00</span></div>
+    <div class="qhead"><span>Queue</span><span id="sCnt">0 首排队</span></div>
+    <div class="queue" id="sQueue"><div class="empty">点歌的是第一位</div></div>
+    <div class="notice" id="sNotice"></div>
+  </div>
+  <audio id="sgAudio" preload="auto"></audio>
+
+  <div class="badge" id="badge"><span class="dot"></span>AI 主播</div>
+
+
+</div>
+
+<script>
+// ── 等比缩放到窗口（横屏 1920×1080 / 竖屏 1080×1920，布局由设置页决定）──
+var stageEl = document.getElementById('stage');
+var forceVertical = new URLSearchParams(location.search).has('v');
+var layoutMode = 'auto';   // auto | landscape | portrait，来自 /api/state
+
+function applyLayout(){
+  var v;
+  if (layoutMode === 'portrait') v = true;
+  else if (layoutMode === 'landscape') v = false;
+  else v = forceVertical || window.innerWidth < window.innerHeight;
+  stageEl.classList.toggle('v', v);
+  return v;
+}
+  // ── 舞台背景 ──
+  var BG_PRESETS = {
+    aurora: 'radial-gradient(900px 700px at 22% 18%, #2a2350 0%, transparent 62%),radial-gradient(1100px 800px at 82% 78%, #14364a 0%, transparent 60%),radial-gradient(700px 600px at 62% 12%, #3a2a55 0%, transparent 65%),linear-gradient(160deg,#0d0b18 0%,#0a0d16 55%,#080a10 100%)',
+    midnight: 'radial-gradient(900px 700px at 30% 20%, #18203a 0%, transparent 62%),radial-gradient(1000px 800px at 78% 80%, #0e1b2e 0%, transparent 60%),linear-gradient(160deg,#080a12 0%,#05070d 100%)',
+    sakura: 'radial-gradient(900px 700px at 25% 18%, #3d2233 0%, transparent 62%),radial-gradient(1000px 800px at 80% 78%, #4a2436 0%, transparent 60%),linear-gradient(160deg,#160d14 0%,#0d070b 100%)',
+    ocean: 'radial-gradient(900px 700px at 22% 20%, #123a44 0%, transparent 62%),radial-gradient(1000px 800px at 80% 80%, #0f2f42 0%, transparent 60%),linear-gradient(160deg,#06121a 0%,#03090e 100%)',
+    sunset: 'radial-gradient(900px 700px at 25% 22%, #4a2536 0%, transparent 62%),radial-gradient(1000px 800px at 80% 78%, #4a3318 0%, transparent 60%),linear-gradient(160deg,#170d14 0%,#0d0709 100%)',
+    forest: 'radial-gradient(900px 700px at 25% 20%, #173326 0%, transparent 62%),radial-gradient(1000px 800px at 80% 80%, #16302a 0%, transparent 60%),linear-gradient(160deg,#08140f 0%,#040a08 100%)',
+    mono: 'radial-gradient(900px 700px at 25% 20%, #2a2a30 0%, transparent 62%),radial-gradient(1000px 800px at 80% 80%, #1c1c22 0%, transparent 60%),linear-gradient(160deg,#101013 0%,#07070a 100%)'
+  };
+
+  function applyBg(bg) {
+    if (!bg) return;
+    var stage = document.getElementById('stage');
+    var img = document.getElementById('bgImg');
+    var dim = document.getElementById('bgDim');
+    if (!stage || !img || !dim) return;
+    var kind = bg.kind || 'gradient';
+    dim.style.opacity = String(Math.max(0, Math.min(0.8, (Number(bg.dim) || 0) / 100)));
+    if (kind === 'image' && bg.image) {
+      stage.style.background = '#05060a';
+      img.style.backgroundImage = 'url("' + bg.image + '")';
+      img.style.filter = 'blur(' + (Number(bg.blur) || 0) + 'px)';
+      img.style.opacity = '1';
+    } else if (kind === 'color') {
+      stage.style.background = bg.color || '#0b1020';
+      img.style.opacity = '0';
+    } else {
+      var p = BG_PRESETS[bg.preset];
+      if (!p && bg.preset === 'custom') {
+        p = 'radial-gradient(1000px 800px at 25% 20%, ' + (bg.color || '#2a2350') + ' 0%, transparent 65%),radial-gradient(1200px 900px at 80% 80%, ' + (bg.color2 || '#14364a') + ' 0%, transparent 60%),linear-gradient(160deg,#08080e,#05060a)';
+      }
+      stage.style.background = p || BG_PRESETS.aurora;
+      img.style.opacity = '0';
+    }
+  }
+
+  function fit(){
+  var v = applyLayout();
+  var W = v ? 1080 : 1920;
+  var H = v ? 1920 : 1080;
+  // 铺满视口：用 max 而不是 min。用 min 时，视口比例不是 16:9 就会上下留黑，看着像「画面挪上去了」
+  var s = Math.max(window.innerWidth / W, window.innerHeight / H);
+  stageEl.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  updateDbg(v, W, H, s);
+}
+
+function updateDbg(v, W, H, s){
+  var el = document.getElementById('dbg');
+  if (!el) return;
+  var q = new URLSearchParams(location.search);
+  // 默认显示；地址加 ?clean=1 或 ?nodebug=1 藏掉（正式播时用）
+  if (q.has('clean') || q.has('nodebug')) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.textContent =
+    'viewport  ' + window.innerWidth + ' × ' + window.innerHeight +
+    '  dpr ' + (window.devicePixelRatio || 1) +
+    '\nlayout    ' + (v ? 'portrait 1080×1920' : 'landscape 1920×1080') +
+    '\nscale     ' + (Math.round(s * 1000) / 1000) +
+    '\n留白      ' + (Math.abs(window.innerWidth / window.innerHeight - W / H) < 0.01 ? '无（比例一致）' : '有（比例不一致）') +
+    '\n\n正式播：地址加 ?clean=1 隐藏这个角标';
+}
+  // 防抖：OBS 重载/改尺寸会连发 resize，逐次 fit 会让画面跳
+  var fitDebounce = null;
+  window.addEventListener('resize', function () {
+    if (fitDebounce) clearTimeout(fitDebounce);
+    fitDebounce = setTimeout(fit, 120);
+  });
+fit();
+
+// 开局同步一次服务端布局设置；之后靠 SSE 的 config 事件热更新
+fetch('/api/state').then(function(r){ return r.json(); }).then(function(j){
+    if (j && j.config && j.config.scene && j.config.scene.bg) applyBg(j.config.scene.bg);
+    if (j && j.config && j.config.scene && j.config.scene.viz) vizCfg.enabled = j.config.scene.viz.enabled !== false;
+  var l = j && j.config && j.config.scene && j.config.scene.layout;
+  if (l) { layoutMode = l; fit(); }
+  if (j && j.config && j.config.avatar) applyAvatar(j.config.avatar);
+}).catch(function(){});
+
+// ── 弹幕池 ──
+var poolEl = document.getElementById('pool');
+var capEl = document.getElementById('cap');
+var sayEl = document.getElementById('say');
+var whoEl = document.getElementById('who');
+var emoEl = document.getElementById('emo');
+var figEl = document.getElementById('fig');
+var badge = document.getElementById('badge');
+var capTimer = null, emoTimer = null, talkTimer = null, idleTimer = null;
+
+var AVATAR = { sources: {}, height: 520, heightPortrait: 700, glow: true };
+
+function spriteUrl(name){
+  var custom = AVATAR.sources && AVATAR.sources[name];
+  if (name === 'idle' && AVATAR.kind === 'image' && AVATAR.model) return AVATAR.model;
+  return custom || ('sprites_hd/' + name + '.png');
+}
+
+function applyAvatar(a){
+  if (!a) return;
+  AVATAR = Object.assign(AVATAR, a);
+  var root = document.documentElement;
+  root.style.setProperty('--fig-h', (AVATAR.height || 520) + 'px');
+  root.style.setProperty('--fig-hp', (AVATAR.heightPortrait || 700) + 'px');
+  var halo = document.querySelector('.pet .halo');
+  if (halo) halo.style.display = AVATAR.glow === false ? 'none' : '';
+  var figNow = document.getElementById('fig');
+  if (figNow) {
+    var emo = figNow.dataset.emo || 'idle';
+    figNow.src = spriteUrl(emo);
+  // 人物：整图 / 动作视频 / 位置
+  var petEl = document.querySelector('.pet');
+  if (petEl) {
+    petEl.style.bottom = (AVATAR.mb === undefined ? 206 : AVATAR.mb) + 'px';
+    petEl.style.marginLeft = (AVATAR.mx || 0) + 'px';
+  }
+  var vidEl = document.getElementById('petVid');
+  var figEl2 = document.getElementById('fig');
+  if (AVATAR.kind === 'video' && AVATAR.video && vidEl) {
+    if (vidEl.getAttribute('src') !== AVATAR.video) vidEl.src = AVATAR.video;
+    vidEl.style.display = 'block';
+    if (figEl2) figEl2.style.display = 'none';
+    try { vidEl.play(); } catch (e) {}
+  } else {
+    if (vidEl) { try { vidEl.pause(); } catch (e) {} vidEl.style.display = 'none'; }
+    if (figEl2) { figEl2.style.display = ''; figEl2.src = spriteUrl(figEl2.dataset.emo || 'idle'); }
+  }
+  }
+}
+
+// 情绪 → 立绘。六套图已按底边对齐，切换时脚不会跳。
+var SPRITE = { '开心':'happy', '生气':'angry', '跺脚':'stomp', '难过':'sad', '大哭':'cry', '平静':'idle' };
+Object.keys(SPRITE).forEach(function(k){ var im = new Image(); im.src = spriteUrl(SPRITE[k]); });
+
+// 调试钩子：方便外部验证立绘映射（不影响正常逻辑）
+window.__avatarDebug = { spriteUrl: spriteUrl, applyAvatar: applyAvatar, get sources(){ return AVATAR.sources; } };
+
+function setEmotion(emotion){
+  var name = SPRITE[emotion] || 'idle';
+  if (figEl.dataset.cur === name) { return; }
+  figEl.dataset.cur = name;
+  figEl.dataset.emo = name; figEl.src = spriteUrl(name);
+  clearTimeout(idleTimer);
+  if (name !== 'idle') {
+    idleTimer = setTimeout(function(){ figEl.dataset.cur = 'idle'; figEl.dataset.emo = 'idle'; figEl.src = spriteUrl('idle'); }, 4200);
+  }
+}
+
+// ── 欢迎横幅 ──
+var welTimer = null;
+function welcome(name){
+  document.getElementById('wName').textContent = name || '有人';
+  var el = document.getElementById('welcome');
+  el.classList.add('on');
+  clearTimeout(welTimer);
+  welTimer = setTimeout(function(){ el.classList.remove('on'); }, 4200);
+}
+
+// ── 点歌台（真实播放）──
+var songStart = 0, songDur = 180000, curUrl = '', songReady = false, songFallbackTimer = null;
+var sg = document.getElementById('sgAudio');
+
+function fmt(ms){
+  if (!ms || ms < 0) return '0:00';
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+
+var curCover = '';
+function setCover(url){
+  var el = document.getElementById('sCover');
+  if (!el) return;
+  if (!url) {
+    el.innerHTML = '<span class="ph">暂无封面</span>';
+    curCover = '';
+    return;
+  }
+  if (curCover === url) return;
+  curCover = url;
+  el.innerHTML = '<img src="" alt="">';
+  el.querySelector('img').src = url;
+}
+
+var noticeTimer = null;
+function showNotice(text, ok){
+  var el = document.getElementById('sNotice');
+  if (!el) return;
+  if (noticeTimer) clearTimeout(noticeTimer);
+  if (!text) { el.className = 'notice'; el.textContent = ''; return; }
+  el.textContent = text;
+  el.className = 'notice on ' + (ok ? 'ok' : 'bad');
+  noticeTimer = setTimeout(function(){
+    el.className = 'notice';
+  }, 5000);
+}
+
+function setSong(d){
+  if (d.notice && d.notice.text) showNotice(d.notice.text, d.notice.ok);
+  var p = d.playing;
+  var wrap = document.getElementById('songs');
+  if (!p) {
+    wrap.classList.remove('playing');
+    document.getElementById('sName').textContent = '还没人点歌';
+    document.getElementById('sArtist').textContent = '发「点歌 歌名」点一首';
+    setCover('');
+    document.getElementById('sBar').style.width = '0%';
+    document.getElementById('sCur').textContent = '0:00';
+    document.getElementById('sDur').textContent = '0:00';
+    renderQueue(d.queue || []);
+    if (sg) { try { sg.pause(); sg.removeAttribute('src'); } catch (e) {} }
+    try { vizStop(); } catch (e) { /* ignore */ }
+      try { sg.volume = 0.9; } catch (e) {} songDucked = false;
+      try { sg.muted = false; } catch (e) {}
+      try { sg.volume = SONG_VOL || 0.9; } catch (e) {}
+    curUrl = '';
+    return;
+  }
+
+  document.getElementById('sName').textContent = p.name || '';
+  var sub = p.artist ? p.artist : '';
+  if (p.user) sub = (sub ? sub + ' · ' : '') + '由 ' + p.user + ' 点播';
+  document.getElementById('sArtist').textContent = sub;
+  setCover(p.cover || '');
+
+  songStart = p.at || Date.now();
+  songDur = p.duration || d.duration || 180000;
+  document.getElementById('sDur').textContent = fmt(songDur);
+  renderQueue(d.queue || []);
+
+  if (p.url && sg) {
+    if (curUrl !== p.url) {
+      curUrl = p.url;
+      try { sg.dataset.songName = p.name || ''; } catch (e) {}
+      sg.src = p.url;
+      sg.volume = 0.9;
+      var pr = sg.play();
+      try { viz.mode = ''; vizStart(); } catch (e) { /* ignore */ }
+      if (pr && pr.catch) pr.catch(function(){
+        wrap.classList.remove('playing');
+        document.getElementById('sArtist').textContent = (sub ? sub + ' · ' : '') + '点击画面播放';
+        // 自动播放被拦：按歌曲时长先把队列推进，避免整条卡住
+        if (songDur) {
+          if (songFallbackTimer) clearTimeout(songFallbackTimer);
+          songFallbackTimer = setTimeout(function(){
+            fetch('/api/song/next', { method: 'POST' }).catch(function(){});
+          }, songDur + 5000);
+        }
+      });
+    }
+    if (songFallbackTimer) { clearTimeout(songFallbackTimer); songFallbackTimer = null; }
+    wrap.classList.add('playing');
+  } else {
+    wrap.classList.remove('playing');
+  }
+  renderQueue(d.queue || []);
+}
+function renderQueue(q){
+  document.getElementById('sCnt').textContent = q.length + ' 首排队';
+  var box = document.getElementById('sQueue');
+  box.innerHTML = '';
+  if (!q.length) { box.innerHTML = '<div class="empty">点歌的是第一位</div>'; return; }
+  q.forEach(function(s, i){
+    var el = document.createElement('div');
+    el.className = 'qi';
+    el.innerHTML = '<span class="n"></span><div class="m"><b></b><span></span></div><span class="u"></span>';
+    el.querySelector('.n').textContent = String(i + 1).padStart(2, '0');
+    el.querySelector('.m b').textContent = s.name;
+    el.querySelector('.m span').textContent = s.artist || '等待解析';
+    el.querySelector('.u').textContent = s.user || '';
+    box.appendChild(el);
+  });
+}
+
+if (sg) {
+  sg.addEventListener('timeupdate', function(){
+    if (!sg.duration) return;
+    var pct = Math.min(1, sg.currentTime / sg.duration);
+    document.getElementById('sBar').style.width = (pct * 100).toFixed(1) + '%';
+    document.getElementById('sCur').textContent = fmt(sg.currentTime * 1000);
+    document.getElementById('sDur').textContent = fmt(sg.duration * 1000);
+  });
+  sg.addEventListener('ended', function(){
+    fetch('/api/song/next', { method: 'POST' }).catch(function(){});
+  });
+  sg.addEventListener('error', function(){
+    document.getElementById('songs').classList.remove('playing');
+  });
+}
+
+// 没有直链时用时间戳兜底推进度
+setInterval(function(){
+  if (!songStart) return;
+  if (songReady) return;
+  var pct = Math.min(1, (Date.now() - songStart) / songDur);
+  document.getElementById('sBar').style.width = (pct * 100).toFixed(1) + '%';
+  document.getElementById('sCur').textContent = fmt(Math.min(songDur, Date.now() - songStart));
+}, 500);
+
+function setTxt(id, v){
+  var el = document.getElementById(id);
+  if (el) el.textContent = v;
+}
+function addLine(kind, user, text){
+  var el = document.createElement('div');
+  el.className = 'line ' + kind;
+  el.innerHTML = '<span class="u"></span><span class="t"></span>';
+  el.querySelector('.u').textContent = user || '';
+  el.querySelector('.t').textContent = text || '';
+  poolEl.appendChild(el);
+  while (poolEl.children.length > (stageEl.classList.contains('v') ? 8 : 10)) poolEl.removeChild(poolEl.firstChild);
+}
+
+// ── 出声：用系统自带语音合成（免装引擎，设置里的语速/音调/静音时段立刻生效）──
+var ttsVoices = [];
+function loadVoices(){
+  try { ttsVoices = window.speechSynthesis ? speechSynthesis.getVoices() : []; } catch (e) { ttsVoices = []; }
+}
+if (window.speechSynthesis) {
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+// 朗读队列：一句没念完不会被打断，新来的排队等着。
+// 每句结束上报服务端，服务端才放下一句出来。
+var speakQueue = [];
+var speaking = false;
+
+  // 预览窗口（场景窗口 / 独立窗口）不出声，声音只从 OBS 浏览器源走
+  var FORCE_MUTE = /[?&]mute=1/.test(location.search);
+  var IS_OBS = /[?&]src=obs/.test(location.search);
+  var WANT_SPEAK = /[?&]speaker=1/.test(location.search);
+  var MUTE = !(IS_OBS || WANT_SPEAK) || FORCE_MUTE;
+  if (window.self !== window.top) MUTE = true;   // 设置页里的预览 iframe 不出声
+
+function reportSpeech(type, id){
+  try {
+    fetch('/api/speech-event', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ type: type, id: id || null })
+    }).catch(function(){});
+  } catch (e) { /* 上报失败不影响念 */ }
+}
+
+// 服务端语音：优先拿音频文件来播，失败再退回浏览器朗读
+var ttsAudio = null;
+  // 视频在放时把她的语音压低，别盖住视频声音
+  // 她说话时把音乐压低（不是停掉），说完恢复
+  var SONG_VOL = 0.9;
+  var songDucked = false;
+  function duckSong() {
+    if (!sg || sg.paused || !sg.currentSrc) return;
+    try { sg.volume = Math.min(SONG_VOL, 0.5); songDucked = true; } catch (e) {}
+  }
+  function unduckSong() {
+    if (!songDucked) return;
+    songDucked = false;
+    // 视频还在放就留在低位，避免和视频声打架
+    try { sg.volume = vidPlaying ? 0.35 : SONG_VOL; } catch (e) {}
+  }
+
+  function speechVolume(){ return vidPlaying ? 0.35 : 1; }
+
+function playServerTts(sp, onDone){
+  var ac = new AbortController();
+  var timer = setTimeout(function(){ try { ac.abort(); } catch (e) {} }, 15000);
+  fetch('/api/tts/speak', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ text: sp.text }),
+    signal: ac.signal
+  }).then(function(r){
+    if (!r.ok) throw new Error('tts ' + r.status);
+    return r.blob();
+  }).then(function(blob){
+    clearTimeout(timer);
+    var url = URL.createObjectURL(blob);
+    if (ttsAudio) { try { ttsAudio.pause(); } catch (e) {} }
+    ttsAudio = new Audio(url);
+    try { ttsAudio.volume = speechVolume(); } catch (e) {}
+    ttsAudio.onended = function(){ URL.revokeObjectURL(url); onDone(true); };
+    ttsAudio.onerror = function(){ URL.revokeObjectURL(url); onDone(false); };
+    var pr = ttsAudio.play();
+    if (pr && pr.catch) pr.catch(function(){ URL.revokeObjectURL(url); onDone(false); });
+  }).catch(function(){
+    clearTimeout(timer);
+    onDone(false);
+  });
+}
+
+function pumpSpeech(){
+  if (speaking || !speakQueue.length) return;
+  var sp = speakQueue.shift();
+  speaking = true;
+  reportSpeech('start', sp.id);
+    // 浏览器自带语音会触发 Windows「通信活动降音」，再叠一层压低就几乎听不见了
+    if (sp && sp.tts) duckSong();
+
+  if (sp.tts) {
+    playServerTts(sp, function(ok){
+      if (ok) { speaking = false; if (!speakQueue.length) unduckSong(); reportSpeech('end', sp.id); pumpSpeech(); return; }
+      // 服务端合成失败：退回浏览器语音，别让直播没声音
+      speaking = false;
+      speakWithBrowser(sp);
+    });
+    return;
+  }
+
+  speakWithBrowser(sp);
+}
+
+function speakWithBrowser(sp){
+  speaking = true;
+  try {
+    if (!ttsVoices.length) loadVoices();
+    var u = new SpeechSynthesisUtterance(sp.text);
+    u.lang = 'zh-CN';
+    u.rate = Math.min(2, Math.max(0.5, 1 + (Number(sp.rate) || 0) / 100));
+    u.pitch = Math.min(2, Math.max(0, 1 + (Number(sp.pitch) || 0) / 50));
+    u.volume = Math.min(1, Math.max(0, 1 + (Number(sp.volume) || 0) / 100)) * speechVolume();
+    var byName = ttsVoices.filter(function (v) { return v.name === sp.voice; })[0];
+    var zh = ttsVoices.filter(function (v) { return /^zh/i.test(v.lang); });
+    u.voice = byName || zh[0] || ttsVoices[0] || null;
+    u.onend = function(){ speaking = false; if (!speakQueue.length) unduckSong(); reportSpeech('end', sp.id); pumpSpeech(); };
+    u.onerror = function(){ speaking = false; if (!speakQueue.length) unduckSong(); reportSpeech('end', sp.id); pumpSpeech(); };
+    speechSynthesis.speak(u);
+  } catch (e) {
+    speaking = false;
+    reportSpeech('end', sp.id);
+  }
+}
+
+function speakOut(sp){
+    if (MUTE) { if (sp && sp.id) reportSpeech('end', sp.id); return; }
+  if (!sp || !sp.text) return;
+  if (sp.enabled === false || sp.muted) {
+    reportSpeech('end', sp.id);   // 静音也要放行，别把队列卡死
+    return;
+  }
+  if (!sp.tts && !window.speechSynthesis) { reportSpeech('end', sp.id); return; }
+  speakQueue.push(sp);
+  pumpSpeech();
+}
+
+function speak(text, emotion){
+  whoEl.textContent = '小汐';
+  sayEl.textContent = text;
+  capEl.classList.add('on');
+  clearTimeout(capTimer);
+  capTimer = setTimeout(function(){ capEl.classList.remove('on'); }, Math.max(6000, text.length * 320));
+
+  emoEl.textContent = emotion || '开心';
+  setEmotion(emotion || '开心');
+  emoEl.classList.add('on');
+  clearTimeout(emoTimer);
+  emoTimer = setTimeout(function(){ emoEl.classList.remove('on'); }, 4000);
+
+  figEl.classList.add('talking');
+  clearTimeout(talkTimer);
+  talkTimer = setTimeout(function(){ figEl.classList.remove('talking'); }, Math.max(1800, text.length * 260));
+}
+
+  // 歌放到一半卡住/没声：让服务端重解析地址，从当前位置续播
+  var songRecovering = false;
+  var songRecoverLast = 0;
+  function recoverSong(reason) {
+    if (songRecovering) return;
+    if (Date.now() - songRecoverLast < 20000) return;
+    if (!sg || !sg.currentSrc) return;
+    songRecoverLast = Date.now();
+    songRecovering = true;
+    var at = Number(sg.currentTime || 0);
+    fetch('/api/song/retry', { method: 'POST' }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j || !j.ok) return;
+      var u = j.playing && j.playing.url;
+      if (!u) return;
+      // 期间如果换了歌，不要拿旧地址覆盖新歌
+      if (j.playing && j.playing.name && sg.dataset.songName && j.playing.name !== sg.dataset.songName) return;
+      curUrl = u;
+      sg.src = u;
+      sg.volume = SONG_VOL;
+      try { sg.currentTime = Math.max(0, at - 1); } catch (e) {}
+      var p = sg.play();
+      if (p && p.catch) p.catch(function () {});
+      console.log('[song] 重新取流：' + reason);
+    }).catch(function () {}).then(function () { songRecovering = false; });
+  }
+  if (sg) {
+    sg.addEventListener('stalled', function () { if (!sg.paused) recoverSong('stalled'); });
+    sg.addEventListener('error', function () { recoverSong('error'); });
+    setInterval(function () {
+      if (!sg || sg.paused || !sg.currentSrc || sg.ended) return;
+      if (sg.readyState < 3) recoverSong('readyState=' + sg.readyState);
+    }, 8000);
+  }
+
+
+  // 每 5 秒回传播放器状态（诊断「放着放着没声」）
+  setInterval(function () {
+    if (!sg) return;
+    try {
+      fetch('/api/scene-audio', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          at: Date.now(),
+          obs: typeof IS_OBS !== 'undefined' ? IS_OBS : false,
+          t: Number(sg.currentTime || 0),
+          paused: sg.paused,
+          ended: sg.ended,
+          volume: sg.volume,
+          readyState: sg.readyState,
+          err: sg.error ? sg.error.code : null,
+          vw: window.innerWidth,
+          vh: window.innerHeight,
+          dpr: window.devicePixelRatio || 1,
+          scale: (function(){ var m = /scale\(([0-9.]+)\)/.exec(document.getElementById("stage").style.transform || ""); return m ? Number(m[1]) : null; })(),
+          src: (sg.currentSrc || '').slice(0, 120),
+          ducked: typeof songDucked !== 'undefined' ? songDucked : null,
+          vidPlaying: Boolean(vidPlaying),
+            muted: sg.muted,
+            ctx: (viz && viz.audio) ? viz.audio.state : 'none',
+            vidVol: vidEl ? vidEl.volume : null,
+            vidMuted: vidEl ? vidEl.muted : null,
+            vidReady: vidEl ? vidEl.readyState : null,
+            vidErr: vidEl && vidEl.error ? vidEl.error.code : null
+        })
+      }).catch(function () {});
+    } catch (e) {}
+  }, 5000);
+
+  // ── 音乐可视化（只在放歌时出现，随机三种效果）──
+  var VIZ_MODES = ['spectrum', 'ring', 'particles'];
+  var viz = { on: true, mode: '', canvas: null, ctx: null, raf: 0, audio: null, analyser: null, data: null, last: 0, seed: 0 };
+  var vizCfg = { enabled: true };
+
+  function vizEnsure() {
+    var stage = document.getElementById('stage');
+    if (!stage) return null;
+    if (!viz.canvas) {
+      var c = document.createElement('canvas');
+      c.width = 960; c.height = 540;
+      c.style.cssText = 'position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;opacity:0;transition:opacity .4s';
+      var bgDim = document.getElementById('bgDim');
+      if (bgDim && bgDim.nextSibling) stage.insertBefore(c, bgDim.nextSibling);
+      else stage.appendChild(c);
+      viz.canvas = c;
+      viz.ctx = c.getContext('2d');
+    }
+    return viz.canvas;
+  }
+
+  function vizAudio() {
+    if (viz.audio) return viz.audio;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC || !sg) return null;
+      // 跨域歌曲不能接进 WebAudio：没有 CORS 头时浏览器会把声音静音（"歌在放但没声"）
+      var sameOrigin = false;
+      try { sameOrigin = new URL(sg.currentSrc || sg.src, location.href).origin === location.origin; } catch (e) { sameOrigin = false; }
+      if (!sameOrigin) return null;   // 跨域：不接分析器，用合成节拍，声音直接从 <audio> 出
+      viz.audio = new AC();
+      var src = viz.audio.createMediaElementSource(sg);
+      var an = viz.audio.createAnalyser();
+      an.fftSize = 256;
+      an.smoothingTimeConstant = 0.82;
+      src.connect(an);
+      an.connect(viz.audio.destination);   // 必须接回去，否则点歌没声音
+      viz.analyser = an;
+      viz.data = new Uint8Array(an.frequencyBinCount);
+      if (viz.audio.state === 'suspended') viz.audio.resume().catch(function () {});
+    } catch (e) { viz.audio = null; return null; }
+    return viz.audio;
+  }
+
+  function vizBars() {
+    if (viz.barsEl) return viz.barsEl;
+    var stage = document.getElementById('stage');
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute;left:0;right:0;bottom:0;height:120px;display:flex;align-items:flex-end;gap:7px;padding:0 48px 0 48px;pointer-events:none;opacity:0;transition:opacity .35s;z-index:0';
+    for (var i = 0; i < 48; i++) {
+      var b = document.createElement('i');
+      var t2 = i / 47;
+      var col = 'rgba(' + Math.round(150 + 56 * t2) + ',' + Math.round(110 + 50 * t2) + ',255,';
+      b.style.cssText = 'flex:1;height:4px;border-radius:4px 4px 0 0;transition:height 80ms linear;background:linear-gradient(to top,' + col + '.08),' + col + '.85))';
+      wrap.appendChild(b);
+    }
+    var vid = document.getElementById('vidLayer');
+    if (vid) stage.insertBefore(wrap, vid);
+    else stage.appendChild(wrap);
+    viz.barsEl = wrap;
+    return wrap;
+  }
+
+  function vizPickMode() {
+    viz.seed = Math.floor(Math.random() * 1000);
+    viz.mode = VIZ_MODES[Math.floor(Math.random() * VIZ_MODES.length)];
+  }
+
+  function vizStop() {
+    if (viz.raf) { cancelAnimationFrame(viz.raf); viz.raf = 0; }
+    if (viz.canvas) { viz.canvas.style.opacity = '0'; if (viz.ctx) viz.ctx.clearRect(0, 0, 960, 540); }
+    if (viz.barsEl) viz.barsEl.style.opacity = '0';
+    viz.mode = '';
+  }
+
+  function vizStart() {
+    if (!vizCfg.enabled) return;
+    if (!sg || sg.paused || !sg.currentSrc) return;
+    if (!vizPickModeIfNeeded()) return;
+    vizEnsure();
+    vizAudio();
+    if (!viz.raf) viz.raf = requestAnimationFrame(vizFrame);
+    if (viz.canvas) viz.canvas.style.opacity = '1';
+    if (viz.audio && viz.audio.state === 'suspended') viz.audio.resume().catch(function () {});
+  }
+
+  function vizPickModeIfNeeded() {
+    if (!viz.mode) vizPickMode();
+    return true;
+  }
+
+  function vizFrame(ts) {
+    viz.raf = requestAnimationFrame(vizFrame);
+    if (!viz.canvas) return;
+    if (!sg || sg.paused || !sg.currentSrc) { vizStop(); return; }
+    if (ts && viz.last && ts - viz.last < 28) return;   // 约 30fps
+    viz.last = ts || Date.now();
+    var g = viz.ctx;
+    if (!g) return;
+    if (viz.canvas) viz.canvas.style.opacity = viz.mode === 'spectrum' ? '0' : '1';
+    if (viz.barsEl) viz.barsEl.style.opacity = viz.mode === 'spectrum' ? '1' : '0';
+    g.clearRect(0, 0, 960, 540);
+    var an = viz.analyser;
+    if (an && viz.data) an.getByteFrequencyData(viz.data);
+    var d = viz.data || new Uint8Array(64);
+    var n = d.length;
+    // 低/中/高能量
+    function band(a, b) { var s = 0, c = 0; for (var i = a; i < b && i < n; i++) { s += d[i]; c++; } return c ? s / c / 255 : 0; }
+    var bass = band(1, 8), mid = band(10, 34), high = band(36, 90);
+    // 有些环境拿不到音频数据（无声卡/分析器为 0），用合成节拍兜底，保证画面一直在动
+    var avgE = 0;
+    for (var q = 0; q < n; q++) avgE += d[q];
+    avgE = n ? avgE / n / 255 : 0;
+    var synth = avgE < 0.02;
+    var spec;
+    if (synth) {
+      bass = 0.42 + 0.34 * Math.abs(Math.sin(t * 2.1));
+      mid = 0.34 + 0.26 * Math.abs(Math.sin(t * 1.5 + 1.2));
+      high = 0.28 + 0.24 * Math.abs(Math.sin(t * 2.9 + 2.1));
+      spec = function (i2) { return Math.max(0.04, (Math.sin(t * 2.4 + i2 * 0.5) * 0.5 + 0.5) * (0.45 + 0.55 * Math.abs(Math.sin(t * 1.15 + i2 * 0.12)))); };
+    } else {
+      spec = function (i2) { return (d[i2] || 0) / 255; };
+    }
+    var t = (ts || Date.now()) / 1000;
+    var stage = document.getElementById('stage');
+    var W = 960, H = 540;
+
+    try {  // viz draw
+    if (viz.mode === 'spectrum') {
+      var barsEl = vizBars();
+      var kids = barsEl.children;
+      for (var i = 0; i < kids.length; i++) {
+        var idx = Math.floor(i / kids.length * 76) + 2;
+        var v = Math.max(spec(idx) || 0, 0.12 + 0.62 * Math.abs(Math.sin(t * 2.3 + i * 0.47)));
+        v = Math.min(1, Math.pow(v, 1.25) * (0.6 + (bass || 0) * 0.8));
+        if (!isFinite(v)) v = 0.2;
+        kids[i].style.height = (6 + v * 92) + "px";
+      }
+      barsEl.style.opacity = "1";
+      if (viz.canvas) viz.canvas.style.opacity = "0";
+    } else if (viz.mode === 'ring') {
+      var pet = document.querySelector('.pet');
+      var r = pet ? pet.getBoundingClientRect() : null;
+      var sr = stage ? stage.getBoundingClientRect() : null;
+      var cx = W / 2, cy = 330, rad = 250;
+      if (r && sr) {
+        var scale = sr.width / (stage.offsetWidth || 1920);
+        cx = ((r.left + r.width / 2) - sr.left) / scale * (W / 1920);
+        cy = ((r.top + r.height / 2) - sr.top) / scale * (H / 1080);
+        rad = (r.width / scale) * (W / 1920) * 0.52;
+      }
+      var bars2 = 72;
+      for (var k = 0; k < bars2; k++) {
+        var a = (k / bars2) * Math.PI * 2 - Math.PI / 2;
+        var idx2 = Math.floor((k / bars2) * 60) + 2;
+        var v2 = Math.max(spec(idx2), 0.10 + 0.40 * Math.abs(Math.sin(t * 1.9 + idx2 * 0.41)));
+        if (!isFinite(v2)) v2 = 0;
+        var len = 4 + Math.pow(v2, 1.3) * 46 * (0.6 + bass * 0.8);
+        if (!isFinite(len)) len = 6;
+        var x1 = cx + Math.cos(a) * rad, y1 = cy + Math.sin(a) * rad;
+        var x2 = cx + Math.cos(a) * (rad + len), y2 = cy + Math.sin(a) * (rad + len);
+        g.strokeStyle = 'rgba(200,150,255,' + (0.35 + v2 * 0.6) + ')';
+        g.lineWidth = 3.5;
+        g.lineCap = 'round';
+        g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+      }
+    } else {
+      // particles
+      var count = 26;
+      for (var p = 0; p < count; p++) {
+        var sx = (p * 137.5 + viz.seed * 31) % W;
+        var sp = 0.18 + ((p * 7) % 10) / 24 + bass * 0.8;
+        var sy = H - ((t * 26 * sp + p * 53) % (H + 120));
+        var rr = 1.2 + ((p * 13) % 7) / 4;
+        var alpha = 0.18 + high * 0.55 + (Math.sin(t * 1.7 + p) * 0.5 + 0.5) * 0.25;
+        g.beginPath(); g.arc(sx, sy, rr, 0, Math.PI * 2);
+        g.fillStyle = 'rgba(214,178,255,' + Math.min(0.85, alpha) + ')';
+        g.fill();
+      }
+      // 背景轻微脉动
+      g.fillStyle = 'rgba(140,100,230,' + (0.03 + mid * 0.07) + ')';
+      g.fillRect(0, 0, W, H);
+    }
+    } catch (e) { /* 绘制异常不中断循环 */ }
+  }
+
+  // ── 事件渲染 ──
+  // ── 视频（B站点播）──
+  var vidLayer = document.getElementById('vidLayer');
+  var vidEl = document.getElementById('vid');
+  var vidPlaying = null;
+  function videoMode(on) {
+    document.getElementById('stage').classList.toggle('video', !!on);
+  }
+  var songFrozenForVideo = false;
+
+  // 事件可能乱序：每秒校正一次，视频在放就一定把歌停掉
+  function enforceMutex() {
+    if (vidPlaying && sg && !sg.paused) { try { sg.pause(); } catch (e) {} songFrozenForVideo = true; }
+  }
+  setInterval(enforceMutex, 1000);
+
+  // 看门狗：保证放歌时一定在动，停歌/暂停时一定停
+  // 声音自检：播 1.2 秒 440Hz，用来确认系统/直播伴侣是否收到声音
+  function playTestTone() {
+    window.__tone = (window.__tone || 0) + 1;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (viz && !viz.audio) viz.audio = new AC();
+      var ctx2 = (viz && viz.audio) ? viz.audio : new AC();
+      if (ctx2.state === 'suspended') ctx2.resume();
+      var osc = ctx2.createOscillator();
+      var gain = ctx2.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 440;
+      gain.gain.setValueAtTime(0.0001, ctx2.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.22, ctx2.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx2.currentTime + 1.15);
+      osc.connect(gain);
+      gain.connect(ctx2.destination);
+      osc.start();
+      osc.stop(ctx2.currentTime + 1.2);
+    } catch (e) { /* ignore */ }
+  }
+
+  var vizWatch = setInterval(function () {
+    try {
+    if (viz.audio && viz.audio.state !== 'running') { try { viz.audio.resume(); } catch (e) {} }
+      if (!vizCfg.enabled) { if (viz.raf) vizStop(); return; }
+      var playing = sg && !sg.paused && sg.currentSrc;
+      if (playing && !viz.raf) vizStart();
+      else if (!playing && viz.raf) vizStop();
+    } catch (e) { /* ignore */ }
+  }, 1200);
+
+  function pauseSongForVideo() {
+    if (sg && !sg.paused && sg.currentSrc) {
+  // ── 音频卡顿自愈 ──
+  var audioWatch = { songT: -1, songTry: 0, vidT: -1, vidTry: 0 };
+  setInterval(function () {
+    try {
+      if (sg && !sg.paused && sg.currentSrc) {
+        var t = sg.currentTime;
+        if (Math.abs(t - audioWatch.songT) < 0.15 && sg.readyState < 3) {
+          audioWatch.songTry++;
+          if (audioWatch.songTry >= 2) {
+            audioWatch.songTry = 0;
+            try { sg.load(); sg.play(); } catch (e) {}
+          }
+        } else audioWatch.songTry = 0;
+        audioWatch.songT = t;
+      }
+      var vEl = document.getElementById('vid');
+      if (vEl && !vEl.paused && vEl.currentSrc && vEl.readyState < 3) {
+        var vt = vEl.currentTime;
+        if (Math.abs(vt - audioWatch.vidT) < 0.15) {
+          audioWatch.vidTry++;
+          if (audioWatch.vidTry >= 2) {
+            audioWatch.vidTry = 0;
+            try { vEl.load(); vEl.play(); } catch (e) {}
+          }
+        } else audioWatch.vidTry = 0;
+        audioWatch.vidT = vt;
+      }
+    } catch (e) { /* ignore */ }
+  }, 5000);
+
+      try { sg.pause(); songFrozenForVideo = true; } catch (e) {}
+    }
+  }
+
+  function resumeSongAfterVideo() {
+    if (!songFrozenForVideo) return;
+    songFrozenForVideo = false;
+    if (sg && sg.currentSrc) { try { sg.play().catch(function () {}); } catch (e) {} }
+  }
+
+  function playVideo(d) {
+    if (!d || !d.url) return;
+    pauseSongForVideo();
+    vidPlaying = d;
+    document.getElementById('vidTitle').textContent = d.title || '';
+    document.getElementById('vidBy').textContent = d.owner ? ('@' + d.owner) : '';
+    vidEl.src = d.url;
+    try { vidEl.muted = false; vidEl.volume = 1; } catch (e) {}
+    vidEl.currentTime = 0;
+    var p = vidEl.play();
+    if (p && p.catch) p.catch(function () { /* 自动播放被拦，等用户交互 */ });
+    vidLayer.classList.add('on');
+    videoMode(true);
+  }
+  function stopVideo() {
+    vidPlaying = null;
+    resumeSongAfterVideo();
+    try { vidEl.pause(); } catch (e) {}
+    vidEl.removeAttribute('src');
+    vidEl.load();
+    vidLayer.classList.remove('on');
+    videoMode(false);
+  }
+  function reportEnded() {
+    var bv = vidPlaying && vidPlaying.bvid;
+    stopVideo();
+    try {
+      fetch('/api/video/ended', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ bvid: bv || '' })
+      });
+    } catch (e) {}
+  }
+  vidEl.addEventListener('ended', reportEnded);
+  vidEl.addEventListener('error', function () {
+    // 放不出来也算结束 → 服务端自动下一条
+    if (vidPlaying) reportEnded();
+  });
+
+  // 刷新/重开 OBS 后恢复正在播的视频
+  fetch('/api/video/state').then(function (r) { return r.json(); }).then(function (s) {
+    if (s && s.playing && (s.playing.url || s.playing.file)) {
+      playVideo({ url: s.playing.url || ('/media/' + s.playing.file + '?v=' + Date.now()), title: s.playing.title, owner: s.playing.owner, bvid: s.playing.bvid });
+    }
+  }).catch(function () {});
+
+  var spokenAt = {};
+  var lastSeenAt = 0;
+  function alreadySpoken(at) {
+    if (!at) return false;
+    var now = Date.now();
+    if (spokenAt[at]) return true;
+    spokenAt[at] = now;
+    Object.keys(spokenAt).forEach(function (k) { if (now - spokenAt[k] > 120000) delete spokenAt[k]; });
+    return false;
+  }
+
+  function handle(d, replay){
+    // 断线重连会重发最近 20 条（backlog），已经显示过的不再重复上屏
+    if (d && d.at) {
+      var stateKinds = { config: 1, song: 1, 'video-state': 1, stats: 1 };
+      if (replay && !stateKinds[d.kind] && d.at <= lastSeenAt) return;
+      if (d.at > lastSeenAt) lastSeenAt = d.at;
+    }
+  if (d.kind === 'role') {
+    if (d.speaker === false) MUTE = true;
+    return;
+  }
+  if (d.kind === 'soundtest') { playTestTone(); return; }
+  if (d.kind === 'chat') {
+    addLine('', d.user, d.text);
+  } else if (d.kind === 'gift') {
+    addLine('gift', d.user, '送出 ' + d.text);
+  } else if (d.kind === 'enter') {
+    // 只显示通过服务端节流的进场，否则热门直播间会被进场消息刷屏
+    if (d.welcome && !replay) {
+      addLine('enter', d.user, '进入直播间');
+      welcome(d.user);
+    }
+  } else if (d.kind === 'config') {
+    var C0 = d.config || {};
+    if (C0.avatar) applyAvatar(C0.avatar);
+    var S0 = C0.scene || {};
+    if (S0.layout) { layoutMode = S0.layout; fit(); }
+    if (S0.bg) applyBg(S0.bg);
+    if (S0.viz) { vizCfg.enabled = S0.viz.enabled !== false; if (!vizCfg.enabled) vizStop(); }
+  } else if (d.kind === 'song-note') {
+    showNotice(d.text, d.ok);
+  } else if (d.kind === 'song') {
+    setSong(d);
+  } else if (d.kind === 'backlog') {
+    // 刚连上时补发最近的消息，OBS 重启 / 刷新不会一片空白
+    (d.items || []).forEach(function(it){ handle(it, true); });
+    } else if (d.kind === 'video') {
+      if (!replay) {
+        if (d.action === 'play') playVideo(d);
+        else if (d.action === 'stop') stopVideo();
+      }
+    } else if (d.kind === 'video-state') {
+      if (!d.playing) stopVideo();
+      else if (!vidPlaying) playVideo({ url: d.playing.url || ('/media/' + d.playing.file + '?v=' + Date.now()), title: d.playing.title, owner: d.playing.owner, bvid: d.playing.bvid });
+    } else if (d.kind === 'reply') {
+      addLine('me', '[我]', d.text);
+      if (replay) return;                       // 回放旧消息：不出声，避免重复说话
+      if (alreadySpoken(d.at)) return;          // 同一条只念一次
+      speak(d.text, d.emotion);
+      if (d.speech) speakOut(d.speech);
+  } else if (d.kind === 'stats') {
+    setTxt('online', Number(d.online).toLocaleString());
+    setTxt('recv', d.received);
+    setTxt('rep', d.replied);
+    setTxt('drop', d.dropped);
+  }
+}
+
+// ── 演示模式：不连服务，本地造几条，用来截图/预览 ──
+function demoMode(){
+  badge.classList.remove('off');
+  var seed = [
+    ['enter', '小鱼干', ''],
+    ['chat', '夜猫子', '主播今天播到几点'],
+    ['chat', '阿康', '这个模型好可爱'],
+    ['gift', '老张', '玫瑰'],
+    ['reply', '[我]', '播到十二点哦，别熬太晚']
+  ];
+  seed.forEach(function(s, i){
+    setTimeout(function(){
+      if (s[0] === 'enter') handle({ kind: 'enter', user: s[1], welcome: true });
+      else if (s[0] === 'gift') handle({ kind: 'gift', user: s[1], text: s[2] });
+      else handle({ kind: s[0], user: s[1], text: s[2], emotion: '开心' });
+    }, i * 220);
+  });
+  setTimeout(function(){ handle({ kind: 'chat', user: 'momo', text: '声音好好听' }); }, 1500);
+  setTimeout(function(){
+    handle({ kind: 'song',
+      playing: { name: '半点心', user: '阿康', at: Date.now() },
+      queue: [{ name: '起风了', user: 'momo' }, { name: '稻香', user: '小鱼干' }] });
+  }, 1300);
+  setTimeout(function(){ handle({ kind: 'stats', online: 1284, received: 12, replied: 3, dropped: 2 }); }, 1600);
+}
+
+// ── SSE ──
+var es = null;
+function connect(){
+  es = new EventSource('/events');
+  es.onopen = function(){ badge.classList.remove('off'); badge.innerHTML = '<span class="dot"></span>AI 主播'; };
+  es.onerror = function(){ badge.classList.add('off'); badge.innerHTML = '<span class="dot"></span>画面已断开'; };
+  es.onmessage = function(e){
+    var d;
+    try { d = JSON.parse(e.data); } catch { return; }
+    handle(d);
+  };
+  // 断线自愈：EventSource 自带重连，这里只做状态提示
+  setInterval(function(){
+    if (es.readyState === 2) { badge.classList.add('off'); badge.innerHTML = '<span class="dot"></span>画面已断开'; }
+  }, 3000);
+}
+
+if (location.search.indexOf('demo') >= 0) demoMode();
+else connect();
+</script>
+</body>
+</html>

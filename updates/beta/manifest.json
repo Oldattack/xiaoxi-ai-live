@@ -1,0 +1,152 @@
+{
+  "version": "2.6.0",
+  "notes": "修复启动脚本行尾问题；插件安装改为正确的 DSH 注册方式；更新入口整合到主页与顶栏",
+  "package": "xiaoxi-ai-live-2.6.0.zip",
+  "size": 3907282,
+  "sha256": "f5b2604ceaf6fd4d4bb8c6915aad9daf066ebdfede5773abe2462c1c78100a0f",
+  "publishedAt": "2026-11-10T12:08:01.135Z",
+  "minAppVersion": "1.0.0",
+  "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
+  "files": [
+    {
+      "path": "插件说明.md",
+      "size": 1224,
+      "sha256": "b7e331b85c27c252a6bc8a5c21aebc3c4fab1356d75f8373033c735f22c3e964"
+    },
+    {
+      "path": "打开直播设置.cmd",
+      "size": 79,
+      "sha256": "c3d33b9eeb23352b87b6dbd7276c423af86aa87273e4eaabc2d2b4e0982e8ed2"
+    },
+    {
+      "path": "启动.cmd",
+      "size": 2855,
+      "sha256": "5e3bc70f36c5ede6b8f4889b36cae5ce0301042f8d24a76a2430ee4f3f1a9f79"
+    },
+    {
+      "path": "启动.vbs",
+      "size": 980,
+      "sha256": "4bf40aacd7622a3002f48940eb7218ae1a299f2101c65727d0df3cd90403710f"
+    },
+    {
+      "path": "使用说明.md",
+      "size": 4543,
+      "sha256": "6da5b1bf5a0296e70e9963bd7624e36871bbdc50546b4894ac62bc99d0b25f10"
+    },
+    {
+      "path": "停止.cmd",
+      "size": 142,
+      "sha256": "ec80f97fc21d2e4f88d93de7309bf5056a95de3398097ec22c89d322afb9dd5c"
+    },
+    {
+      "path": "停止.ps1",
+      "size": 2085,
+      "sha256": "e1f932e4753cf9edb8e1c5ddc0c31e1a27b68bc2b5463dbf92549873db9e7477"
+    },
+    {
+      "path": "停止.vbs",
+      "size": 870,
+      "sha256": "6b5be32904a1181dcf5b2b6f223d636647facffb9e2a89f554eeb0ccee9f7d7b"
+    },
+    {
+      "path": "修复DSH.cmd",
+      "size": 117,
+      "sha256": "52d392af41774490f501fa70343f06cf55f7a0326293646a7b270347cd3638c0"
+    },
+    {
+      "path": "修复DSH.ps1",
+      "size": 4095,
+      "sha256": "783cb0111a373df10e75fbfd133200e6531aad7e7c50bfdc5345e8630b39190f"
+    },
+    {
+      "path": "一键更新.cmd",
+      "size": 121,
+      "sha256": "33980718909125a4b809a85da97a589ab6fcd788a98a7f7625b200999d1c752c"
+    },
+    {
+      "path": "一句话部署.txt",
+      "size": 3443,
+      "sha256": "91c8bf966187e83cf09542be881ae0e1b804f715247ac9693d9c990f69dcd850"
+    },
+    {
+      "path": "自检.cmd",
+      "size": 1806,
+      "sha256": "c16e1a52f8e3e1fc7b193bfc0927f17ab8bf43fc1bdb919dcfa5910c5a899869"
+    },
+    {
+      "path": "AGENT.md",
+      "size": 7823,
+      "sha256": "c92bd76d34398da32638dd692be349df1db0d6d47a785da474f0bbeb8932c156"
+    },
+    {
+      "path": "dsh-check.ps1",
+      "size": 2741,
+      "sha256": "1454a3312d34b37fc01908c3e61cba370adf7f24f9c7d62f8987a9aff5d813c6"
+    },
+    {
+      "path": "open-browser.vbs",
+      "size": 1356,
+      "sha256": "61c1d6fbe362fbb7c8d2271db46b127f1ddd52f97e3d3bfa63a1a22eede26be4"
+    },
+    {
+      "path": "scene.html",
+      "size": 58220,
+      "sha256": "233e6b41f7b76167fd1396f6fbee2f1a2c9702a1ab66b4b110db68ee5cc6fa66"
+    },
+    {
+      "path": "settings.html",
+      "size": 132354,
+      "sha256": "0f5612de3e6581724e8d3fb535834e58e8972e93fc8e822265ae03de121b9cec"
+    },
+    {
+      "path": "sprites_hd/angry.png",
+      "size": 442307,
+      "sha256": "37d1628e1bd6a95e8b49e1b11194e431e70fd70993217fef9a55adbd3d8ef3a0"
+    },
+    {
+      "path": "sprites_hd/cry.png",
+      "size": 830115,
+      "sha256": "5af527166ec150dbe62fec649a79e222d7b1a797356c1ff7ac2edf89d5ce39c3"
+    },
+    {
+      "path": "sprites_hd/happy.png",
+      "size": 774910,
+      "sha256": "7e2eb2c3fbb726766054952683b74f18c4698862fc955a909bd9ed1c6f13bd9b"
+    },
+    {
+      "path": "sprites_hd/idle.png",
+      "size": 873405,
+      "sha256": "ea36511f3aa779a1c29771ee642a3b28679ed49386a3ce3e3323115a96216ccd"
+    },
+    {
+      "path": "sprites_hd/sad.png",
+      "size": 371819,
+      "sha256": "e407a5ab8bc41756b55c7b7102a6c2a5c64b23a729a52dc71c713111c0a8d5ed"
+    },
+    {
+      "path": "sprites_hd/stomp.png",
+      "size": 463515,
+      "sha256": "3907b6453658c2c838d6f9f176c5d008ab4f966cf8afcefde0659c3f28c8ae3a"
+    },
+    {
+      "path": "supervisor.mjs",
+      "size": 5275,
+      "sha256": "47090eddce385ad9ee7fd99a4d1e6d999cadfb6fab58eb7610f6b9e906370ede"
+    },
+    {
+      "path": "update.ps1",
+      "size": 970,
+      "sha256": "592e378e40fb4aa0dd24ab3ef06db661ff9af0e91ff9be873b418f5f98299fa2"
+    },
+    {
+      "path": "VERSION",
+      "size": 6,
+      "sha256": "6693435eadb673dda297a0652d241e293e361200bc40db949cf2501d18dd01ee"
+    },
+    {
+      "path": "xiaoxi.mjs",
+      "size": 245053,
+      "sha256": "0ca3d2c615b6f1b5313b61763ac3db7262046a211ec09f9ae77c4925f887b1cd"
+    }
+  ]
+}

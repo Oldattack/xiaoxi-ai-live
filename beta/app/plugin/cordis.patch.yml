@@ -1,0 +1,3 @@
+- insert:
+    - id: live-agent
+      name: '@local/dsh-live-agent'
