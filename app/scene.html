@@ -1215,15 +1215,16 @@ function speak(text, emotion){
       welcome(d.user);
     }
   } else if (d.kind === 'config') {
-    if (d.config && d.config.avatar) applyAvatar(d.config.avatar);
+    var C0 = d.config || {};
+    if (C0.avatar) applyAvatar(C0.avatar);
+    var S0 = C0.scene || {};
+    if (S0.layout) { layoutMode = S0.layout; fit(); }
+    if (S0.bg) applyBg(S0.bg);
+    if (S0.viz) { vizCfg.enabled = S0.viz.enabled !== false; if (!vizCfg.enabled) vizStop(); }
   } else if (d.kind === 'song-note') {
     showNotice(d.text, d.ok);
   } else if (d.kind === 'song') {
     setSong(d);
-  } else if (d.kind === 'config') {
-    if (d.scene && d.scene.layout) { layoutMode = d.scene.layout; fit(); }
-      if (d.scene && d.scene.bg) applyBg(d.scene.bg);
-      if (d.scene && d.scene.viz) { vizCfg.enabled = d.scene.viz.enabled !== false; if (!vizCfg.enabled) vizStop(); }
   } else if (d.kind === 'backlog') {
     // 刚连上时补发最近的消息，OBS 重启 / 刷新不会一片空白
     (d.items || []).forEach(function(it){ handle(it, true); });
