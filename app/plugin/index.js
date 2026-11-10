@@ -166,6 +166,13 @@ async function handler(req, res) {
   return json(res, 404, { ok: false, error: 'no route' });
 }
 
+  /** 插件加载时确保服务在跑；用户主动「关闭服务」留下的 stop.flag 会尊重 */
+  async function ensureService() {
+    if (existsSync(path.join(agentDir(), 'stop.flag'))) return;
+    if (await probe(1200)) return;
+    try { await start(); } catch { /* 拉不起来等用户手动点 */ }
+  }
+
 export function apply(ctx) {
   const mount = (tries = 0) => {
     let ws = null;
@@ -182,4 +189,5 @@ export function apply(ctx) {
     } catch { /* 挂不上也不影响客户端面板 */ }
   };
   mount();
+  setTimeout(() => { ensureService(); }, 1500);
 }
