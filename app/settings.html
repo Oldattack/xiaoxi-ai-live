@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-store">
 <title>小汐AI直播平台 · 设置</title>
 <script id="xx-theme-init">
   (function () {
@@ -1339,6 +1340,16 @@ document.querySelectorAll('[data-layout]').forEach(function (b) {
   /* ─────────── 舞台背景 ─────────── */
   var bgState = { kind: 'gradient', preset: 'aurora', color: '#0b1020', color2: '#1b3a5c', image: '', dim: 0, blur: 0 };
   var bgPicked = '';   // 新选的图片 dataURL
+    var BG_PRESETS = {
+      aurora: 'radial-gradient(900px 700px at 22% 18%, #2a2350 0%, transparent 62%),radial-gradient(1100px 800px at 82% 78%, #14364a 0%, transparent 60%),radial-gradient(700px 600px at 62% 12%, #3a2a55 0%, transparent 65%),linear-gradient(160deg,#0d0b18 0%,#0a0d16 55%,#080a10 100%)',
+      midnight: 'radial-gradient(900px 700px at 30% 20%, #18203a 0%, transparent 62%),radial-gradient(1000px 800px at 78% 80%, #0e1b2e 0%, transparent 60%),linear-gradient(160deg,#080a12 0%,#05070d 100%)',
+      sakura: 'radial-gradient(900px 700px at 25% 18%, #3d2233 0%, transparent 62%),radial-gradient(1000px 800px at 80% 78%, #4a2436 0%, transparent 60%),linear-gradient(160deg,#160d14 0%,#0d070b 100%)',
+      ocean: 'radial-gradient(900px 700px at 22% 20%, #123a44 0%, transparent 62%),radial-gradient(1000px 800px at 80% 80%, #0f2f42 0%, transparent 60%),linear-gradient(160deg,#06121a 0%,#03090e 100%)',
+      sunset: 'radial-gradient(900px 700px at 25% 22%, #4a2536 0%, transparent 62%),radial-gradient(1000px 800px at 80% 78%, #4a3318 0%, transparent 60%),linear-gradient(160deg,#170d14 0%,#0d0709 100%)',
+      forest: 'radial-gradient(900px 700px at 25% 20%, #173326 0%, transparent 62%),radial-gradient(1000px 800px at 80% 80%, #16302a 0%, transparent 60%),linear-gradient(160deg,#08140f 0%,#040a08 100%)',
+      mono: 'radial-gradient(900px 700px at 25% 20%, #2a2a30 0%, transparent 62%),radial-gradient(1000px 800px at 80% 80%, #1c1c22 0%, transparent 60%),linear-gradient(160deg,#101013 0%,#07070a 100%)'
+    };
+
   function paintBgPanel() {
     var kind = bgState.kind || 'gradient';
     document.querySelectorAll('[data-bgkind]').forEach(function (b) {
@@ -1357,7 +1368,20 @@ document.querySelectorAll('[data-layout]').forEach(function (b) {
     if ($('bgDim')) { $('bgDim').value = bgState.dim || 0; $('bgDimHint').textContent = (bgState.dim || 0) + '%'; }
     if ($('bgBlur')) { $('bgBlur').value = bgState.blur || 0; $('bgBlurHint').textContent = (bgState.blur || 0) + 'px（仅图片）'; }
     var img = bgPicked || bgState.image || '';
-    $('bgPreview').style.backgroundImage = img ? ('url("' + img + '")') : '';
+    var pv = $('bgPreview');
+    if (kind === 'image' && img) {
+      pv.style.background = '#05060a';
+      pv.style.backgroundImage = 'url("' + img + '")';
+    } else if (kind === 'color') {
+      pv.style.backgroundImage = '';
+      pv.style.background = bgState.color || '#0b1020';
+    } else if (bgState.preset === 'custom') {
+      pv.style.backgroundImage = '';
+      pv.style.background = 'linear-gradient(160deg,' + (bgState.color || '#0b1020') + ',' + (bgState.color2 || '#1b3a5c') + ')';
+    } else {
+      pv.style.backgroundImage = '';
+      pv.style.background = BG_PRESETS[bgState.preset] || BG_PRESETS.aurora;
+    }
     $('bgFileName').textContent = bgPicked ? '已选择新图片' : (bgState.image ? '已保存' : '未选择');
   }
   if ($('soundTestBtn')) {
