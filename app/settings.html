@@ -516,26 +516,19 @@
       </div>
 
       <div class="card">
-        <h3>音色</h3>
-        <div class="row"><label>选一个</label>
-          <div><select class="inp" id="ttsVoiceSel"><option value="">默认（元气少女）</option></select>
-            <div class="hint">选了立刻生效；也可以用下面的框直接填音色 ID</div></div></div>
-        <div class="row"><label>自定义音色 ID</label><div><input class="inp" id="ttsVoice" placeholder="留空＝默认"></div></div>
+        <h3>音色与试听<span class="live">所有声音都在这</span></h3>
+        <p class="sub">选一个音色点试听，满意就保存；语速、音调、音量也在这里调。</p>
+        <div class="row"><label>选一个</label><div><select class="inp" id="ttsVoiceSel"><option value="">默认（元气少女）</option></select>
+          <div class="hint">选了立刻生效，等同「设为默认」</div></div></div>
+        <div class="row"><label>自定义音色 ID</label><div style="display:flex;gap:8px">
+          <input class="inp" id="ttsVoice" placeholder="留空＝默认；也可填控制台里的音色 ID">
+          <button class="btn" id="voiceTryBtn">试听这个</button>
+        </div></div>
+        <div id="voiceAuditions" class="mini" style="display:flex;flex-direction:column;gap:6px;margin:8px 0">还在读取音色…</div>
         <div class="row"><label>语速</label><div><input class="inp" id="ttsRate" type="number" step="1"><div class="hint">0 为正常，+8 稍快</div></div></div>
         <div class="row"><label>音调</label><div><input class="inp" id="ttsPitch" type="number" step="1"></div></div>
         <div class="row"><label>音量</label><div><input class="inp" id="ttsVolume" type="number" step="1"></div></div>
       </div>
-    </div>
-
-        <div class="card">
-          <h3>音色试听<span class="live">每个都能试</span></h3>
-          <p class="sub">点「试听」先用这个音色念一句，满意再「设为默认」。</p>
-          <div id="voiceAuditions" class="mini" style="display:flex;flex-direction:column;gap:6px">还在读取音色…</div>
-          <div class="row" style="margin-top:10px"><label>自定义音色 ID</label><div style="display:flex;gap:8px">
-            <input class="inp" id="voiceTryId" placeholder="从火山控制台音色库复制">
-            <button class="btn" id="voiceTryBtn">试听这个</button>
-          </div></div>
-        </div>
 
     <!-- ══════ 进场欢迎 ══════ -->
     <div class="pane" id="p2">
@@ -1489,11 +1482,11 @@ $('ttsOff').onclick = async function () {
   catch (e) { toast('切换失败：' + e.message); }
 };
   if ($('voiceTryBtn')) {
-    $('voiceTryBtn').onclick = function () { playVoicePreview($('voiceTryId').value.trim()); };
+    $('voiceTryBtn').onclick = function () { playVoicePreview($('ttsVoice').value.trim()); };
   }
 
 $('ttsVoiceSel').onchange = async function () {
-  try { await api('/api/tts', { voice: this.value }); toast(this.value ? '音色已切换' : '已恢复默认'); }
+  try { var vi2 = $('ttsVoice'); if (vi2) vi2.value = this.value; await api('/api/tts', { voice: this.value }); toast(this.value ? '音色已切换' : '已恢复默认'); }
   catch (e) { toast('切换失败：' + e.message); }
 };
 
@@ -1546,7 +1539,7 @@ $('ttsVoiceSel').onchange = async function () {
     });
     box.querySelectorAll('[data-set]').forEach(function (b) {
       b.onclick = async function () {
-        try { await api('/api/tts', { voice: b.dataset.set }); toast('已设为默认音色'); loadTts(); }
+        try { await api('/api/tts', { voice: b.dataset.set }); var vi = $('ttsVoice'); if (vi) vi.value = b.dataset.set; toast('已设为默认音色'); loadTts(); }
         catch (e) { toast('设置失败：' + e.message); }
       };
     });
