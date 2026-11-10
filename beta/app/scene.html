@@ -1241,6 +1241,48 @@ function speak(text, emotion){
     return false;
   }
 
+  // ── 弹幕赛马渲染 ──
+  var GCOLORS = { 1: "#ff6b6b", 2: "#5aa9ff", 3: "#ffd166" };
+  function gameBuild(s) {
+    var box = document.getElementById("gTrack");
+    if (!box || box.dataset.built) return;
+    box.dataset.built = "1";
+    (s.horses || []).forEach(function (h) {
+      var d = document.createElement("div"); d.className = "g-lane"; d.dataset.lane = h.lane;
+      d.innerHTML = "<span class=\"g-name\">" + h.name + "</span><div class=\"g-run\"><div class=\"g-fill\"></div><i>🐎</i></div>";
+      box.appendChild(d);
+    });
+  }
+  function gameRender(s) {
+    if (!s || !s.horses) return;
+    var layer = document.getElementById("gameLayer"), stage = document.getElementById("stage");
+    gameBuild(s);
+    if (layer) layer.classList.add("on");
+    if (stage) stage.classList.add("game");
+    (s.horses || []).forEach(function (h) {
+      var lane = document.querySelector(".g-lane[data-lane=\"" + h.lane + "\"]");
+      if (!lane) return;
+      var fill = lane.querySelector(".g-fill"), horse = lane.querySelector("i");
+      var p = Math.max(0, Math.min(100, Number(h.progress) || 0));
+      if (fill) { fill.style.width = p + "%"; fill.style.background = GCOLORS[h.lane] || "#fff"; }
+      if (horse) horse.style.left = p + "%";
+    });
+    var tm = document.getElementById("gTimer");
+    if (tm) tm.textContent = s.active ? Math.max(0, Math.ceil((s.endsAt - Date.now()) / 1000)) : (s.winner ? "结束" : "0");
+    var win = document.getElementById("gWin");
+    if (win) win.textContent = s.winner ? (s.winner.name + " 赢啦！") : "";
+  }
+  function gameHide() {
+    var layer = document.getElementById("gameLayer"), stage = document.getElementById("stage");
+    if (layer) layer.classList.remove("on");
+    if (stage) stage.classList.remove("game");
+  }
+  function onGame(d) {
+    if (!d) return;
+    if (d.action === "stop") { gameHide(); return; }
+    gameRender(d);
+    if (d.action === "end") { setTimeout(function () { if (!document.getElementById("gameLayer").classList.contains("on")) return; setTimeout(gameHide, 9000); }, 0); }
+  }
   function handle(d, replay){
     // 断线重连会重发最近 20 条（backlog），已经显示过的不再重复上屏
     if (d && d.at) {
@@ -1329,48 +1371,6 @@ function demoMode(){
 // ── SSE ──
 var es = null;
 function connect(){
-  // ── 弹幕赛马渲染 ──
-  var GCOLORS = { 1: "#ff6b6b", 2: "#5aa9ff", 3: "#ffd166" };
-  function gameBuild(s) {
-    var box = document.getElementById("gTrack");
-    if (!box || box.dataset.built) return;
-    box.dataset.built = "1";
-    (s.horses || []).forEach(function (h) {
-      var d = document.createElement("div"); d.className = "g-lane"; d.dataset.lane = h.lane;
-      d.innerHTML = "<span class=\"g-name\">" + h.name + "</span><div class=\"g-run\"><div class=\"g-fill\"></div><i>🐎</i></div>";
-      box.appendChild(d);
-    });
-  }
-  function gameRender(s) {
-    if (!s || !s.horses) return;
-    var layer = document.getElementById("gameLayer"), stage = document.getElementById("stage");
-    gameBuild(s);
-    if (layer) layer.classList.add("on");
-    if (stage) stage.classList.add("game");
-    (s.horses || []).forEach(function (h) {
-      var lane = document.querySelector(".g-lane[data-lane=\"" + h.lane + "\"]");
-      if (!lane) return;
-      var fill = lane.querySelector(".g-fill"), horse = lane.querySelector("i");
-      var p = Math.max(0, Math.min(100, Number(h.progress) || 0));
-      if (fill) { fill.style.width = p + "%"; fill.style.background = GCOLORS[h.lane] || "#fff"; }
-      if (horse) horse.style.left = p + "%";
-    });
-    var tm = document.getElementById("gTimer");
-    if (tm) tm.textContent = s.active ? Math.max(0, Math.ceil((s.endsAt - Date.now()) / 1000)) : (s.winner ? "结束" : "0");
-    var win = document.getElementById("gWin");
-    if (win) win.textContent = s.winner ? (s.winner.name + " 赢啦！") : "";
-  }
-  function gameHide() {
-    var layer = document.getElementById("gameLayer"), stage = document.getElementById("stage");
-    if (layer) layer.classList.remove("on");
-    if (stage) stage.classList.remove("game");
-  }
-  function onGame(d) {
-    if (!d) return;
-    if (d.action === "stop") { gameHide(); return; }
-    gameRender(d);
-    if (d.action === "end") { setTimeout(function () { if (!document.getElementById("gameLayer").classList.contains("on")) return; setTimeout(gameHide, 9000); }, 0); }
-  }
   es = new EventSource('/events');
   es.onopen = function(){ badge.classList.remove('off'); badge.innerHTML = '<span class="dot"></span>AI 主播'; };
   es.onerror = function(){ badge.classList.add('off'); badge.innerHTML = '<span class="dot"></span>画面已断开'; };
