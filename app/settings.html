@@ -875,7 +875,7 @@
   <div>
     <div class="side-card">
       <h4>画面预览</h4>
-      <div class="pv"><iframe id="pv" src="/?clean=1" scrolling="no"></iframe></div>
+      <div class="pv"><iframe id="pv" src="/?clean=1&mute=1" scrolling="no"></iframe></div>
     </div>
     <div class="side-card">
       <h4>实时</h4>
@@ -1425,7 +1425,7 @@ if ($('audioViaObs')) {
     } catch (e) { toast('切换失败：' + e.message); }
   };
 }
-$('btnPreview').onclick = function () { window.open('/', '_blank'); };
+$('btnPreview').onclick = function () { window.open('/?clean=1&mute=1', '_blank'); };
 
 /* ─────────── 点歌 ─────────── */
 $('songClear').onclick = async function () {
@@ -1856,7 +1856,7 @@ $('homeStop').onclick = async function () {
   try { await api('/api/config', { gate: { enabled: false } }); toast('已停止回复'); load(); }
   catch (e) { toast('停止失败：' + e.message); }
 };
-$('actPreview').onclick = function () { window.open('/', '_blank'); };
+$('actPreview').onclick = function () { window.open('/?clean=1&mute=1', '_blank'); };
 $('actAlign').onclick = async function () {
   var btn = this;
   btn.disabled = true; btn.textContent = '对齐中…';

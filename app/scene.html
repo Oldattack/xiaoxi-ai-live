@@ -660,6 +660,7 @@ var speaking = false;
 
   // 预览窗口（场景窗口 / 独立窗口）不出声，声音只从 OBS 浏览器源走
   var MUTE = /[?&]mute=1/.test(location.search);
+  if (window.self !== window.top) MUTE = true;   // 设置页里的预览 iframe 不出声，避免同一句话念两遍
 
 function reportSpeech(type, id){
   try {
