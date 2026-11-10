@@ -381,7 +381,6 @@
       <a data-p="p8">点歌台</a>
       <a data-p="p13">视频点播</a>
       <div class="grp">系统</div>
-      <a data-p="p10">插件与模块</a>
       <a data-p="p4">状态与更新</a>
 
       <div style="margin-top:18px;padding:10px 10px 0;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink3);line-height:1.7">
@@ -872,14 +871,6 @@
       </div>
     </div>
 
-    <!-- ══════ 插件 ══════ -->
-    <div class="pane" id="p10">
-      <div class="card">
-        <h3>已装的模块</h3>
-        <p class="sub">插件化功能，可以单独开关，互不影响聊天。</p>
-        <div id="modules"></div>
-      </div>
-    </div>
 
     <!-- ══════ 运行状态 ══════ -->
     <div class="pane" id="p4">
@@ -928,10 +919,6 @@
         </div></div>
       </div>
 
-      <div class="card">
-        <h3>为什么跳过</h3>
-        <div id="skipReason" class="mini">—</div>
-      </div>
     </div>
   </div>
 
@@ -1039,7 +1026,6 @@ document.querySelectorAll('.nav a').forEach(function (a) {
     } else {
       document.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.id === a.dataset.p); });
     }
-    if (a.dataset.p === 'p10') loadModules();
     if (a.dataset.p === 'p4') loadVersion();
     if (a.dataset.p === 'p11') loadAvatar();
     loadAvModel();
@@ -1143,11 +1129,6 @@ function renderStats(st) {
   $('sideDrop').textContent = s.dropped || 0;
   $('sideUp').textContent = txt;
 
-  var reasons = s.skippedReason || {};
-  var keys = Object.keys(reasons);
-  $('skipReason').textContent = keys.length
-    ? keys.map(function (k) { return k + '：' + reasons[k] + ' 条'; }).join('　·　')
-    : '暂无';
 
   var real = !!(st.sources && st.sources.real && st.sources.real.running);
   $('pSource').className = 'pill ' + (real ? 'on' : 'off');
@@ -1871,22 +1852,6 @@ function uploadAvatar(key, file) {
   reader.readAsDataURL(file);
 }
 
-/* ─────────── 模块 ─────────── */
-async function loadModules() {
-  try {
-    var r = await api('/api/modules');
-    var box = $('modules');
-    var list = r.modules || [];
-    box.innerHTML = list.length ? '' : '<div class="mini">还没有装模块</div>';
-    list.forEach(function (m) {
-      var d = document.createElement('div');
-      d.className = 'soft';
-      d.style.marginTop = '10px';
-      d.innerHTML = '<b>' + (m.name || m.id) + '</b><div class="mini">' + (m.desc || '') + '</div>';
-      box.appendChild(d);
-    });
-  } catch (e) { }
-}
 
   /* ─────────── 版本与更新（双通道） ─────────── */
   var UPDATE = null;
