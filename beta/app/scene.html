@@ -451,10 +451,12 @@ function applyAvatar(a){
   var vidEl = document.getElementById('petVid');
   var figEl2 = document.getElementById('fig');
   if (AVATAR.kind === 'video' && AVATAR.video && vidEl) {
+  if (!vidForVod) {
     if (vidEl.getAttribute('src') !== AVATAR.video) vidEl.src = AVATAR.video;
     vidEl.style.display = 'block';
     if (figEl2) figEl2.style.display = 'none';
     try { vidEl.play(); } catch (e) {}
+  }
   } else {
     if (vidEl) { try { vidEl.pause(); } catch (e) {} vidEl.style.display = 'none'; }
     if (figEl2) { figEl2.style.display = ''; figEl2.src = spriteUrl(figEl2.dataset.emo || 'idle'); }
@@ -1057,6 +1059,7 @@ function speak(text, emotion){
   var vidLayer = document.getElementById('vidLayer');
   var vidEl = document.getElementById('vid');
   var vidPlaying = null;
+  var vidForVod = false;   // true=当前元素在放 B 站视频，false=可能在放形象视频
   function videoMode(on) {
     document.getElementById('stage').classList.toggle('video', !!on);
   }
@@ -1149,6 +1152,7 @@ function speak(text, emotion){
     vidPlaying = d;
     document.getElementById('vidTitle').textContent = d.title || '';
     document.getElementById('vidBy').textContent = d.owner ? ('@' + d.owner) : '';
+    vidForVod = true;
     vidEl.src = d.url;
     try { vidEl.muted = false; vidEl.volume = 1; } catch (e) {}
     vidEl.currentTime = 0;
@@ -1160,9 +1164,13 @@ function speak(text, emotion){
   function stopVideo() {
     vidPlaying = null;
     resumeSongAfterVideo();
+  if (vidForVod) {
+    vidForVod = false;
     try { vidEl.pause(); } catch (e) {}
     vidEl.removeAttribute('src');
     vidEl.load();
+    if (AVATAR && AVATAR.kind === 'video' && AVATAR.video) applyAvatar(AVATAR);
+  }
     vidLayer.classList.remove('on');
     videoMode(false);
   }
