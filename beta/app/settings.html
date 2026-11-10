@@ -376,7 +376,8 @@
       <div class="grp">系统</div>
       <a data-p="p10">插件与模块</a>
       <a data-p="p4">状态与更新</a>
-        <div style="margin-top:18px;padding:10px 10px 0;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink3);line-height:1.7">
+
+      <div style="margin-top:18px;padding:10px 10px 0;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink3);line-height:1.7">
         小汐AI直播平台<br>作者 <b style="color:var(--ink2);font-weight:600">Oldattack</b>
       </div>
   </div>
@@ -472,11 +473,6 @@
         <p class="sub">弹幕里出现这些词就不回复，用逗号或换行分隔。</p>
         <textarea class="inp" id="banned" rows="3" placeholder="加群，微信，代练"></textarea>
       </div>
-      <div class="card">
-        <h3>为什么跳过</h3>
-        <div id="skipReason" class="mini">—</div>
-      </div>
-    </div>
     </div>
 
     <!-- ══════ 抖音接入 ══════ -->
@@ -547,16 +543,6 @@
         <div class="row"><label>音调</label><div><input class="inp" id="ttsPitch" type="number" step="1"></div></div>
         <div class="row"><label>音量</label><div><input class="inp" id="ttsVolume" type="number" step="1"></div></div>
       </div>
-        <div class="card">
-          <h3>声音自检<span class="live">排查用</span></h3>
-          <p class="sub">点一下放 1 秒提示音，再看下面这行状态；没声音就先查系统音量和 OBS。</p>
-          <div id="audioNow" class="mini" style="margin:2px 0 8px;padding:8px 10px;border-radius:8px;background:rgba(127,127,127,.10)">声音：等待画面回报…</div>
-          <div class="row"><label>提示音</label><div>
-            <button class="btn" id="soundTestBtn">播放提示音</button>
-            <div class="hint" id="soundTestHint">点一下，盯着 OBS「桌面音频」电平：跳 = 声音链路通</div>
-          </div></div>
-        </div>
-
     </div>
 
     <!-- ══════ 进场欢迎 ══════ -->
@@ -865,6 +851,11 @@
           <h3>各项状态<span class="live">自检</span></h3>
           <p class="sub">每项功能现在到底能不能用，这里直接给结果。</p>
           <div id="hcList" class="mini" style="display:flex;flex-direction:column;gap:6px;margin:4px 0 10px">正在检查…</div>
+          <div id="audioNow" class="mini" style="margin:2px 0 8px;padding:8px 10px;border-radius:8px;background:rgba(127,127,127,.10)">声音：等待画面回报…</div>
+          <div class="row"><label>声音自检</label><div>
+            <button class="btn" id="soundTestBtn">播放提示音</button>
+            <div class="hint" id="soundTestHint">点一下，盯着 OBS「桌面音频」电平：跳 = 声音链路通</div>
+          </div></div>
           <div class="row"><label></label><div><button class="btn" id="hcRefresh">刷新状态</button></div></div>
         </div>
 
@@ -901,6 +892,11 @@
         </div></div>
       </div>
 
+      <div class="card">
+        <h3>为什么跳过</h3>
+        <div id="skipReason" class="mini">—</div>
+      </div>
+    </div>
   </div>
 
   <div>
