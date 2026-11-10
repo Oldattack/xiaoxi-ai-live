@@ -838,6 +838,11 @@ function speak(text, emotion){
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           at: Date.now(),
+          avVidReady: (function(){ var v=document.getElementById('petVid'); return v?v.readyState:null; })(),
+          avVidW: (function(){ var v=document.getElementById('petVid'); return v?v.videoWidth:null; })(),
+          avVidH: (function(){ var v=document.getElementById('petVid'); return v?v.videoHeight:null; })(),
+          avVidSrc: (function(){ var v=document.getElementById('petVid'); return v?String(v.currentSrc||v.getAttribute('src')||'').slice(-60):''; })(),
+          avVidErr: (function(){ var v=document.getElementById('petVid'); return v&&v.error?v.error.code:null; })(),
           obs: typeof IS_OBS !== 'undefined' ? IS_OBS : false,
           t: Number(sg.currentTime || 0),
           paused: sg.paused,
