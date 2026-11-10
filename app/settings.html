@@ -869,17 +869,16 @@
       <div class="card">
         <h3>版本与更新<span class="live">自动同步</span></h3>
         <p class="sub">有新版本会在这里提示，点一下就能升级；升级不会覆盖你的配置。</p>
-        <div class="row"><label>当前版本</label><div><b id="appVer">—</b> <span id="updState" style="margin-left:8px;font-size:12.5px;color:var(--ink3)">还没检查过</span></div></div>
-        <div class="row"><label>更新通道</label><div><select class="inp" id="updChannel">
-          <option value="stable">稳定版（推荐）</option>
-          <option value="beta">测试版（尝鲜，可能有问题）</option>
-        </select>
-          <div class="hint">稳定版只收正式版；测试版会收内测版（版本号更高）。切回稳定版不会自动降级。</div>
-        </div></div>
-        <div class="row"><label></label><div style="display:flex;gap:8px">
-          <button class="btn" id="updCheck">检查更新</button>
-          <button class="btn pri" id="updApply">立即更新</button>
-        </div></div>
+          <div class="row"><label>当前版本</label><div><b id="appVer">—</b></div></div>
+          <div class="row"><label>更新渠道</label><div>
+            <div class="kv"><span>稳定版</span><b id="updStableVer">—</b><button class="btn sm" id="updStableBtn" style="margin-left:8px">更新</button></div>
+            <div class="kv"><span>测试版</span><b id="updBetaVer">—</b><button class="btn sm" id="updBetaBtn" style="margin-left:8px">更新</button></div>
+            <div class="hint">稳定版只推正式版；测试版是内测，版本号更高。升级不会覆盖配置。</div>
+          </div></div>
+          <div class="row"><label></label><div style="display:flex;gap:10px;align-items:center">
+            <button class="btn" id="updCheck">刷新检查</button>
+            <span id="updState" style="font-size:12.5px;color:var(--ink3)">还没检查过</span>
+          </div></div>
         <div class="row" id="updProgressRow" style="display:none"><label>进度</label><div>
           <div style="height:10px;border-radius:999px;background:rgba(120,110,100,.16);overflow:hidden">
             <div id="updBar" style="height:100%;width:0%;background:var(--brand);border-radius:999px;transition:width .25s ease"></div>
@@ -1837,140 +1836,113 @@ async function loadModules() {
   } catch (e) { }
 }
 
-/* ─────────── 版本与更新 ─────────── */
-var UPDATE = null;
-var updTimer = null;
-function stopUpdPoll() { if (updTimer) { clearInterval(updTimer); updTimer = null; } }
-function showUpdProgress(on) {
-  var row = document.getElementById('updProgressRow');
-  if (row) row.style.display = on ? '' : 'none';
-}
-function renderUpdProgress(p) {
-  if (!p) return;
-  var bar = document.getElementById('updBar');
-  var txt = document.getElementById('updProgressText');
-  if (p.phase === 'download') {
-    var pct = p.total ? Math.min(99, Math.round((p.received / p.total) * 100)) : 8;
-    if (bar) bar.style.width = pct + '%';
-    if (txt) txt.textContent = (p.mode === 'files')
-      ? '正在下载改动文件 ' + (p.received || 0) + '/' + (p.total || 0)
-      : ('正在下载 ' + Math.round((p.received || 0) / 1024) + ' KB' + (p.total ? ' / ' + Math.round(p.total / 1024) + ' KB' : ''));
-  } else if (p.phase === 'verify') {
-    if (txt) txt.textContent = '正在校验…';
-  } else if (p.phase === 'install') {
-    if (bar) bar.style.width = '100%';
-    if (txt) txt.textContent = '正在替换文件…';
-  } else if (p.phase === 'done') {
-    if (bar) bar.style.width = '100%';
-    if (txt) txt.textContent = '更新完成';
-  } else if (p.phase === 'error') {
-    if (txt) txt.textContent = '失败：' + (p.error || '');
+  /* ─────────── 版本与更新（双通道） ─────────── */
+  var UPDATE = null;
+  var UPD_INFO = { stable: null, beta: null };
+  var updTimer = null;
+  var armCh = '', armTimer = null;
+  function stopUpdPoll() { if (updTimer) { clearInterval(updTimer); updTimer = null; } }
+  function showUpdProgress(on) { var row = document.getElementById('updProgressRow'); if (row) row.style.display = on ? '' : 'none'; }
+  function renderUpdProgress(p) {
+    if (!p) return;
+    var bar = document.getElementById('updBar');
+    var txt = document.getElementById('updProgressText');
+    if (p.phase === 'download') {
+      var pct = p.total ? Math.min(99, Math.round((p.received / p.total) * 100)) : 8;
+      if (bar) bar.style.width = pct + '%';
+      if (txt) txt.textContent = (p.mode === 'files')
+        ? '正在下载改动文件 ' + (p.received || 0) + '/' + (p.total || 0)
+        : ('正在下载 ' + Math.round((p.received || 0) / 1024) + ' KB' + (p.total ? ' / ' + Math.round(p.total / 1024) + ' KB' : ''));
+    } else if (p.phase === 'verify') { if (txt) txt.textContent = '正在校验…'; }
+    else if (p.phase === 'install') { if (bar) bar.style.width = '100%'; if (txt) txt.textContent = '正在替换文件…'; }
+    else if (p.phase === 'done') { if (bar) bar.style.width = '100%'; if (txt) txt.textContent = '更新完成'; }
+    else if (p.phase === 'error') { if (txt) txt.textContent = '失败：' + (p.error || ''); }
   }
-}
-function cmpVer(a, b) {
-  function p(v) { return String(v || '0').split(/[.\-+]/).slice(0, 3).map(function (n) { return parseInt(n, 10) || 0; }); }
-  var x = p(a), y = p(b);
-  for (var i = 0; i < 3; i++) { if (x[i] > y[i]) return 1; if (x[i] < y[i]) return -1; }
-  return 0;
-}
-async function loadVersion() {
-  try {
-    var r = await api('/api/update');
-    $('appVer').textContent = r.version || '—';
-    if ($('updChannel')) $('updChannel').value = r.channel === 'beta' ? 'beta' : 'stable';
-    UPDATE = r.latest || null;
-    if (UPDATE && UPDATE.hasUpdate) {
-      $('updState').textContent = '发现新版本 ' + UPDATE.latest;
-      $('updState').style.color = '#0f7a55';
-    }
-  } catch (e) { /* 读不到就不管 */ }
-}
-if ($('updChannel')) $('updChannel').onchange = async function () {
-  var ch = this.value === 'beta' ? 'beta' : 'stable';
-  try { await api('/api/config', { update: { channel: ch } }); toast(ch === 'beta' ? '已切到测试版通道' : '已切到稳定版通道'); loadVersion(); }
-  catch (e) { toast('切换失败：' + e.message); }
-};
-
-$('updCheck').onclick = async function () {
-  this.disabled = true;
-  $('updState').textContent = '正在检查…';
-  $('updState').style.color = '';
-  try {
-    var r = await api('/api/update/check', {});
-    if (!r.ok) {
-      $('updState').textContent = '检查失败：' + (r.reason || '网络不通');
-      $('updState').style.color = '#c0392b';
-      toast('检查失败');
-    } else if (r.hasUpdate) {
-      $('updState').textContent = '有新版本 ' + r.latest;
-      $('updState').style.color = '#0f7a55';
-      toast('发现 ' + r.latest);
-    } else {
-      $('updState').textContent = '已经是最新版（' + r.current + '）';
-      $('updState').style.color = '';
-      toast('已是最新版');
-    }
-  } catch (e) {
-    $('updState').textContent = '检查失败';
-    $('updState').style.color = '#c0392b';
+  function chName(ch) { return ch === 'beta' ? '测试版' : '稳定版'; }
+  function paintUpdRows() {
+    var pairs = [['stable', 'updStableVer', 'updStableBtn'], ['beta', 'updBetaVer', 'updBetaBtn']];
+    pairs.forEach(function (p) {
+      var info = UPD_INFO[p[0]], el = $(p[1]), btn = $(p[2]);
+      if (!el || !btn) return;
+      if (!info) { el.textContent = '—'; el.style.color = ''; btn.disabled = true; btn.textContent = '更新'; return; }
+      if (!info.ok) { el.textContent = '检查失败'; el.style.color = '#c0392b'; btn.disabled = true; btn.textContent = '更新'; return; }
+      if (info.hasUpdate) { el.textContent = '最新 ' + info.latest; el.style.color = '#0f7a55'; btn.disabled = false; btn.textContent = '更新到 ' + info.latest; }
+      else { el.textContent = '已是最新（' + info.current + '）'; el.style.color = ''; btn.disabled = true; btn.textContent = '已最新'; }
+    });
   }
-  this.disabled = false;
-};
-var updArm = false, updArmTimer = null;
-$('updApply').onclick = async function () {
-  var btn = this;
-  if (!updArm) {
-    updArm = true;
-    btn.textContent = '再点一次确认更新';
-    btn.style.background = '#c0392b';
-    btn.style.color = '#fff';
-    $('updState').textContent = '再点一次按钮才开始更新（8 秒内有效）';
-    $('updState').style.color = '#c0392b';
-    clearTimeout(updArmTimer);
-    updArmTimer = setTimeout(function () {
-      updArm = false;
-      btn.textContent = '立即更新';
-      btn.style.background = '';
-      btn.style.color = '';
-      $('updState').textContent = '已取消，没有更新';
-      $('updState').style.color = 'var(--ink3)';
-    }, 8000);
-    return;
+  async function peekChannel(ch) {
+    try { return await api('/api/update/check', { channel: ch, probe: true }); }
+    catch (e) { return { ok: false, reason: e.message }; }
   }
-  clearTimeout(updArmTimer);
-  updArm = false;
-  btn.textContent = '立即更新';
-  btn.style.background = '';
-  btn.style.color = '';
-  btn.disabled = true;
-  showUpdProgress(true);
-  renderUpdProgress({ phase: 'download', received: 0, total: 0, pct: 0 });
-  $('updState').textContent = '正在下载…';
-  $('updState').style.color = '';
-  stopUpdPoll();
-  var pollTimer = setInterval(async function () {
+  async function checkBothChannels() {
+    $('updState').textContent = '正在检查两个渠道…';
+    $('updState').style.color = '';
+    var pair = await Promise.all([peekChannel('stable'), peekChannel('beta')]);
+    UPD_INFO.stable = pair[0];
+    UPD_INFO.beta = pair[1];
+    paintUpdRows();
+    var s = UPD_INFO.stable, b = UPD_INFO.beta;
+    var txt = '稳定版：' + (s.ok ? (s.hasUpdate ? '有新版 ' + s.latest : '已最新') : '检查失败')
+      + ' · 测试版：' + (b.ok ? (b.hasUpdate ? '有新版 ' + b.latest : '已最新') : '检查失败');
+    $('updState').textContent = txt;
+    $('updState').style.color = (s.hasUpdate || (b && b.hasUpdate)) ? '#0f7a55' : '';
+  }
+  async function loadVersion() {
     try {
-      var s = await api('/api/update');
-      if (s.progress) renderUpdProgress(s.progress);
-    } catch (e) { /* 重启中 */ }
-  }, 800);
-  updTimer = pollTimer;
-  try {
-    var r = await api('/api/update/apply', {});
-    if (r.ok === false) throw new Error(r.error || '更新失败');
-    renderUpdProgress({ phase: 'done', pct: 100 });
-    $('updState').textContent = '更新完成，正在重启…';
-    $('updState').style.color = '#0f7a55';
-    setTimeout(function () { location.reload(); }, 6000);
-  } catch (e) {
-    stopUpdPoll();
-    showUpdProgress(false);
-    $('updState').textContent = '更新失败：' + e.message;
-    $('updState').style.color = '#c0392b';
-    toast('更新失败');
+      var r = await api('/api/update');
+      $('appVer').textContent = r.version || '—';
+      UPDATE = r.latest || null;
+      paintUpdRows();
+    } catch (e) { /* 读不到就不管 */ }
   }
-  btn.disabled = false;
-};
+  async function applyChannel(ch) {
+    showUpdProgress(true);
+    renderUpdProgress({ phase: 'download', received: 0, total: 0, pct: 0 });
+    $('updState').textContent = chName(ch) + ' 正在下载…';
+    $('updState').style.color = '';
+    stopUpdPoll();
+    updTimer = setInterval(async function () {
+      try { var s = await api('/api/update'); if (s.progress) renderUpdProgress(s.progress); } catch (e) { /* 重启中 */ }
+    }, 800);
+    try {
+      var r = await api('/api/update/apply', { channel: ch });
+      if (r && r.ok === false) throw new Error(r.error || '更新失败');
+      renderUpdProgress({ phase: 'done', pct: 100 });
+      $('updState').textContent = chName(ch) + ' 更新完成，正在重启…';
+      $('updState').style.color = '#0f7a55';
+      setTimeout(function () { location.reload(); }, 6000);
+    } catch (e) {
+      stopUpdPoll();
+      showUpdProgress(false);
+      $('updState').textContent = '更新失败：' + e.message;
+      $('updState').style.color = '#c0392b';
+      toast('更新失败');
+    }
+  }
+  ['stable', 'beta'].forEach(function (ch) {
+    var btn = $(ch === 'stable' ? 'updStableBtn' : 'updBetaBtn');
+    if (!btn) return;
+    btn.onclick = function () {
+      if (armCh !== ch) {
+        armCh = ch;
+        clearTimeout(armTimer);
+        btn.textContent = '再点一次确认';
+        $('updState').textContent = '再点一次开始更新' + chName(ch) + '（8 秒内有效）';
+        $('updState').style.color = '#c0392b';
+        armTimer = setTimeout(function () { armCh = ''; paintUpdRows(); }, 8000);
+        return;
+      }
+      clearTimeout(armTimer);
+      armCh = '';
+      applyChannel(ch);
+    };
+  });
+  if ($('updCheck')) $('updCheck').onclick = async function () {
+    this.disabled = true;
+    await checkBothChannels();
+    this.disabled = false;
+  };
+  setTimeout(function () { try { checkBothChannels(); } catch (e) {} }, 1800);
 
 
 /* ─────────── 主页按钮 ─────────── */
