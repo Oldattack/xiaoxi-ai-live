@@ -527,6 +527,16 @@
       </div>
     </div>
 
+        <div class="card">
+          <h3>音色试听<span class="live">每个都能试</span></h3>
+          <p class="sub">点「试听」先用这个音色念一句，满意再「设为默认」。</p>
+          <div id="voiceAuditions" class="mini" style="display:flex;flex-direction:column;gap:6px">还在读取音色…</div>
+          <div class="row" style="margin-top:10px"><label>自定义音色 ID</label><div style="display:flex;gap:8px">
+            <input class="inp" id="voiceTryId" placeholder="从火山控制台音色库复制">
+            <button class="btn" id="voiceTryBtn">试听这个</button>
+          </div></div>
+        </div>
+
     <!-- ══════ 进场欢迎 ══════ -->
     <div class="pane" id="p2">
       <div class="card">
@@ -1441,11 +1451,13 @@ async function loadTts() {
     }
     var sel = $('ttsVoiceSel');
     sel.innerHTML = '<option value="">默认（元气少女）</option>';
+    window.__ttsVoices = r.voices || [];
     (r.voices || []).forEach(function (v) {
       var o = document.createElement('option');
       o.value = v.id; o.textContent = v.name;
       if (r.tts && r.tts.voice === v.id) o.selected = true;
       sel.appendChild(o);
+    renderVoiceAuditions(r.tts && r.tts.voice);
     });
   } catch (e) { }
 }
@@ -1475,10 +1487,64 @@ $('ttsOff').onclick = async function () {
   try { await api('/api/tts', { action: 'off' }); toast('已切回系统语音'); loadTts(); load(); }
   catch (e) { toast('切换失败：' + e.message); }
 };
+  if ($('voiceTryBtn')) {
+    $('voiceTryBtn').onclick = function () { playVoicePreview($('voiceTryId').value.trim()); };
+  }
+
 $('ttsVoiceSel').onchange = async function () {
   try { await api('/api/tts', { voice: this.value }); toast(this.value ? '音色已切换' : '已恢复默认'); }
   catch (e) { toast('切换失败：' + e.message); }
 };
+
+  /* ─────────── 音色试听 ─────────── */
+  var voiceAudio = null;
+  function stopVoiceAudio() { try { if (voiceAudio) { voiceAudio.pause(); voiceAudio = null; } } catch (e) {} }
+  async function playVoicePreview(id) {
+    stopVoiceAudio();
+    try {
+      var res = await fetch('/api/tts/speak', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ text: '你好呀，我是小汐，今天也要开心哦', voice: id || '' })
+      });
+      if (!res.ok) {
+        var jj = await res.json().catch(function () { return {}; });
+        toast('这个音色放不了：' + (jj.error || res.status));
+        return;
+      }
+      var blob = await res.blob();
+      voiceAudio = new Audio(URL.createObjectURL(blob));
+      voiceAudio.play();
+    } catch (e) { toast('试听失败：' + e.message); }
+  }
+  function renderVoiceAuditions(current) {
+    var box = $('voiceAuditions');
+    if (!box) return;
+    var list = window.__ttsVoices || [];
+    if (!list.length) { box.textContent = '还没读取到音色'; return; }
+    box.innerHTML = '';
+    list.forEach(function (v) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;background:rgba(127,127,127,.07)';
+      var on = (current || '') === v.id;
+      row.innerHTML = '<b style="min-width:96px">' + v.name + '</b>' +
+        '<span style="opacity:.55;font-size:12px;flex:1">' + v.id + '</span>' +
+        (v.kind === 'v1' ? '<span style="font-size:11px;opacity:.55">旧版</span>' : '') +
+        '<button class="btn sm" data-try="' + v.id + '">试听</button>' +
+        '<button class="btn sm' + (on ? ' pri' : '') + '" data-set="' + v.id + '">' + (on ? '默认中' : '设为默认') + '</button>';
+      box.appendChild(row);
+    });
+    box.querySelectorAll('[data-try]').forEach(function (b) {
+      b.onclick = function () { playVoicePreview(b.dataset.try); };
+    });
+    box.querySelectorAll('[data-set]').forEach(function (b) {
+      b.onclick = async function () {
+        try { await api('/api/tts', { voice: b.dataset.set }); toast('已设为默认音色'); loadTts(); }
+        catch (e) { toast('设置失败：' + e.message); }
+      };
+    });
+  }
+
 
 /* ─────────── 形象 ─────────── */
 var AV_EMO = [
