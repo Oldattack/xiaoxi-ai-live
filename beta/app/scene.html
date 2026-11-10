@@ -856,6 +856,10 @@ function speak(text, emotion){
             vidVol: vidEl ? vidEl.volume : null,
             vidMuted: vidEl ? vidEl.muted : null,
             vidReady: vidEl ? vidEl.readyState : null,
+            vidW: vidEl ? vidEl.videoWidth : null,
+            vidH: vidEl ? vidEl.videoHeight : null,
+            vidSrc: vidEl ? String(vidEl.currentSrc || vidEl.getAttribute('src') || '').slice(-60) : '',
+            avKind: (typeof AVATAR !== 'undefined' && AVATAR) ? AVATAR.kind : '',
             vidErr: vidEl && vidEl.error ? vidEl.error.code : null
         })
       }).catch(function () {});
