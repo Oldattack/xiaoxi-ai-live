@@ -95,8 +95,9 @@ function start() {
   });
 }
 
-/* ── 父进程看门狗：窗口/DSH 关了，就一起退出 ── */
-if (PARENT_PID) {
+/* ── 父进程看门狗：默认关闭，服务常驻；只有显式 --exit-with-parent 才跟随父进程退出 ── */
+const EXIT_WITH_PARENT = argv.includes('--exit-with-parent');
+if (PARENT_PID && EXIT_WITH_PARENT) {
   const timer = setInterval(() => {
     let alive = true;
     try { process.kill(PARENT_PID, 0); } catch { alive = false; }
@@ -107,6 +108,8 @@ if (PARENT_PID) {
   }, 2000);
   timer.unref?.();
   log('已挂上父进程看门狗：PID ' + PARENT_PID);
+} else {
+  log('父进程看门狗已关闭（服务常驻，不会因为 DSH/窗口关闭而退出）');
 }
 
 /* ── 停止信号 ── */
@@ -123,6 +126,18 @@ setInterval(() => {
     shutdown('收到 stop.flag');
   }
 }, 1500).unref();
+
+// 已经有服务在跑就别再拉一个（重复启动会抢端口）
+async function alreadyUp() {
+  try {
+    const r = await fetch('http://127.0.0.1:' + (Number(argOf('--port')) || Number(process.env.PORT) || 8792) + '/health', { signal: AbortSignal.timeout(1200) });
+    return r.ok;
+  } catch { return false; }
+}
+if (await alreadyUp()) {
+  log('已有实例在跑，本守护退出（避免重复启动）');
+  process.exit(0);
+}
 
 log('守护启动，正在拉起主程序…');
 start();

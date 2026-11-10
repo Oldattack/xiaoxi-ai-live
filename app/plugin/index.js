@@ -88,7 +88,7 @@ async function start() {
     return { ok: false, error: '找不到独立的 node.exe（装 Node.js，或用环境变量 LIVE_AGENT_NODE 指一个）' };
   }
 
-  const child = spawn(nodeBin, ['supervisor.mjs', '--hidden', '--parent-pid', String(process.pid)], {
+  const child = spawn(nodeBin, ['supervisor.mjs', '--hidden'], {
     cwd: agentDir(),
     detached: true,
     stdio: 'ignore',
