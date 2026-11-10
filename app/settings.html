@@ -1520,7 +1520,13 @@ $('ttsVoiceSel').onchange = async function () {
   function renderVoiceAuditions(current) {
     var box = $('voiceAuditions');
     if (!box) return;
-    var list = window.__ttsVoices || [];
+    var all = window.__ttsVoices || [];
+    var prov = window.__ttsProvider || '';
+    var list = all.filter(function (v) {
+      if (prov === 'ark') return v.kind === 'v2';
+      if (prov === 'doubao') return v.kind === 'v1';
+      return true;
+    });
     if (!list.length) { box.textContent = '还没读取到音色'; return; }
     box.innerHTML = '';
     list.forEach(function (v) {
