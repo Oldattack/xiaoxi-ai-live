@@ -439,7 +439,6 @@ fetch('/api/state').then(function(r){ return r.json(); }).then(function(j){
   var l = j && j.config && j.config.scene && j.config.scene.layout;
   if (l) { layoutMode = l; fit(); }
   if (j && j.config && j.config.avatar) applyAvatar(j.config.avatar);
-  if (j && j.game) gameRender(j.game);
 }).catch(function(){});
 
 // ── 弹幕池 ──
