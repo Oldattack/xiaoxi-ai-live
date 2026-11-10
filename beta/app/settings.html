@@ -1906,6 +1906,12 @@ async function loadModules() {
     else if (p.phase === 'error') { if (txt) txt.textContent = '失败：' + (p.error || ''); }
   }
   function chName(ch) { return ch === 'beta' ? '测试版' : '稳定版'; }
+  function cmpVer(a, b) {
+    function p(v) { return String(v || '0').split(/[.\-+]/).slice(0, 3).map(function (n) { return parseInt(n, 10) || 0; }); }
+    var x = p(a), y = p(b);
+    for (var i = 0; i < 3; i++) { if (x[i] > y[i]) return 1; if (x[i] < y[i]) return -1; }
+    return 0;
+  }
   function paintUpdRows() {
     var pairs = [['stable', 'updStableVer', 'updStableBtn'], ['beta', 'updBetaVer', 'updBetaBtn']];
     pairs.forEach(function (p) {
