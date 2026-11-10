@@ -568,11 +568,25 @@
         <div class="row"><label>最多排队</label><div><input class="inp" id="songMaxQueue" type="number" min="1"><div class="hint">首</div></div></div>
         <div class="row"><label></label><div><button class="btn" id="songClear">清空点歌台</button></div></div>
       </div>
+        <div class="card">
+          <h3>手动点歌<span class="live">不用开播也能放</span></h3>
+          <p class="sub">搜一首，点「放这首」就进点歌台；观众发「点歌 歌名」也一样。</p>
+          <div class="row"><label>搜歌</label><div style="display:flex;gap:8px">
+            <input class="inp" id="songSearchInput" placeholder="歌名，比如 晴天">
+            <button class="btn" id="songSearchBtn">搜索</button>
+          </div></div>
+          <div id="songResults" class="mini" style="display:flex;flex-direction:column;gap:6px">输入歌名搜一下</div>
+        </div>
+
       <div class="card">
         <h3>现在在放</h3>
         <div class="kv"><span>歌名</span><b id="songName">—</b></div>
         <div class="kv"><span>歌手</span><b id="songArtist">—</b></div>
         <div class="kv"><span>队列</span><b id="songQueue">0 首</b></div>
+        <div class="row"><label></label><div style="display:flex;gap:8px">
+          <button class="btn" id="songNext">下一首</button>
+          <button class="btn" id="songRetry">重新解析</button>
+        </div></div>
       </div>
     </div>
 
@@ -885,7 +899,7 @@
           <div class="chat-log" id="chatLog"><div class="empty">试一句「今天播到几点呀」，看她怎么回。</div></div>
           <div class="chat-quick">
             <button data-say="今天播到几点呀">播到几点</button>
-            <button data-say="点一首晴天">点歌</button>
+            <button data-say="点歌 晴天">点歌</button>
             <button data-say="夸夸我">夸夸我</button>
             <button data-say="讲个笑话">讲个笑话</button>
           </div>
@@ -1075,6 +1089,38 @@ function renderStats(st) {
   $('pScene').innerHTML = '<i></i>' + (sceneOk ? '画面就绪' : '画面');
   $('pLat').innerHTML = '<i></i>耗时 ' + (lat.last ? Math.round(lat.last) + 'ms' : '—');
 }
+
+  async function songSearchNow() {
+    var q = $('songSearchInput').value.trim();
+    if (!q) { toast('先输入歌名'); return; }
+    var box = $('songResults');
+    box.textContent = '搜索中…';
+    try {
+      var r = await (await fetch('/api/song/search?q=' + encodeURIComponent(q))).json();
+      var list = (r && r.list) || [];
+      if (!list.length) { box.textContent = '没搜到，换个歌名试试'; return; }
+      box.innerHTML = '';
+      list.forEach(function (s) {
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;background:rgba(127,127,127,.07)';
+        var btn = document.createElement('button');
+        btn.className = 'btn sm pri';
+        btn.textContent = '放这首';
+        btn.onclick = async function () {
+          try {
+            await fetch('/song?name=' + encodeURIComponent(s.name) + '&user=' + encodeURIComponent('手动'));
+            toast('已点：' + s.name);
+            load();
+          } catch (e) { toast('点歌失败：' + e.message); }
+        };
+        var nm = document.createElement('b'); nm.style.flex = '1'; nm.textContent = s.name;
+        var ar = document.createElement('span'); ar.style.cssText = 'opacity:.55;font-size:12px'; ar.textContent = s.artist || '';
+        row.appendChild(nm); row.appendChild(ar); row.appendChild(btn);
+        box.appendChild(row);
+      });
+    } catch (e) { box.textContent = '搜索失败：' + e.message; }
+  }
+
 
 function renderSong(st) {
   var p = st.songs && st.songs.playing;
@@ -1423,6 +1469,13 @@ if ($('audioViaObs')) {
 $('btnPreview').onclick = function () { window.open('/?clean=1&mute=1', '_blank'); };
 
 /* ─────────── 点歌 ─────────── */
+  if ($('songSearchBtn')) {
+    $('songSearchBtn').onclick = songSearchNow;
+    $('songSearchInput').onkeydown = function (e) { if (e.key === 'Enter') songSearchNow(); };
+  }
+  if ($('songNext')) $('songNext').onclick = async function () { try { await fetch('/api/song/next', { method: 'POST' }); toast('下一首'); load(); } catch (e) { toast('失败：' + e.message); } };
+  if ($('songRetry')) $('songRetry').onclick = async function () { try { await fetch('/api/song/retry', { method: 'POST' }); toast('已重新解析'); load(); } catch (e) { toast('失败：' + e.message); } };
+
 $('songClear').onclick = async function () {
   try { await api('/api/song/clear', {}); toast('点歌台已清空'); load(); }
   catch (e) { toast('清空失败：' + e.message); }
@@ -2252,6 +2305,11 @@ async function loadHealth() {
 if ($('hcRefresh')) { $('hcRefresh').onclick = loadHealth; }
 loadHealth();
 setInterval(loadHealth, 30000);
+
+  // 每 3 秒刷新点歌/实时状态（页面开着就能看到「现在在放」变化）
+  setInterval(async function () {
+    try { var st = await (await fetch('/api/state')).json(); renderSong(st); renderStats(st); } catch (e) {}
+  }, 3000);
 
 if ($('obsDiagBtn')) {
   $('obsDiagBtn').onclick = async function () {
