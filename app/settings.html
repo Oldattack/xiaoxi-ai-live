@@ -409,7 +409,7 @@
         </div>
       </div>
 
-      <div class="upd-bar" id="updBar" style="display:none">
+      <div class="upd-bar" id="updNotice" style="display:none">
         <span class="dot"></span>
         <span id="updBarText">有新版本可用</span>
         <button class="btn sm" id="updBarGo">去更新</button>
@@ -1962,7 +1962,7 @@ async function loadModules() {
       toast('更新失败');
     }
   }
-  ['stable', 'beta'].forEach(function (ch) {
+  ['beta'].forEach(function (ch) {
     var btn = $(ch === 'stable' ? 'updStableBtn' : 'updBetaBtn');
     if (!btn) return;
     btn.onclick = function () {
@@ -2518,7 +2518,7 @@ var UPD_LATEST = null;
 function paintVer(version, info) {
   var el = document.getElementById("pVer");
   if (el) el.textContent = "v" + (version || "—");
-  var bar = document.getElementById("updBar");
+  var bar = document.getElementById("updNotice");
   if (!bar) return;
   if (info && info.ok && info.hasUpdate) {
     bar.style.display = "flex";
