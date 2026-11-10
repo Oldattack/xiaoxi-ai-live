@@ -907,6 +907,7 @@
         <p class="sub">有新版本会在这里提示，点一下就能升级；升级不会覆盖你的配置。</p>
           <div class="row"><label>当前版本</label><div><b id="appVer">—</b></div></div>
           <div class="row"><label>更新渠道</label><div>
+            <div class="kv"><span>稳定版</span><b id="updStableVer">—</b><button class="btn sm" id="updStableBtn" style="margin-left:8px">更新</button></div>
             <div class="kv"><span>测试版（默认）</span><b id="updBetaVer">—</b><button class="btn sm" id="updBetaBtn" style="margin-left:8px">更新</button></div>
             <div class="hint">稳定版只推正式版；测试版是内测，版本号更高。升级不会覆盖配置。</div>
           </div></div>
@@ -1906,7 +1907,7 @@ async function loadModules() {
   }
   function chName(ch) { return ch === 'beta' ? '测试版' : '稳定版'; }
   function paintUpdRows() {
-    var pairs = [['beta', 'updBetaVer', 'updBetaBtn']];
+    var pairs = [['stable', 'updStableVer', 'updStableBtn'], ['beta', 'updBetaVer', 'updBetaBtn']];
     pairs.forEach(function (p) {
       var info = UPD_INFO[p[0]], el = $(p[1]), btn = $(p[2]);
       if (!el || !btn) return;
@@ -1921,14 +1922,16 @@ async function loadModules() {
     catch (e) { return { ok: false, reason: e.message }; }
   }
   async function checkBothChannels() {
-    $('updState').textContent = '正在检查测试版…';
+    $('updState').textContent = '正在检查稳定版和测试版…';
     $('updState').style.color = '';
-    UPD_INFO.beta = await peekChannel('beta');
+    var pair = await Promise.all([peekChannel('stable'), peekChannel('beta')]);
+      UPD_INFO.stable = pair[0];
+      UPD_INFO.beta = pair[1];
     paintUpdRows();
     var b = UPD_INFO.beta;
     var txt = '测试版：' + (b && b.ok ? (b.hasUpdate ? '有新版 ' + b.latest : '已最新') : '检查失败');
     $('updState').textContent = txt;
-    $('updState').style.color = (b && b.hasUpdate) ? '#0f7a55' : '';
+    $('updState').style.color = ((s1 && s1.hasUpdate) || (b && b.hasUpdate)) ? '#0f7a55' : '';
   }
   async function loadVersion() {
     try {
@@ -1962,8 +1965,8 @@ async function loadModules() {
       toast('更新失败');
     }
   }
-  ['beta'].forEach(function (ch) {
-    var btn = $('updBetaBtn');
+  ['stable', 'beta'].forEach(function (ch) {
+    var btn = $(ch === 'stable' ? 'updStableBtn' : 'updBetaBtn');
     if (!btn) return;
     btn.onclick = function () {
       if (armCh !== ch) {
