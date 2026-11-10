@@ -660,8 +660,10 @@ var speaking = false;
 
   // 预览窗口（场景窗口 / 独立窗口）不出声，声音只从 OBS 浏览器源走
   var FORCE_MUTE = /[?&]mute=1/.test(location.search);
-  var MUTE = FORCE_MUTE;
-  if (window.self !== window.top) MUTE = true;   // 设置页里的预览 iframe 不出声，避免同一句话念两遍
+  var IS_OBS = /[?&]src=obs/.test(location.search);
+  var WANT_SPEAK = /[?&]speaker=1/.test(location.search);
+  var MUTE = !(IS_OBS || WANT_SPEAK) || FORCE_MUTE;
+  if (window.self !== window.top) MUTE = true;   // 设置页里的预览 iframe 不出声
 
 function reportSpeech(type, id){
   try {
@@ -1199,7 +1201,6 @@ function speak(text, emotion){
     }
   if (d.kind === 'role') {
     if (d.speaker === false) MUTE = true;
-    else if (!FORCE_MUTE && window.self === window.top) MUTE = false;
     return;
   }
   if (d.kind === 'soundtest') { playTestTone(); return; }
