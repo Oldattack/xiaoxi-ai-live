@@ -1452,6 +1452,7 @@ async function loadTts() {
     var sel = $('ttsVoiceSel');
     sel.innerHTML = '<option value="">默认（元气少女）</option>';
     window.__ttsVoices = r.voices || [];
+    window.__ttsProvider = (r.tts && r.tts.provider) || '';
     (r.voices || []).forEach(function (v) {
       var o = document.createElement('option');
       o.value = v.id; o.textContent = v.name;
