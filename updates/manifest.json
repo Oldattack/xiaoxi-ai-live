@@ -1,10 +1,10 @@
 {
-  "version": "2.5.46",
+  "version": "2.5.47",
   "notes": "修复启动脚本行尾问题；插件安装改为正确的 DSH 注册方式；更新入口整合到主页与顶栏",
-  "package": "xiaoxi-ai-live-2.5.46.zip",
-  "size": 3902967,
-  "sha256": "fde890ecf28b08beca7d7146b94d8e04ae435cb3ebabf96081cec1365764730e",
-  "publishedAt": "2026-11-10T06:06:39.544Z",
+  "package": "xiaoxi-ai-live-2.5.47.zip",
+  "size": 3902982,
+  "sha256": "8783ffaaf8fd8f7b49810cf9d10bb03270514a498d72356b147e3eff195ced3f",
+  "publishedAt": "2026-11-10T06:08:19.163Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/app/",
   "files": [
@@ -95,8 +95,8 @@
     },
     {
       "path": "settings.html",
-      "size": 122330,
-      "sha256": "a0714c7eeaf413bcab1cbcf6ddfcba18ecc28827b43cfbb721c3b6b909346715"
+      "size": 122341,
+      "sha256": "31656d01e63eea728f141c43c7d8a430d782bad7c17cd25fae9354589e27f1d3"
     },
     {
       "path": "sprites_hd/angry.png",
@@ -141,12 +141,12 @@
     {
       "path": "VERSION",
       "size": 7,
-      "sha256": "81ffa8675384a06bf902c2f46fc2d06f688663f68b7424f79789091d040a3c27"
+      "sha256": "f77f1cea7fb770bbf96ebdabf34b7ea944c02495b441165b6669af9ae8c535f3"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 241460,
-      "sha256": "320a9044d21ae93742cc3999f09726f47c3cc6f009c1e82c132512b638c1f13a"
+      "size": 240830,
+      "sha256": "825b4079a3204d70f8fdae66586c789be3005e7e24ff795f4995f298c5a370e5"
     }
   ]
 }
