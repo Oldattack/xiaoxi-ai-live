@@ -1122,7 +1122,7 @@ function renderHome(st) {
   var rs = $('rScene'); rs.textContent = sceneOk ? '已推到 OBS' : '还没对齐'; rs.className = sceneOk ? 'g' : 'm';
 
   var t = CFG.tts || {};
-  var NAMES = { doubao: '豆包 2.0', openai: 'OpenAI 兼容', custom: '自建接口', edge: 'Edge-TTS', browser: '系统语音' };
+  var NAMES = { ark: '豆包 2.0（方舟语音 Key）', doubao: '豆包 2.0', openai: 'OpenAI 兼容', custom: '自建接口', edge: 'Edge-TTS', browser: '系统语音' };
   var label = NAMES[t.provider || 'browser'] || '系统语音';
   setChip('cVoice', '声音：' + label, t.provider === 'browser' ? 'warm' : '');
   var rv = $('rVoice'); rv.textContent = label; rv.className = 'g';
