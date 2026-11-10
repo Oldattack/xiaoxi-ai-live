@@ -570,7 +570,7 @@
       </div>
         <div class="card">
           <h3>手动点歌<span class="live">不用开播也能放</span></h3>
-          <p class="sub">搜一首，点「放这首」就进点歌台；观众发「点歌 歌名」也一样。</p>
+          <p class="sub">搜一首，点「放这首」就进点歌台；「试听」只在本机响一下。声音最终从 OBS 出，OBS 没开时直播画面是静音的。</p>
           <div class="row"><label>搜歌</label><div style="display:flex;gap:8px">
             <input class="inp" id="songSearchInput" placeholder="歌名，比如 晴天">
             <button class="btn" id="songSearchBtn">搜索</button>
@@ -1103,6 +1103,21 @@ function renderStats(st) {
       list.forEach(function (s) {
         var row = document.createElement('div');
         row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;background:rgba(127,127,127,.07)';
+        var pv = document.createElement('button');
+        pv.className = 'btn sm';
+        pv.id = 'songPreviewBtn';
+        pv.textContent = '试听';
+        pv.onclick = async function () {
+          try {
+            var rr = await (await fetch('/api/song/preview', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: s.name }) })).json();
+            if (!rr.ok) { toast(rr.error || '这首歌暂时没有可播放的源'); return; }
+            if (window.__pvAudio) { try { window.__pvAudio.pause(); } catch (e) {} }
+            window.__pvAudio = new Audio(rr.url);
+            window.__pvAudio.volume = 0.9;
+            window.__pvAudio.play();
+            toast('试听：' + s.name);
+          } catch (e) { toast('试听失败：' + e.message); }
+        };
         var btn = document.createElement('button');
         btn.className = 'btn sm pri';
         btn.textContent = '放这首';
@@ -1115,7 +1130,7 @@ function renderStats(st) {
         };
         var nm = document.createElement('b'); nm.style.flex = '1'; nm.textContent = s.name;
         var ar = document.createElement('span'); ar.style.cssText = 'opacity:.55;font-size:12px'; ar.textContent = s.artist || '';
-        row.appendChild(nm); row.appendChild(ar); row.appendChild(btn);
+        row.appendChild(nm); row.appendChild(ar); row.appendChild(pv); row.appendChild(btn);
         box.appendChild(row);
       });
     } catch (e) { box.textContent = '搜索失败：' + e.message; }
