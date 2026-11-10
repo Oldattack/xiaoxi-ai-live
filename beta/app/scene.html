@@ -684,7 +684,7 @@ var ttsAudio = null;
   var songDucked = false;
   function duckSong() {
     if (!sg || sg.paused || !sg.currentSrc) return;
-    try { sg.volume = Math.min(SONG_VOL, 0.5); songDucked = true; } catch (e) {}
+    try { sg.volume = Math.min(SONG_VOL, 0.35); songDucked = true; } catch (e) {}
   }
   function unduckSong() {
     if (!songDucked) return;
