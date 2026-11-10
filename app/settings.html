@@ -1429,7 +1429,11 @@ async function loadTts() {
     var r = await api('/api/tts');
     var s = $('ttsState');
     if (r.ready && r.ready.ok) {
+      if (!r.tts.provider || r.tts.provider === 'none' || r.tts.provider === 'browser') {
+      s.textContent = '当前：系统语音（还没接入专业语音）';
+    } else {
       s.textContent = '当前：' + (r.providers[r.tts.provider] || r.tts.provider) + ' · 已接入';
+    }
       s.style.color = '#0f7a55';
     } else {
       s.textContent = '当前：系统语音（' + (r.ready && r.ready.reason || '') + '）';
