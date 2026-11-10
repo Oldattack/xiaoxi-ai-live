@@ -1921,7 +1921,7 @@ async function loadModules() {
     catch (e) { return { ok: false, reason: e.message }; }
   }
   async function checkBothChannels() {
-    $('updState').textContent = '正在检查两个渠道…';
+    $('updState').textContent = '正在检查测试版…';
     $('updState').style.color = '';
     UPD_INFO.beta = await peekChannel('beta');
     paintUpdRows();
@@ -1963,7 +1963,7 @@ async function loadModules() {
     }
   }
   ['beta'].forEach(function (ch) {
-    var btn = $(ch === 'stable' ? 'updStableBtn' : 'updBetaBtn');
+    var btn = $('updBetaBtn');
     if (!btn) return;
     btn.onclick = function () {
       if (armCh !== ch) {
