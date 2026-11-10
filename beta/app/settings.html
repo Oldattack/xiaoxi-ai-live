@@ -1914,7 +1914,8 @@ async function loadModules() {
       if (!info) { el.textContent = '—'; el.style.color = ''; btn.disabled = true; btn.textContent = '更新'; return; }
       if (!info.ok) { el.textContent = '检查失败'; el.style.color = '#c0392b'; btn.disabled = true; btn.textContent = '更新'; return; }
       if (info.hasUpdate) { el.textContent = '最新 ' + info.latest; el.style.color = '#0f7a55'; btn.disabled = false; btn.textContent = '更新到 ' + info.latest; }
-      else { el.textContent = '已是最新（' + info.current + '）'; el.style.color = ''; btn.disabled = true; btn.textContent = '已最新'; }
+      else if (info.latest && cmpVer(info.current, info.latest) > 0) { el.textContent = '当前 ' + info.current + '（比 ' + info.latest + ' 新）'; el.style.color = ''; btn.disabled = true; btn.textContent = '已最新'; }
+        else { el.textContent = '已是最新（' + info.current + '）'; el.style.color = ''; btn.disabled = true; btn.textContent = '已最新'; }
     });
   }
   async function peekChannel(ch) {
