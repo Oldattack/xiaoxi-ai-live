@@ -190,4 +190,6 @@ export function apply(ctx) {
   };
   mount();
   setTimeout(() => { ensureService(); }, 1500);
+  // 每分钟巡检一次：DSH 里被意外杀掉/端口掉了，自动拉起（用户主动停止的 stop.flag 会尊重）
+  setInterval(() => { ensureService(); }, 60000).unref?.();
 }
