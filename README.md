@@ -1,4 +1,4 @@
-# 小汐 AI 直播平台 · 分销版 v2.5.66
+# 小汐 AI 直播平台 · 分销版 v2.6.2
 
 > **AI 一键多功能全流程直播，支持国内多个平台。**
 > 接弹幕、会说话、会放歌、进场欢迎、点歌台、自带 OBS 画面——开箱即播。
@@ -26,7 +26,7 @@
 
 **1. 装 Node.js**（只需一次）：<https://nodejs.org> 选 LTS，一路下一步
 
-**2. 下载并解压**：[整包下载](updates/xiaoxi-ai-live-2.5.66.zip)（3.7 MB）→ 解压到 `D:\xiaoxi-ai-live`
+**2. 下载并解压**：[整包下载](updates/xiaoxi-ai-live-2.6.2.zip)（3.7 MB）→ 解压到 `D:\xiaoxi-ai-live`
 
 **3. 双击 `启动.cmd`**
 
