@@ -888,6 +888,10 @@ function speak(text, emotion){
     try {
       var AC = window.AudioContext || window.webkitAudioContext;
       if (!AC || !sg) return null;
+      // 跨域歌曲不能接进 WebAudio：没有 CORS 头时浏览器会把声音静音（"歌在放但没声"）
+      var sameOrigin = false;
+      try { sameOrigin = new URL(sg.currentSrc || sg.src, location.href).origin === location.origin; } catch (e) { sameOrigin = false; }
+      if (!sameOrigin) return null;   // 跨域：不接分析器，用合成节拍，声音直接从 <audio> 出
       viz.audio = new AC();
       var src = viz.audio.createMediaElementSource(sg);
       var an = viz.audio.createAnalyser();
