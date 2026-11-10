@@ -376,6 +376,7 @@
       <div class="grp">画面</div>
       <a data-p="p9">直播画面</a>
       <a data-p="p12">界面外观</a>
+      <a data-p="p15">舞台后台</a>
       <div class="grp">内容</div>
       <a data-p="p8">点歌台</a>
       <a data-p="p13">视频点播</a>
@@ -576,6 +577,30 @@
         <div class="row"><label>说这些</label><div><textarea class="inp" id="idleLines" rows="4" placeholder="每行一句"></textarea></div></div>
       </div>
     </div>
+
+      <!-- ══════ 舞台后台 ══════ -->
+
+      <div class="pane" id="p15">
+        <div class="card">
+          <h3>舞台后台<span class="live">打字就能控</span></h3>
+          <p class="sub">输入指令直接改舞台：换背景、放歌、说话、切横竖屏、开关可视化。</p>
+          <div class="row"><label>指令</label><div style="display:flex;gap:8px">
+            <input class="inp" id="stageCmd" placeholder="例如：换背景 樱花 / 放歌 晴天 / 说 大家好">
+            <button class="btn pri" id="stageSend">发送</button>
+          </div></div>
+          <div class="chat-quick" id="stageQuick">
+            <button data-cmd="换背景 樱花">樱花背景</button>
+            <button data-cmd="换背景 海洋">海洋背景</button>
+            <button data-cmd="放歌 晴天">放歌晴天</button>
+            <button data-cmd="说 大家好呀，我是小汐">说句话</button>
+            <button data-cmd="横屏">横屏</button>
+            <button data-cmd="竖屏">竖屏</button>
+            <button data-cmd="可视化关">关可视化</button>
+            <button data-cmd="帮助">帮助</button>
+          </div>
+          <div id="stageLog" class="mini" style="margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto">还没有指令</div>
+        </div>
+      </div>
 
     <!-- ══════ 点歌台 ══════ -->
     <div class="pane" id="p8">
@@ -882,8 +907,7 @@
         <p class="sub">有新版本会在这里提示，点一下就能升级；升级不会覆盖你的配置。</p>
           <div class="row"><label>当前版本</label><div><b id="appVer">—</b></div></div>
           <div class="row"><label>更新渠道</label><div>
-            <div class="kv"><span>稳定版</span><b id="updStableVer">—</b><button class="btn sm" id="updStableBtn" style="margin-left:8px">更新</button></div>
-            <div class="kv"><span>测试版</span><b id="updBetaVer">—</b><button class="btn sm" id="updBetaBtn" style="margin-left:8px">更新</button></div>
+            <div class="kv"><span>测试版（默认）</span><b id="updBetaVer">—</b><button class="btn sm" id="updBetaBtn" style="margin-left:8px">更新</button></div>
             <div class="hint">稳定版只推正式版；测试版是内测，版本号更高。升级不会覆盖配置。</div>
           </div></div>
           <div class="row"><label></label><div style="display:flex;gap:10px;align-items:center">
@@ -1882,7 +1906,7 @@ async function loadModules() {
   }
   function chName(ch) { return ch === 'beta' ? '测试版' : '稳定版'; }
   function paintUpdRows() {
-    var pairs = [['stable', 'updStableVer', 'updStableBtn'], ['beta', 'updBetaVer', 'updBetaBtn']];
+    var pairs = [['beta', 'updBetaVer', 'updBetaBtn']];
     pairs.forEach(function (p) {
       var info = UPD_INFO[p[0]], el = $(p[1]), btn = $(p[2]);
       if (!el || !btn) return;
@@ -1899,15 +1923,12 @@ async function loadModules() {
   async function checkBothChannels() {
     $('updState').textContent = '正在检查两个渠道…';
     $('updState').style.color = '';
-    var pair = await Promise.all([peekChannel('stable'), peekChannel('beta')]);
-    UPD_INFO.stable = pair[0];
-    UPD_INFO.beta = pair[1];
+    UPD_INFO.beta = await peekChannel('beta');
     paintUpdRows();
-    var s = UPD_INFO.stable, b = UPD_INFO.beta;
-    var txt = '稳定版：' + (s.ok ? (s.hasUpdate ? '有新版 ' + s.latest : '已最新') : '检查失败')
-      + ' · 测试版：' + (b.ok ? (b.hasUpdate ? '有新版 ' + b.latest : '已最新') : '检查失败');
+    var b = UPD_INFO.beta;
+    var txt = '测试版：' + (b && b.ok ? (b.hasUpdate ? '有新版 ' + b.latest : '已最新') : '检查失败');
     $('updState').textContent = txt;
-    $('updState').style.color = (s.hasUpdate || (b && b.hasUpdate)) ? '#0f7a55' : '';
+    $('updState').style.color = (b && b.hasUpdate) ? '#0f7a55' : '';
   }
   async function loadVersion() {
     try {
@@ -2026,6 +2047,40 @@ $('actSay').onclick = async function () {
   try { await fetch('/say?text=' + encodeURIComponent('大家好呀，我是小汐') + '&emotion=' + encodeURIComponent('开心')); toast('已发出'); }
   catch (e) { toast('失败：' + e.message); }
 };
+
+/* ─────────── 舞台后台 ─────────── */
+function stageLogLine(text, cls) {
+  var box = document.getElementById('stageLog');
+  if (!box) return;
+  if (box.textContent === '还没有指令') box.innerHTML = '';
+  var d = document.createElement('div');
+  d.textContent = text;
+  d.style.cssText = 'padding:6px 8px;border-radius:8px;line-height:1.5;background:' + (cls === 'bad' ? 'rgba(192,57,43,.10)' : (cls === 'ok' ? 'rgba(15,122,85,.10)' : 'rgba(127,127,127,.08)'));
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+async function stageSend() {
+  var inp = document.getElementById('stageCmd');
+  if (!inp) return;
+  var text = inp.value.trim();
+  if (!text) { toast('先输入指令'); return; }
+  stageLogLine('你：' + text, 'me');
+  try {
+    var r = await api('/api/stage/command', { text: text });
+    stageLogLine((r && r.ok ? '✅ ' : '❌ ') + ((r && (r.detail || r.error)) || '执行失败'), r && r.ok ? 'ok' : 'bad');
+    if (r && r.ok) toast(r.detail || '已执行');
+    else toast((r && r.error) || '指令失败');
+  } catch (e) { stageLogLine('❌ ' + e.message, 'bad'); toast('执行失败'); }
+  inp.value = '';
+  try { await load(); } catch (e) {}
+}
+if (document.getElementById('stageSend')) {
+  document.getElementById('stageSend').onclick = stageSend;
+  document.getElementById('stageCmd').onkeydown = function (e) { if (e.key === 'Enter') stageSend(); };
+}
+document.querySelectorAll('#stageQuick [data-cmd]').forEach(function (b) {
+  b.onclick = function () { document.getElementById('stageCmd').value = b.dataset.cmd; stageSend(); };
+});
 
 /* ─────────── 自动刷新 ─────────── */
 setInterval(function () {
