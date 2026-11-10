@@ -82,6 +82,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
 #stage.video .pet::after{content:"陪你一起看";position:absolute;left:12px;bottom:10px;z-index:9;
   font-size:11px;color:#cfc6dd;padding:3px 8px;border-radius:5px;background:rgba(0,0,0,.42)}
 #stage.video .pet .fig{height:382px;animation:none}
+#stage.video .pet .figvid{height:382px}
 #stage.video .pet .halo{opacity:0}
 #stage.video .pool{width:470px}
 #stage.video .songs{opacity:0;pointer-events:none;transition:opacity .3s}
@@ -451,12 +452,10 @@ function applyAvatar(a){
   var vidEl = document.getElementById('petVid');
   var figEl2 = document.getElementById('fig');
   if (AVATAR.kind === 'video' && AVATAR.video && vidEl) {
-  if (!vidForVod) {
     if (vidEl.getAttribute('src') !== AVATAR.video) vidEl.src = AVATAR.video;
     vidEl.style.display = 'block';
     if (figEl2) figEl2.style.display = 'none';
     try { vidEl.play(); } catch (e) {}
-  }
   } else {
     if (vidEl) { try { vidEl.pause(); } catch (e) {} vidEl.style.display = 'none'; }
     if (figEl2) { figEl2.style.display = ''; figEl2.src = spriteUrl(figEl2.dataset.emo || 'idle'); }
