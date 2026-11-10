@@ -1363,6 +1363,22 @@ document.querySelectorAll('[data-layout]').forEach(function (b) {
       mono: 'radial-gradient(900px 700px at 25% 20%, #2a2a30 0%, transparent 62%),radial-gradient(1000px 800px at 80% 80%, #1c1c22 0%, transparent 60%),linear-gradient(160deg,#101013 0%,#07070a 100%)'
     };
 
+    var bgTimer = null;
+    function applyBgNow(silent) {
+      var payload = {
+        kind: bgState.kind, preset: bgState.preset,
+        color: bgState.color, color2: bgState.color2,
+        dim: Number(bgState.dim) || 0, blur: Number(bgState.blur) || 0
+      };
+      if (bgState.kind === 'image' && (bgPicked || bgState.image)) payload.image = bgPicked || bgState.image;
+      if (bgTimer) clearTimeout(bgTimer);
+      bgTimer = setTimeout(function () {
+        api('/api/scene/bg', payload).then(function () {
+          if (!silent) toast('背景已应用');
+        }).catch(function (e) { if (!silent) toast('背景应用失败：' + e.message); });
+      }, 150);
+    }
+
   function paintBgPanel() {
     var kind = bgState.kind || 'gradient';
     document.querySelectorAll('[data-bgkind]').forEach(function (b) {
@@ -1432,23 +1448,23 @@ document.querySelectorAll('[data-layout]').forEach(function (b) {
     paintBgPanel();
   }
   document.querySelectorAll('[data-bgkind]').forEach(function (b) {
-    b.onclick = function () { bgState.kind = b.dataset.bgkind; paintBgPanel(); };
+    b.onclick = function () { bgState.kind = b.dataset.bgkind; paintBgPanel(); applyBgNow(); };
   });
   document.querySelectorAll('[data-bgpreset]').forEach(function (b) {
-    b.onclick = function () { bgState.preset = b.dataset.bgpreset; paintBgPanel(); };
+    b.onclick = function () { bgState.preset = b.dataset.bgpreset; paintBgPanel(); applyBgNow(b.dataset.bgpreset === 'custom'); };
   });
-  if ($('bgColor1')) $('bgColor1').oninput = function () { bgState.color = this.value; };
-  if ($('bgColor2')) $('bgColor2').oninput = function () { bgState.color2 = this.value; };
-  if ($('bgSolid')) $('bgSolid').oninput = function () { bgState.color = this.value; };
-  if ($('bgDim')) $('bgDim').oninput = function () { bgState.dim = Number(this.value); $('bgDimHint').textContent = this.value + '%'; };
-  if ($('bgBlur')) $('bgBlur').oninput = function () { bgState.blur = Number(this.value); $('bgBlurHint').textContent = this.value + 'px（仅图片）'; };
+  if ($('bgColor1')) $('bgColor1').oninput = function () { bgState.color = this.value; applyBgNow(true); };
+  if ($('bgColor2')) $('bgColor2').oninput = function () { bgState.color2 = this.value; applyBgNow(true); };
+  if ($('bgSolid')) $('bgSolid').oninput = function () { bgState.color = this.value; applyBgNow(true); };
+  if ($('bgDim')) $('bgDim').oninput = function () { bgState.dim = Number(this.value); $('bgDimHint').textContent = this.value + '%'; applyBgNow(true); };
+  if ($('bgBlur')) $('bgBlur').oninput = function () { bgState.blur = Number(this.value); $('bgBlurHint').textContent = this.value + 'px（仅图片）'; applyBgNow(true); };
   if ($('bgPick')) $('bgPick').onclick = function () { $('bgFile').click(); };
   if ($('bgFile')) $('bgFile').onchange = function () {
     var f = this.files && this.files[0];
     if (!f) return;
     if (f.size > 12 * 1024 * 1024) { toast('图片别超过 12MB'); return; }
     var rd = new FileReader();
-    rd.onload = function () { bgPicked = rd.result; bgState.kind = 'image'; paintBgPanel(); };
+    rd.onload = function () { bgPicked = rd.result; bgState.kind = 'image'; paintBgPanel(); applyBgNow(); };
     rd.readAsDataURL(f);
   };
   if ($('bgClear')) $('bgClear').onclick = function () { bgPicked = ''; bgState.image = ''; paintBgPanel(); };
