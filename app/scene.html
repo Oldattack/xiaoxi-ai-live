@@ -837,6 +837,7 @@ function speak(text, emotion){
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           at: Date.now(),
+          obs: typeof IS_OBS !== 'undefined' ? IS_OBS : false,
           t: Number(sg.currentTime || 0),
           paused: sg.paused,
           ended: sg.ended,
