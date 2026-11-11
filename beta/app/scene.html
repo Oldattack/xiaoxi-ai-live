@@ -43,81 +43,62 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   background:radial-gradient(50% 50% at 50% 50%, rgba(120,90,255,.30), transparent 70%);filter:blur(20px)}
 
 /* ── 模型区（正面立绘，像素风） ── */
-  #djBooth{position:absolute;left:50%;bottom:50px;transform:translateX(-50%);width:900px;height:720px;z-index:2;opacity:0;pointer-events:none;transition:opacity .5s ease}
+  #djBooth{position:absolute;inset:0;z-index:2;opacity:0;pointer-events:none;transition:opacity .6s ease}
   #djBooth.on{opacity:1}
-  #djBooth .dj-riser{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:780px;height:260px;clip-path:polygon(7% 0,93% 0,100% 100%,0 100%);border-radius:8px 8px 0 0;background:linear-gradient(180deg,#2a1b3d 0%,#160f22 45%,#0a0710 100%);border:1px solid rgba(190,140,255,.35);box-shadow:0 -2px 30px rgba(168,85,247,.25),inset 0 2px 0 rgba(255,255,255,.18)}
-  #djBooth .dj-riser::before{content:"";position:absolute;left:10px;right:10px;top:-3px;height:6px;border-radius:6px;background:linear-gradient(90deg,#22d3ee,#ff4fd8,#a855f7);filter:blur(1px);box-shadow:0 0 18px rgba(255,79,216,.8)}
-  #djBooth .dj-riser::after{content:"";position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);width:760px;height:26px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(168,85,247,.5),transparent 70%);filter:blur(6px)}
-  #djBooth .dj-desk{position:absolute;left:50%;bottom:260px;transform:translateX(-50%);width:600px;height:150px;z-index:6;border-radius:16px 16px 10px 10px;background:linear-gradient(180deg,#241a33,#120d1c 70%,#0b0812);border:1px solid rgba(190,140,255,.45);box-shadow:0 -4px 44px rgba(168,85,247,.3),inset 0 1px 0 rgba(255,255,255,.1)}
-  #djBooth .dj-platter{position:absolute;top:-42px;width:132px;height:132px;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,#16101f 0 2px,#0b0811 2px 4px);border:3px solid #2b2038;box-shadow:0 0 0 4px rgba(255,79,216,.14),0 10px 22px rgba(0,0,0,.55)}
-  #djBooth .dj-platter.l{left:52px}
-  #djBooth .dj-platter.r{right:52px}
-  #djBooth .dj-platter span{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:radial-gradient(circle,#ff4fd8,#7c3aed);box-shadow:0 0 14px rgba(255,79,216,.8)}
-  #djBooth .dj-platter::after{content:"";position:absolute;left:50%;top:8px;width:2px;height:44px;margin-left:-1px;background:linear-gradient(#ff8ae2,transparent);transform-origin:bottom center}
-  #djBooth .dj-mixer{position:absolute;left:50%;top:20px;transform:translateX(-50%);width:180px;height:66px;border-radius:10px;background:#0b0812;border:1px solid rgba(190,140,255,.3);display:flex;align-items:center;justify-content:center;gap:10px}
-  #djBooth .dj-mixer b{width:7px;height:30px;border-radius:4px;background:linear-gradient(#ff4fd8,#7c3aed);box-shadow:0 0 10px rgba(255,79,216,.55)}
-  #djBooth .dj-led{position:absolute;left:8px;right:8px;bottom:8px;height:7px;border-radius:6px;background:repeating-linear-gradient(90deg,#ff4fd8 0 10px,#7c3aed 10px 20px,#22d3ee 20px 30px);filter:blur(.6px);opacity:.75;animation:djLed 1.2s linear infinite}
-  @keyframes djLed{0%{opacity:.45}50%{opacity:.95}100%{opacity:.45}}
-  #djBooth .dj-sign{position:absolute;left:50%;top:-86px;transform:translateX(-50%);font:800 30px/1 ui-monospace,Consolas,monospace;letter-spacing:5px;color:#ffd8ff;text-shadow:0 0 8px #ff4fd8,0 0 22px #a855f7,0 0 40px #7c3aed;white-space:nowrap;opacity:.95}
-  #djBooth .dj-speaker{position:absolute;bottom:0;width:130px;height:380px;border-radius:14px;background:linear-gradient(180deg,#1b1626,#0d0a14);border:1px solid rgba(190,140,255,.35);box-shadow:0 14px 36px rgba(0,0,0,.55),inset 0 0 24px rgba(124,58,237,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:5}
-  #djBooth .dj-speaker.l{left:0}
-  #djBooth .dj-speaker.r{right:0}
-  #djBooth .dj-speaker i{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3a2c52,#0a0810 70%);border:2px solid rgba(190,140,255,.28);box-shadow:inset 0 0 16px #000}
-  #djBooth .dj-lasers{position:absolute;left:50%;top:-260px;transform:translateX(-50%);width:1600px;height:820px;overflow:hidden;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .5s}
-  #djBooth.on .dj-lasers{opacity:.9}
-  #djBooth .dj-lasers i{position:absolute;top:0;width:4px;height:780px;border-radius:4px;transform-origin:top center;filter:blur(1.2px);animation:laserSweep 3.6s ease-in-out infinite alternate,laserHue 6s linear infinite}
-  #djBooth .dj-lasers i:nth-child(1){left:8%;background:linear-gradient(#ff4fd8,transparent);animation-duration:3.1s}
-  #djBooth .dj-lasers i:nth-child(2){left:22%;background:linear-gradient(#22d3ee,transparent);animation-duration:4.2s;animation-delay:-1s}
-  #djBooth .dj-lasers i:nth-child(3){left:38%;background:linear-gradient(#a855f7,transparent);animation-duration:2.8s;animation-delay:-.6s}
-  #djBooth .dj-lasers i:nth-child(4){left:55%;background:linear-gradient(#ffd166,transparent);animation-duration:4.8s;animation-delay:-2s}
-  #djBooth .dj-lasers i:nth-child(5){left:72%;background:linear-gradient(#ff4fd8,transparent);animation-duration:3.4s;animation-delay:-1.4s}
-  #djBooth .dj-lasers i:nth-child(6){left:88%;background:linear-gradient(#22d3ee,transparent);animation-duration:4.1s;animation-delay:-2.6s}
-  @keyframes laserSweep{0%{transform:rotate(-24deg) scaleY(.55)}50%{transform:rotate(2deg) scaleY(1)}100%{transform:rotate(26deg) scaleY(.6)}}
-  @keyframes laserHue{to{filter:blur(1.2px) hue-rotate(360deg)}}
-  #djBooth.on .dj-platter{animation:djSpin 2.6s linear infinite}
-  #djBooth.on .dj-platter.r{animation-duration:2.2s;animation-direction:reverse}
+  #djBooth .dj-venue{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(120,20,60,.55),transparent 55%),radial-gradient(ellipse at 20% 60%,rgba(30,60,160,.5),transparent 55%),radial-gradient(ellipse at 85% 55%,rgba(140,20,90,.45),transparent 55%),linear-gradient(180deg,#05030a 0%,#0a0512 55%,#05030a 100%)}
+  #djBooth .dj-venue::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 35%,rgba(0,0,0,.75) 100%)}
+  #djLaserCanvas{position:absolute;left:-12%;top:-14%;width:124%;height:128%;z-index:1;pointer-events:none;mix-blend-mode:screen}
+  #djBooth .dj-rig{position:absolute;left:0;right:0;top:0;height:120px;z-index:3;background:linear-gradient(180deg,rgba(8,5,14,.95),rgba(8,5,14,.35) 70%,transparent);border-bottom:1px solid rgba(255,60,120,.25);box-shadow:0 0 40px rgba(255,40,100,.25)}
+  #djBooth .dj-rig::before{content:"";position:absolute;left:6%;right:6%;top:22px;height:10px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.12) 0 2px,transparent 2px 26px);opacity:.6}
+  #djBooth .dj-array{position:absolute;top:54px;width:120px;height:430px;z-index:4;display:flex;flex-direction:column;gap:6px;filter:drop-shadow(0 12px 20px rgba(0,0,0,.7))}
+  #djBooth .dj-array.l{left:38px;transform:perspective(600px) rotateY(12deg)}
+  #djBooth .dj-array.r{right:38px;transform:perspective(600px) rotateY(-12deg)}
+  #djBooth .dj-array i{flex:1;border-radius:6px;background:linear-gradient(180deg,#16101f,#07050b);border:1px solid rgba(255,70,120,.25);position:relative;box-shadow:inset 0 0 18px #000}
+  #djBooth .dj-array i::before,#djBooth .dj-array i::after{content:"";position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 40% 35%,#2a2038,#050308 72%);border:1px solid rgba(255,80,130,.25)}
+  #djBooth .dj-array i::before{top:9px;width:64px;height:64px}
+  #djBooth .dj-array i::after{bottom:9px;width:44px;height:44px}
+  #djBooth .dj-ledwall{position:absolute;left:50%;bottom:190px;transform:translateX(-50%);width:660px;height:260px;z-index:3;clip-path:polygon(10% 0,90% 0,100% 100%,0 100%);background:linear-gradient(180deg,#1a0a14,#0a0510);border-top:2px solid rgba(255,70,120,.7);box-shadow:0 0 60px rgba(255,30,90,.35)}
+  #djBooth .dj-ledwall .dj-tri{position:absolute;left:50%;top:12px;transform:translateX(-50%);width:0;height:0;border-left:90px solid transparent;border-right:90px solid transparent;border-bottom:150px solid rgba(255,45,85,.55);filter:drop-shadow(0 0 22px rgba(255,45,85,.9))}
+  #djBooth .dj-ledwall .dj-tri.t2{top:38px;border-left-width:70px;border-right-width:70px;border-bottom-width:110px;border-bottom-color:rgba(70,120,255,.6);filter:drop-shadow(0 0 22px rgba(70,120,255,.9))}
+  #djBooth .dj-ledwall b{position:absolute;left:0;right:0;bottom:22px;text-align:center;font:900 34px/1 ui-monospace,Consolas,monospace;letter-spacing:8px;color:#fff;text-shadow:0 0 10px #ff2d55,0 0 26px #ff2d55,0 0 50px #2f7bff}
+  #djBooth .dj-sign{position:absolute;left:50%;top:52px;transform:translateX(-50%);font:900 26px/1 ui-monospace,Consolas,monospace;letter-spacing:8px;color:#fff;text-shadow:0 0 8px #ff2d55,0 0 24px #ff2d55,0 0 46px #2f7bff;white-space:nowrap;z-index:5}
+  #djBooth .dj-riser{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:840px;height:190px;z-index:5;clip-path:polygon(6% 0,94% 0,100% 100%,0 100%);background:linear-gradient(180deg,#1e1020 0%,#120a18 48%,#07040a 100%);border-top:2px solid rgba(255,70,120,.6);box-shadow:0 -8px 50px rgba(255,40,100,.35)}
+  #djBooth .dj-riser span{position:absolute;left:50%;top:52px;transform:translateX(-50%);font:900 36px/1 ui-monospace,Consolas,monospace;letter-spacing:12px;color:rgba(255,235,245,.92);text-shadow:0 0 10px #ff2d55,0 0 30px #ff2d55,0 0 60px #2f7bff}
+  #djBooth .dj-desk{position:absolute;left:50%;bottom:190px;transform:translateX(-50%);width:620px;height:150px;z-index:6;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,#251626,#0d0712 75%);border:1px solid rgba(255,70,120,.45);box-shadow:0 -6px 46px rgba(255,45,85,.35)}
+  #djBooth .dj-platter{position:absolute;top:-46px;width:140px;height:140px;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,#18101f 0 2px,#0a060d 2px 4px);border:3px solid #2b2038;box-shadow:0 0 0 4px rgba(255,45,85,.18),0 10px 22px rgba(0,0,0,.6)}
+  #djBooth .dj-platter.l{left:56px}
+  #djBooth .dj-platter.r{right:56px}
+  #djBooth .dj-platter span{position:absolute;left:50%;top:50%;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;background:radial-gradient(circle,#ff2d55,#2f7bff);box-shadow:0 0 16px rgba(255,45,85,.9)}
+  #djBooth .dj-platter::after{content:"";position:absolute;left:50%;top:8px;width:2px;height:48px;margin-left:-1px;background:linear-gradient(#ff6b8a,transparent);transform-origin:bottom center}
+  #djBooth .dj-mixer{position:absolute;left:50%;top:22px;transform:translateX(-50%);width:190px;height:70px;border-radius:8px;background:#08050c;border:1px solid rgba(255,70,120,.35);display:flex;align-items:center;justify-content:center;gap:10px}
+  #djBooth .dj-mixer b{width:7px;height:34px;border-radius:4px;background:linear-gradient(#ff2d55,#2f7bff);box-shadow:0 0 10px rgba(255,45,85,.7)}
+  #djBooth .dj-led{position:absolute;left:8px;right:8px;bottom:8px;height:8px;border-radius:4px;background:repeating-linear-gradient(90deg,#ff2d55 0 10px,#2f7bff 10px 20px,#fff 20px 24px);filter:blur(.4px);opacity:.85;animation:djLed 1s linear infinite}
+  @keyframes djLed{0%,100%{opacity:.5}50%{opacity:1}}
+  #djBooth .dj-crowd{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:1500px;height:190px;z-index:9;pointer-events:none}
+  #djBooth .dj-crowd i{position:absolute;bottom:0;width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 50% 35%,#1a1224,#020104 72%);box-shadow:0 -4px 22px rgba(0,0,0,.9)}
+  #djBooth .dj-crowd i::before{content:"";position:absolute;left:50%;bottom:60px;width:9px;height:86px;background:#05030a;border-radius:5px;transform-origin:bottom center}
+  #djBooth .dj-crowd i::after{content:"";position:absolute;left:50%;bottom:138px;width:20px;height:20px;border-radius:50%;background:#07040c;box-shadow:0 0 14px rgba(255,45,85,.35)}
+  #djBooth .dj-crowd i:nth-child(1){left:1%;width:92px;height:92px}
+  #djBooth .dj-crowd i:nth-child(2){left:10%;height:70px;width:70px}
+  #djBooth .dj-crowd i:nth-child(3){left:20%;width:96px;height:96px}
+  #djBooth .dj-crowd i:nth-child(4){left:31%;height:74px;width:74px}
+  #djBooth .dj-crowd i:nth-child(5){left:42%;width:90px;height:90px}
+  #djBooth .dj-crowd i:nth-child(6){left:54%;height:72px;width:72px}
+  #djBooth .dj-crowd i:nth-child(7){left:64%;width:94px;height:94px}
+  #djBooth .dj-crowd i:nth-child(8){left:76%;height:68px;width:68px}
+  #djBooth .dj-crowd i:nth-child(9){left:86%;width:88px;height:88px}
+  #djBooth .dj-crowd i:nth-child(10){left:95%;height:76px;width:76px}
+  #djBooth .dj-strobe{position:absolute;inset:0;background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.25),transparent 55%);opacity:0;z-index:8;pointer-events:none}
+  #djBooth.on .dj-strobe{animation:djStrobe 2.6s ease-in-out infinite}
+  @keyframes djStrobe{0%,70%,100%{opacity:0}74%{opacity:.9}78%{opacity:0}82%{opacity:.55}86%{opacity:0}}
+  #djBooth.on .dj-platter{animation:djSpin 2.4s linear infinite}
+  #djBooth.on .dj-platter.r{animation-duration:2s;animation-direction:reverse}
   @keyframes djSpin{to{transform:rotate(360deg)}}
-  #djBooth.on .dj-speaker i{animation:djPump .55s ease-in-out infinite alternate}
-  #djBooth.on .dj-speaker.r i{animation-delay:.16s}
-  @keyframes djPump{from{transform:scale(.94);box-shadow:inset 0 0 16px #000}to{transform:scale(1.05);box-shadow:inset 0 0 22px #ff4fd8,0 0 18px rgba(255,79,216,.4)}}
-  #djBooth .dj-riser::before{content:"LIVE";position:absolute;left:50%;top:58px;transform:translateX(-50%);font:900 40px/1 ui-monospace,Consolas,monospace;letter-spacing:10px;color:rgba(255,216,255,.9);text-shadow:0 0 10px #ff4fd8,0 0 30px #a855f7;opacity:.85}
-  #djBooth .dj-crowd{position:absolute;left:50%;bottom:-64px;transform:translateX(-50%);width:1300px;height:170px;z-index:9;pointer-events:none}
-  #djBooth .dj-crowd i{position:absolute;bottom:0;width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 50% 35%,#241a33,#050308 70%);box-shadow:0 -6px 22px rgba(0,0,0,.8);filter:blur(.4px)}
-  #djBooth .dj-crowd i:nth-child(1){left:2%;width:86px;height:86px}
-  #djBooth .dj-crowd i:nth-child(2){left:14%;height:66px;width:66px}
-  #djBooth .dj-crowd i:nth-child(3){left:26%;width:92px;height:92px}
-  #djBooth .dj-crowd i:nth-child(4){left:42%;height:70px;width:70px}
-  #djBooth .dj-crowd i:nth-child(5){left:55%;width:88px;height:88px}
-  #djBooth .dj-crowd i:nth-child(6){left:70%;height:72px;width:72px}
-  #djBooth .dj-crowd i:nth-child(7){left:84%;width:84px;height:84px}
-  #djBooth .dj-crowd i::after{content:"";position:absolute;left:50%;top:-10px;transform:translateX(-50%);width:34%;height:34%;border-radius:50%;background:rgba(255,79,216,.18);filter:blur(6px)}
-  /* 大音响 */
-  #djBooth .dj-speaker{width:190px;height:520px;border-radius:18px;gap:22px;padding:22px 0;justify-content:flex-start}
-  #djBooth .dj-speaker i{width:128px;height:128px}
-  #djBooth .dj-speaker::after{content:"";position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:150px;height:110px;border-radius:12px;background:linear-gradient(180deg,#241a33,#0b0812);border:1px solid rgba(190,140,255,.3);box-shadow:inset 0 0 24px rgba(255,79,216,.25)}
-  #djBooth .dj-speaker::before{content:"";position:absolute;left:50%;bottom:36px;transform:translateX(-50%);width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 42% 38%,#3a2c52,#07050b 72%);border:2px solid rgba(190,140,255,.3);z-index:2;box-shadow:inset 0 0 18px #000}
-  /* 激光：宽光柱 + 雾 */
-  #djBooth .dj-lasers{width:2200px;height:1050px;top:-360px;overflow:visible;mix-blend-mode:screen}
-  #djBooth .dj-lasers::before{content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);width:1400px;height:520px;background:radial-gradient(ellipse at 50% 0,rgba(168,85,247,.28),transparent 65%);filter:blur(20px)}
-  #djBooth .dj-lasers i{width:260px;height:1000px;border-radius:0;filter:blur(7px);opacity:.55;clip-path:polygon(47% 0,53% 0,100% 100%,0 100%);background:linear-gradient(180deg,rgba(255,79,216,.65),rgba(255,79,216,.12) 55%,transparent 82%)}
-  #djBooth .dj-lasers i:nth-child(1){left:2%;animation-duration:5.2s;background:linear-gradient(180deg,rgba(255,79,216,.7),rgba(255,79,216,.12) 55%,transparent 82%)}
-  #djBooth .dj-lasers i:nth-child(2){left:14%;animation-duration:6.4s;animation-delay:-1.6s;background:linear-gradient(180deg,rgba(34,211,238,.65),rgba(34,211,238,.1) 55%,transparent 82%)}
-  #djBooth .dj-lasers i:nth-child(3){left:26%;animation-duration:4.6s;animation-delay:-.8s;background:linear-gradient(180deg,rgba(168,85,247,.75),rgba(168,85,247,.12) 55%,transparent 82%)}
-  #djBooth .dj-lasers i:nth-child(4){left:38%;animation-duration:6.8s;animation-delay:-2.4s;background:linear-gradient(180deg,rgba(255,209,102,.6),rgba(255,209,102,.1) 55%,transparent 82%)}
-  #djBooth .dj-lasers i:nth-child(5){left:50%;animation-duration:5.6s;animation-delay:-1s;background:linear-gradient(180deg,rgba(255,79,216,.7),rgba(255,79,216,.1) 55%,transparent 82%)}
-  #djBooth .dj-lasers i:nth-child(6){left:62%;animation-duration:6.2s;animation-delay:-2.8s;background:linear-gradient(180deg,rgba(34,211,238,.65),rgba(34,211,238,.1) 55%,transparent 82%)}
-  #djBooth .dj-lasers i:nth-child(7){left:74%;animation-duration:4.9s;animation-delay:-1.8s;background:linear-gradient(180deg,rgba(168,85,247,.7),rgba(168,85,247,.1) 55%,transparent 82%)}
-  #djBooth .dj-lasers i:nth-child(8){left:86%;animation-duration:5.8s;animation-delay:-2.2s;background:linear-gradient(180deg,rgba(255,209,102,.6),rgba(255,209,102,.1) 55%,transparent 82%)}
-  #djBooth .dj-haze{position:absolute;left:50%;bottom:60px;transform:translateX(-50%);width:1500px;height:520px;background:radial-gradient(ellipse at 50% 100%,rgba(124,58,237,.22),transparent 62%);filter:blur(18px);z-index:1;pointer-events:none}
-  #djBooth .dj-strobe{position:absolute;inset:-200px -300px;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.22),transparent 55%);opacity:0;z-index:8;pointer-events:none}
-  #djBooth.on .dj-strobe{animation:djStrobe 2.8s ease-in-out infinite}
-  @keyframes djStrobe{0%,72%,100%{opacity:0}76%{opacity:.9}80%{opacity:0}84%{opacity:.5}88%{opacity:0}}
-  @keyframes laserSweep{0%{transform:rotate(-16deg) scaleY(.7)}50%{transform:rotate(0deg) scaleY(1)}100%{transform:rotate(16deg) scaleY(.75)}}
-  #stage.dj .pet{bottom:260px !important;transition:bottom .45s ease}
-  #stage.v #djBooth{width:900px;height:760px;bottom:100px;transform:translateX(-50%) scale(1.05)}
-  #stage.v #djBooth .dj-riser{width:800px;height:300px}
+  #djBooth.on .dj-array i::before{animation:djPump .5s ease-in-out infinite alternate}
+  @keyframes djPump{from{box-shadow:inset 0 0 18px #000}to{box-shadow:inset 0 0 20px #ff2d55,0 0 12px rgba(255,45,85,.5)}}
+  #stage.dj .pet{bottom:190px !important;transition:bottom .5s ease}
+  #stage.v #djBooth .dj-desk{bottom:210px}
   #stage.video #djBooth,#stage.game #djBooth{display:none}
-  #djBooth:not(.on){pointer-events:none}
 .pet{position:absolute;left:50%;bottom:206px;transform:translateX(-50%);width:440px;height:600px;
   display:flex;align-items:flex-end;justify-content:center}
 .pet .halo{position:absolute;left:50%;bottom:40px;width:420px;height:420px;transform:translateX(-50%);
@@ -390,18 +371,22 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   <div class="pool" id="pool"></div>
 
   <div id="djBooth">
-    <div class="dj-lasers"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="dj-venue"></div>
+    <canvas id="djLaserCanvas"></canvas>
+    <div class="dj-rig"></div>
+    <div class="dj-array l"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="dj-array r"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="dj-ledwall"><div class="dj-tri"></div><div class="dj-tri t2"></div><b>XIAOXI</b></div>
     <div class="dj-sign">XIAOXI · DJ</div>
-    <div class="dj-riser"></div>
-    <div class="dj-speaker l"><i></i><i></i></div>
-    <div class="dj-speaker r"><i></i><i></i></div>
+    <div class="dj-riser"><span>LIVE</span></div>
     <div class="dj-desk">
       <div class="dj-platter l"><span></span></div>
       <div class="dj-mixer"><b></b><b></b><b></b><b></b></div>
       <div class="dj-platter r"><span></span></div>
       <div class="dj-led"></div>
     </div>
-    <div class="dj-crowd"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="dj-crowd"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="dj-strobe"></div>
   </div>
 
   <div class="pet">
@@ -651,12 +636,80 @@ function showNotice(text, ok){
 
   var djEnabled = true;
   var songPlaying = false;
+  var djRaf = 0, djBeams = [], djLast = 0;
+  function djLaserBuild() {
+    var cv = document.getElementById("djLaserCanvas");
+    if (!cv) return null;
+    if (!cv.width || cv.width < 100) { cv.width = 1600; cv.height = 1000; }
+    var g = cv.getContext("2d");
+    if (!djBeams.length) {
+      var cols = ["#ff2d55", "#2f7bff", "#a855f7", "#ff5c8a", "#4d9bff", "#ffffff"];
+      for (var k = 0; k < 30; k++) {
+        djBeams.push({ sx: Math.random() * 1600, tx: Math.random() * 1600, sp: 0.4 + Math.random() * 1.2, ph: Math.random() * 6.28, c: cols[k % cols.length], w: 1 + Math.random() * 2.2 });
+      }
+    }
+    return { cv: cv, g: g };
+  }
+  function djLaserFrame(ts) {
+    var o = djLaserBuild();
+    if (!o) return;
+    var g = o.g, W = o.cv.width, H = o.cv.height;
+    g.clearRect(0, 0, W, H);
+    var t = ts / 1000;
+    g.save();
+    g.globalCompositeOperation = "lighter";
+    // 背景红蓝舞台光
+    var bg = g.createRadialGradient(W * 0.5, H * 0.45, 40, W * 0.5, H * 0.45, W * 0.7);
+    bg.addColorStop(0, "rgba(255,45,85,.10)");
+    bg.addColorStop(0.45, "rgba(47,123,255,.07)");
+    bg.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    // 交叉激光
+    for (var i = 0; i < djBeams.length; i++) {
+      var b = djBeams[i];
+      var tx = b.tx + Math.sin(t * b.sp + b.ph) * 320;
+      var grad = g.createLinearGradient(b.sx, -40, tx, H + 40);
+      grad.addColorStop(0, b.c);
+      grad.addColorStop(0.55, b.c);
+      grad.addColorStop(1, "rgba(0,0,0,0)");
+      g.strokeStyle = grad;
+      g.globalAlpha = 0.55 + 0.3 * Math.sin(t * 2 + b.ph);
+      g.lineWidth = b.w;
+      g.shadowBlur = 16;
+      g.shadowColor = b.c;
+      g.beginPath(); g.moveTo(b.sx, -40); g.lineTo(tx, H + 40); g.stroke();
+    }
+    // 横向扫射
+    g.globalAlpha = 0.5;
+    for (var j = 0; j < 7; j++) {
+      var y = H * (0.18 + j * 0.095) + Math.sin(t * 0.8 + j) * 26;
+      var lg = g.createLinearGradient(0, y, W, y);
+      lg.addColorStop(0, "rgba(255,45,85,0)");
+      lg.addColorStop(0.5, j % 2 ? "#2f7bff" : "#ff2d55");
+      lg.addColorStop(1, "rgba(47,123,255,0)");
+      g.strokeStyle = lg; g.lineWidth = 1.2; g.shadowBlur = 12;
+      g.beginPath(); g.moveTo(0, y); g.lineTo(W, y + Math.sin(t + j) * 20); g.stroke();
+    }
+    g.restore();
+    djRaf = requestAnimationFrame(djLaserFrame);
+  }
+  function djLaserStart() {
+    if (djRaf) return;
+    djRaf = requestAnimationFrame(djLaserFrame);
+  }
+  function djLaserStop() {
+    if (djRaf) cancelAnimationFrame(djRaf);
+    djRaf = 0;
+    var cv = document.getElementById("djLaserCanvas");
+    if (cv) { var g = cv.getContext("2d"); g.clearRect(0, 0, cv.width, cv.height); }
+  }
   function djShow(on) {
     var b = document.getElementById("djBooth");
     if (!b) return;
     b.classList.toggle("on", Boolean(on) && djEnabled);
     var st = document.getElementById("stage");
     if (st) st.classList.toggle("dj", Boolean(on) && djEnabled);
+    if (Boolean(on) && djEnabled) djLaserStart(); else djLaserStop();
   }
 function setSong(d){
     songPlaying = !!d.playing;
