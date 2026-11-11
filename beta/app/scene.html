@@ -902,12 +902,12 @@ function showNotice(text, ok){
         for (var i = 0; i < d.length; i += 4) {
           var r = d[i], g = d[i + 1], b = d[i + 2];
           var l = r > g ? r : g; if (b > l) l = b;
-          if (l < 8) d[i + 3] = 0;
-          else if (l < 30) d[i + 3] = Math.round((l - 8) / 22 * 255);
+          if (l < 4) d[i + 3] = 0;
+          else if (l < 24) d[i + 3] = Math.round((l - 4) / 20 * 255);
         }
         var amask = new Uint8ClampedArray(w * h);
         for (var mi = 0; mi < amask.length; mi++) amask[mi] = d[mi * 4 + 3];
-        for (var pass = 0; pass < 4; pass++) {
+        for (var pass = 0; pass < 1; pass++) {
           var next = new Uint8ClampedArray(amask);
           for (var yy = 1; yy < h - 1; yy++) {
             for (var xx = 1; xx < w - 1; xx++) {
