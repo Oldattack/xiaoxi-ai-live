@@ -64,7 +64,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #djBooth .dj-sign{position:absolute;left:50%;top:52px;transform:translateX(-50%);font:900 26px/1 ui-monospace,Consolas,monospace;letter-spacing:8px;color:#fff;text-shadow:0 0 8px #ff2d55,0 0 24px #ff2d55,0 0 46px #2f7bff;white-space:nowrap;z-index:5}
   #djBooth .dj-riser{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:840px;height:190px;z-index:5;clip-path:polygon(6% 0,94% 0,100% 100%,0 100%);background:linear-gradient(180deg,#1e1020 0%,#120a18 48%,#07040a 100%);border-top:2px solid rgba(255,70,120,.6);box-shadow:0 -8px 50px rgba(255,40,100,.35)}
   #djBooth .dj-riser span{position:absolute;left:50%;top:52px;transform:translateX(-50%);font:900 36px/1 ui-monospace,Consolas,monospace;letter-spacing:12px;color:rgba(255,235,245,.92);text-shadow:0 0 10px #ff2d55,0 0 30px #ff2d55,0 0 60px #2f7bff}
-  #djBooth .dj-desk{position:absolute;left:50%;bottom:190px;transform:translateX(-50%);width:620px;height:150px;z-index:6;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,#251626,#0d0712 75%);border:1px solid rgba(255,70,120,.45);box-shadow:0 -6px 46px rgba(255,45,85,.35)}
+  #djBooth .dj-desk{position:absolute;left:50%;bottom:190px;transform:translateX(-50%);width:620px;height:150px;z-index:8;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,#251626,#0d0712 75%);border:1px solid rgba(255,70,120,.45);box-shadow:0 -6px 46px rgba(255,45,85,.35)}
   #djBooth .dj-platter{position:absolute;top:-46px;width:140px;height:140px;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,#18101f 0 2px,#0a060d 2px 4px);border:3px solid #2b2038;box-shadow:0 0 0 4px rgba(255,45,85,.18),0 10px 22px rgba(0,0,0,.6)}
   #djBooth .dj-platter.l{left:56px}
   #djBooth .dj-platter.r{right:56px}
@@ -96,7 +96,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   @keyframes djSpin{to{transform:rotate(360deg)}}
   #djBooth.on .dj-array i::before{animation:djPump .5s ease-in-out infinite alternate}
   @keyframes djPump{from{box-shadow:inset 0 0 18px #000}to{box-shadow:inset 0 0 20px #ff2d55,0 0 12px rgba(255,45,85,.5)}}
-  #stage.dj .pet{bottom:190px !important;z-index:7 !important;transition:bottom .5s ease}
+  #stage.dj .pet{bottom:190px !important;z-index:7 !important;transform:translateX(-50%) scale(.86);transform-origin:bottom center;transition:bottom .5s ease,transform .5s ease}
   #stage.v #djBooth .dj-desk{bottom:210px}
   #stage.video #djBooth,#stage.game #djBooth{display:none}
 .pet{position:absolute;left:50%;bottom:206px;transform:translateX(-50%);width:440px;height:600px;
