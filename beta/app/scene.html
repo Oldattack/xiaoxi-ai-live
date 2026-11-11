@@ -96,6 +96,16 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   @keyframes djSpin{to{transform:rotate(360deg)}}
   #djBooth.on .dj-array i::before{animation:djPump .5s ease-in-out infinite alternate}
   @keyframes djPump{from{box-shadow:inset 0 0 18px #000}to{box-shadow:inset 0 0 20px #ff2d55,0 0 12px rgba(255,45,85,.5)}}
+  #djBooth .dj-ledwall{overflow:hidden}
+  #djBooth #djCover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:.92;filter:saturate(1.15) contrast(1.05)}
+  #djBooth .dj-ledwall::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.55) 65%,rgba(0,0,0,.85));box-shadow:inset 0 0 60px rgba(255,45,85,.35)}
+  #djBooth .dj-eq{position:absolute;left:24px;right:24px;bottom:34px;height:54px;display:flex;align-items:flex-end;gap:5px;z-index:2;opacity:.9;mix-blend-mode:screen}
+  #djBooth .dj-eq b{flex:1;height:30%;border-radius:2px 2px 0 0;background:linear-gradient(180deg,#7fd4ff,#ff2d55);box-shadow:0 0 10px rgba(255,45,85,.6);animation:djEq 1s ease-in-out infinite alternate}
+  #djBooth .dj-eq b:nth-child(2n){animation-duration:.72s;animation-delay:-.2s}
+  #djBooth .dj-eq b:nth-child(3n){animation-duration:1.35s;animation-delay:-.5s}
+  #djBooth .dj-eq b:nth-child(5n){animation-duration:.55s;animation-delay:-.32s}
+  @keyframes djEq{from{height:12%}to{height:96%}}
+  #djBooth .dj-ledlabel{position:absolute;left:0;right:0;top:16px;text-align:center;font:900 20px/1 ui-monospace,Consolas,monospace;letter-spacing:6px;color:#fff;text-shadow:0 0 8px #ff2d55,0 0 24px #2f7bff;z-index:2;opacity:.9}
   #stage:not(.dj) > .dj-desk{display:none}
   #stage > .dj-desk{position:absolute;left:50%;bottom:190px;transform:translateX(-50%);width:620px;height:150px;z-index:8}
   #stage.dj .pet{bottom:190px !important;z-index:7 !important;transform:translateX(-50%) scale(.86);transform-origin:bottom center;transition:bottom .5s ease,transform .5s ease}
@@ -378,10 +388,9 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <div class="dj-rig"></div>
     <div class="dj-array l"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="dj-array r"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <div class="dj-ledwall"><div class="dj-tri"></div><div class="dj-tri t2"></div><b>XIAOXI</b></div>
+    <div class="dj-ledwall"><img id="djCover" alt=""><div class="dj-eq"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div><div class="dj-ledlabel">XIAOXI · LIVE</div></div>
     <div class="dj-sign">XIAOXI · DJ</div>
     <div class="dj-riser"><span>LIVE</span></div>
-    <div class="dj-crowd"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="dj-strobe"></div>
   </div>
 
@@ -680,6 +689,36 @@ function showNotice(text, ok){
       g.shadowBlur = 16;
       g.shadowColor = b.c;
       g.beginPath(); g.moveTo(b.sx, -40); g.lineTo(tx, H + 40); g.stroke();
+    }
+    // 摇头灯：4 个灯头来回扫
+    var djHeads = [
+      { x: 260, c: "127,212,255", sp: 0.55, ph: 0 },
+      { x: 640, c: "255,92,138", sp: 0.42, ph: 1.7 },
+      { x: 980, c: "179,136,255", sp: 0.5, ph: 3.1 },
+      { x: 1360, c: "255,209,102", sp: 0.38, ph: 4.4 }
+    ];
+    for (var h = 0; h < djHeads.length; h++) {
+      var hd = djHeads[h];
+      var ang = Math.sin(t * hd.sp + hd.ph) * 0.42;
+      var tip = hd.x + Math.tan(ang) * 1250;
+      var cone = g.createLinearGradient(hd.x, 0, tip, H);
+      cone.addColorStop(0, "rgba(" + hd.c + ",.55)");
+      cone.addColorStop(0.5, "rgba(" + hd.c + ",.18)");
+      cone.addColorStop(1, "rgba(" + hd.c + ",0)");
+      g.fillStyle = cone;
+      g.globalAlpha = 0.75;
+      g.beginPath();
+      g.moveTo(hd.x - 14, -10);
+      g.lineTo(hd.x + 14, -10);
+      g.lineTo(tip + 210, H + 40);
+      g.lineTo(tip - 210, H + 40);
+      g.closePath();
+      g.fill();
+      // 灯头亮点
+      g.globalAlpha = 1;
+      g.fillStyle = "rgba(" + hd.c + ",.95)";
+      g.shadowBlur = 30;
+      g.beginPath(); g.arc(hd.x, 10, 9, 0, Math.PI * 2); g.fill();
     }
     // 横向扫射
     g.globalAlpha = 0.5;
