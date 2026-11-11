@@ -43,6 +43,32 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   background:radial-gradient(50% 50% at 50% 50%, rgba(120,90,255,.30), transparent 70%);filter:blur(20px)}
 
 /* ── 模型区（正面立绘，像素风） ── */
+  #djBooth{position:absolute;left:50%;bottom:150px;transform:translateX(-50%);width:820px;height:470px;z-index:2;opacity:0;pointer-events:none;transition:opacity .5s ease}
+  #djBooth.on{opacity:1}
+  #djBooth .dj-sign{position:absolute;left:50%;top:0;transform:translateX(-50%);font:800 30px/1 ui-monospace,Consolas,monospace;letter-spacing:5px;color:#ffd8ff;text-shadow:0 0 8px #ff4fd8,0 0 22px #a855f7,0 0 40px #7c3aed;white-space:nowrap;opacity:.95}
+  #djBooth .dj-speaker{position:absolute;bottom:0;width:108px;height:300px;border-radius:14px;background:linear-gradient(180deg,#1b1626,#0d0a14);border:1px solid rgba(190,140,255,.35);box-shadow:0 10px 30px rgba(0,0,0,.5),inset 0 0 24px rgba(124,58,237,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+  #djBooth .dj-speaker.l{left:0}
+  #djBooth .dj-speaker.r{right:0}
+  #djBooth .dj-speaker i{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3a2c52,#0a0810 70%);border:2px solid rgba(190,140,255,.28);box-shadow:inset 0 0 16px #000}
+  #djBooth .dj-desk{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:560px;height:132px;border-radius:16px 16px 10px 10px;background:linear-gradient(180deg,#241a33,#120d1c 70%,#0b0812);border:1px solid rgba(190,140,255,.4);box-shadow:0 -4px 40px rgba(168,85,247,.28),inset 0 1px 0 rgba(255,255,255,.09)}
+  #djBooth .dj-platter{position:absolute;top:-42px;width:132px;height:132px;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,#16101f 0 2px,#0b0811 2px 4px);border:3px solid #2b2038;box-shadow:0 0 0 4px rgba(255,79,216,.14),0 10px 22px rgba(0,0,0,.55)}
+  #djBooth .dj-platter.l{left:52px}
+  #djBooth .dj-platter.r{right:52px}
+  #djBooth .dj-platter span{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:radial-gradient(circle,#ff4fd8,#7c3aed);box-shadow:0 0 14px rgba(255,79,216,.8)}
+  #djBooth .dj-platter::after{content:"";position:absolute;left:50%;top:8px;width:2px;height:44px;margin-left:-1px;background:linear-gradient(#ff8ae2,transparent);transform-origin:bottom center}
+  #djBooth .dj-mixer{position:absolute;left:50%;top:20px;transform:translateX(-50%);width:180px;height:66px;border-radius:10px;background:#0b0812;border:1px solid rgba(190,140,255,.3);display:flex;align-items:center;justify-content:center;gap:10px}
+  #djBooth .dj-mixer b{width:7px;height:30px;border-radius:4px;background:linear-gradient(#ff4fd8,#7c3aed);box-shadow:0 0 10px rgba(255,79,216,.55)}
+  #djBooth .dj-led{position:absolute;left:8px;right:8px;bottom:8px;height:7px;border-radius:6px;background:repeating-linear-gradient(90deg,#ff4fd8 0 10px,#7c3aed 10px 20px,#22d3ee 20px 30px);filter:blur(.6px);opacity:.75;animation:djLed 1.2s linear infinite}
+  @keyframes djLed{0%{opacity:.45}50%{opacity:.95}100%{opacity:.45}}
+  #djBooth.on .dj-platter{animation:djSpin 2.6s linear infinite}
+  #djBooth.on .dj-platter.r{animation-duration:2.2s;animation-direction:reverse}
+  @keyframes djSpin{to{transform:rotate(360deg)}}
+  #djBooth.on .dj-speaker i{animation:djPump .55s ease-in-out infinite alternate}
+  #djBooth.on .dj-speaker.r i{animation-delay:.16s}
+  @keyframes djPump{from{transform:scale(.94);box-shadow:inset 0 0 16px #000}to{transform:scale(1.04);box-shadow:inset 0 0 22px #ff4fd8,0 0 18px rgba(255,79,216,.4)}}
+  #stage.v #djBooth{bottom:300px;transform:translateX(-50%) scale(1.05)}
+  #stage.video #djBooth,#stage.game #djBooth{display:none}
+  #djBooth:not(.on) .dj-sign{opacity:0}
 .pet{position:absolute;left:50%;bottom:206px;transform:translateX(-50%);width:440px;height:600px;
   display:flex;align-items:flex-end;justify-content:center}
 .pet .halo{position:absolute;left:50%;bottom:40px;width:420px;height:420px;transform:translateX(-50%);
@@ -314,6 +340,18 @@ html,body{height:100%;background:#05060a;overflow:hidden;
 
   <div class="pool" id="pool"></div>
 
+  <div id="djBooth">
+    <div class="dj-sign">XIAOXI · DJ</div>
+    <div class="dj-speaker l"><i></i><i></i></div>
+    <div class="dj-speaker r"><i></i><i></i></div>
+    <div class="dj-desk">
+      <div class="dj-platter l"><span></span></div>
+      <div class="dj-mixer"><b></b><b></b><b></b><b></b></div>
+      <div class="dj-platter r"><span></span></div>
+      <div class="dj-led"></div>
+    </div>
+  </div>
+
   <div class="pet">
     <div class="halo"></div>
     <img class="fig" id="fig" src="sprites_hd/idle.png" alt="小汐">
@@ -439,6 +477,8 @@ fetch('/api/state').then(function(r){ return r.json(); }).then(function(j){
   var l = j && j.config && j.config.scene && j.config.scene.layout;
   if (l) { layoutMode = l; fit(); }
   if (j && j.config && j.config.avatar) applyAvatar(j.config.avatar);
+    if (j && j.config && j.config.scene && j.config.scene.dj) { djEnabled = j.config.scene.dj.enabled !== false; }
+    if (j && j.songs && j.songs.playing) { songPlaying = true; djShow(true); }
 }).catch(function(){});
 
 // ── 弹幕池 ──
@@ -557,7 +597,16 @@ function showNotice(text, ok){
   }, 5000);
 }
 
+  var djEnabled = true;
+  var songPlaying = false;
+  function djShow(on) {
+    var b = document.getElementById("djBooth");
+    if (!b) return;
+    b.classList.toggle("on", Boolean(on) && djEnabled);
+  }
 function setSong(d){
+    songPlaying = !!d.playing;
+    djShow(songPlaying);
   if (d.notice && d.notice.text) showNotice(d.notice.text, d.notice.ok);
   var p = d.playing;
   var wrap = document.getElementById('songs');
@@ -1312,6 +1361,7 @@ function speak(text, emotion){
     if (S0.layout) { layoutMode = S0.layout; fit(); }
     if (S0.bg) applyBg(S0.bg);
     if (S0.viz) { vizCfg.enabled = S0.viz.enabled !== false; if (!vizCfg.enabled) vizStop(); }
+      if (S0.dj) { djEnabled = S0.dj.enabled !== false; djShow(songPlaying); }
   } else if (d.kind === 'song-note') {
     showNotice(d.text, d.ok);
   } else if (d.kind === 'song') {
