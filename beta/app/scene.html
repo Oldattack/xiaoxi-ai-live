@@ -918,7 +918,10 @@ function setSong(d){
     djShow(songPlaying);
   if (d.notice && d.notice.text) showNotice(d.notice.text, d.notice.ok);
   var p = d.playing;
-  if (p && p.id && p.id !== lastActSong) { lastActSong = p.id; if (!actActive) actionStart(); }
+  if (p) {
+      if (p.id !== lastActSong) lastActSong = p.id;
+      if (!actActive) actionStart();
+    }
     if (!p) { clearTimeout(actStopTimer); actStopTimer = setTimeout(function () { if (!songPlaying) actionStop(); }, 450); }
   else if (!p) actionStop();
   var djName = document.getElementById("djSongName"), djArtist = document.getElementById("djSongArtist");
