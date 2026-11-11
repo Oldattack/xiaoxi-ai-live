@@ -435,6 +435,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <img class="fig" id="fig" src="sprites_hd/idle.png" alt="小汐">
     <video id="petVid" class="figvid" muted loop playsinline preload="auto"></video>
     <div class="emo" id="emo">开心</div>
+      <div class="grooveFx"><span class="glasses"></span><span class="hand l"></span><span class="hand r"></span></div>
   </div>
     <div class="dj-desk">
       <div class="dj-platter l"><span></span></div>
@@ -856,6 +857,8 @@ function showNotice(text, ok){
   }
 function setSong(d){
     songPlaying = !!d.playing;
+    var petEl0 = document.querySelector('.pet');
+    if (petEl0) petEl0.classList.toggle('groove', songPlaying);
     djShow(songPlaying);
   if (d.notice && d.notice.text) showNotice(d.notice.text, d.notice.ok);
   var p = d.playing;
