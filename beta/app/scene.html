@@ -757,6 +757,11 @@ function setSong(d){
     djShow(songPlaying);
   if (d.notice && d.notice.text) showNotice(d.notice.text, d.notice.ok);
   var p = d.playing;
+  var djCover = document.getElementById("djCover");
+  if (djCover) {
+    if (p && p.cover) { djCover.src = p.cover; djCover.style.display = "block"; }
+    else { djCover.removeAttribute("src"); djCover.style.display = "none"; }
+  }
   var wrap = document.getElementById('songs');
   if (!p) {
     wrap.classList.remove('playing');
