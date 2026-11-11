@@ -1,4 +1,4 @@
-小汐AI直播平台 v2.6.96
+小汐AI直播平台 v2.6.97
 
 AGENT.md
 VERSION
@@ -17,7 +17,7 @@ plugin/locale/zh.json
 plugin/package.json
 scene.html
 settings.html
-sprites_hd/actions/song-wave.mp4
+sprites_hd/actions/music-loop.mp4
 sprites_hd/angry.png
 sprites_hd/cry.png
 sprites_hd/happy.png

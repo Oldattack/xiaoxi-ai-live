@@ -1,10 +1,10 @@
 {
-  "version": "2.6.96",
+  "version": "2.6.97",
   "notes": "修复启动脚本行尾问题；插件安装改为正确的 DSH 注册方式；更新入口整合到主页与顶栏",
-  "package": "xiaoxi-ai-live-2.6.96.zip",
-  "size": 9525872,
-  "sha256": "04c6738406e22f4503766fadf79dab03847c9d28e22903e208ea51e9166776dd",
-  "publishedAt": "2026-11-11T12:02:34.833Z",
+  "package": "xiaoxi-ai-live-2.6.97.zip",
+  "size": 9525849,
+  "sha256": "24411abe40abda09dbaafa057af9d89df373263a6364fadb149c4275af8f40f6",
+  "publishedAt": "2026-11-11T12:04:15.763Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -90,8 +90,8 @@
     },
     {
       "path": "scene.html",
-      "size": 93092,
-      "sha256": "2a70895c3dbb519ae50b1c112734710891df1f6c37d3f408269d1b786a6cdb67"
+      "size": 93093,
+      "sha256": "cf8a4a7a79660f9edcfbf57edba986b3bba431987e5838d34bd4f1fb15613229"
     },
     {
       "path": "settings.html",
@@ -99,7 +99,7 @@
       "sha256": "ff6a4439376b61e38e890d5e739837fa0d1dd8bf2c4cd867e77c1d1b70c251f0"
     },
     {
-      "path": "sprites_hd/actions/song-wave.mp4",
+      "path": "sprites_hd/actions/music-loop.mp4",
       "size": 4941927,
       "sha256": "4583375b1e731fd86b0785910056036442f60b5eb329c51ac3df803e7cc90568"
     },
@@ -151,12 +151,12 @@
     {
       "path": "VERSION",
       "size": 7,
-      "sha256": "7e69ca6ad0a512f2319eb4615fc5fb2ab670abf2dadd70dda3290622c7ea750b"
+      "sha256": "589116ae563238a79056102c208869afcef014557b210a9b1008566339824a43"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 266799,
-      "sha256": "321d342f20ecd6474b7d2c3f0e07331589cb2f72e1c8672ef0ad9b3fe0246ebf"
+      "size": 266502,
+      "sha256": "7d353ffc5a1d00b5b549c88b951290de373cd243dbf1af2f051ce8200ccc1d8a"
     }
   ]
 }
