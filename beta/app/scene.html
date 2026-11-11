@@ -875,6 +875,56 @@ function showNotice(text, ok){
     if (st) st.classList.toggle("dj", Boolean(on) && djEnabled);
     if (Boolean(on) && djEnabled) djLaserStart(); else djLaserStop();
   }
+  var actVideo = document.getElementById("actVideo");
+  var actCanvas = document.getElementById("actCanvas");
+  var actCtx = actCanvas ? actCanvas.getContext("2d") : null;
+  var actActive = false, actRaf = 0, lastActSong = 0;
+  if (actCtx) actCtx.imageSmoothingEnabled = false;
+  function actionStop() {
+    actActive = false;
+    if (actRaf) cancelAnimationFrame(actRaf);
+    actRaf = 0;
+    if (actVideo) { try { actVideo.pause(); } catch (e) {} }
+    if (actCanvas) actCanvas.style.display = "none";
+    var petA = document.querySelector(".pet");
+    if (petA) petA.classList.remove("action");
+    var figA = document.getElementById("fig"), pvA = document.getElementById("petVid");
+    if (typeof AVATAR !== "undefined" && AVATAR && AVATAR.kind === "video" && pvA) { pvA.style.display = "block"; if (figA) figA.style.display = "none"; }
+    else { if (figA) figA.style.display = ""; if (pvA) pvA.style.display = "none"; }
+  }
+  function actionLoop() {
+    if (!actActive || !actVideo || !actCtx) return;
+    if (actVideo.readyState >= 2) {
+      var w = actCanvas.width, h = actCanvas.height;
+      actCtx.drawImage(actVideo, 0, 0, w, h);
+      try {
+        var img = actCtx.getImageData(0, 0, w, h), d = img.data;
+        for (var i = 0; i < d.length; i += 4) {
+          var r = d[i], g = d[i + 1], b = d[i + 2];
+          var l = r > g ? r : g; if (b > l) l = b;
+          if (l < 8) d[i + 3] = 0;
+          else if (l < 30) d[i + 3] = Math.round((l - 8) / 22 * 255);
+        }
+        actCtx.putImageData(img, 0, 0);
+      } catch (e) {}
+    }
+    actRaf = requestAnimationFrame(actionLoop);
+  }
+  function actionStart() {
+    if (!actVideo || !actCanvas) return;
+    actActive = true;
+    var petA = document.querySelector(".pet");
+    if (petA) petA.classList.add("action");
+    var figA = document.getElementById("fig"), pvA = document.getElementById("petVid");
+    if (figA) figA.style.display = "none";
+    if (pvA) pvA.style.display = "none";
+    actCanvas.style.display = "block";
+    try { actVideo.currentTime = 0; } catch (e) {}
+    var pr = actVideo.play(); if (pr && pr.catch) pr.catch(function () { actionStop(); });
+    if (actRaf) cancelAnimationFrame(actRaf);
+    actRaf = requestAnimationFrame(actionLoop);
+  }
+  if (actVideo) actVideo.addEventListener("ended", actionStop);
 function setSong(d){
     songPlaying = !!d.playing;
     var petEl0 = document.querySelector('.pet');
