@@ -91,6 +91,28 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #djBooth .dj-crowd i:nth-child(6){left:70%;height:72px;width:72px}
   #djBooth .dj-crowd i:nth-child(7){left:84%;width:84px;height:84px}
   #djBooth .dj-crowd i::after{content:"";position:absolute;left:50%;top:-10px;transform:translateX(-50%);width:34%;height:34%;border-radius:50%;background:rgba(255,79,216,.18);filter:blur(6px)}
+  /* 大音响 */
+  #djBooth .dj-speaker{width:190px;height:520px;border-radius:18px;gap:22px;padding:22px 0;justify-content:flex-start}
+  #djBooth .dj-speaker i{width:128px;height:128px}
+  #djBooth .dj-speaker::after{content:"";position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:150px;height:110px;border-radius:12px;background:linear-gradient(180deg,#241a33,#0b0812);border:1px solid rgba(190,140,255,.3);box-shadow:inset 0 0 24px rgba(255,79,216,.25)}
+  #djBooth .dj-speaker::before{content:"";position:absolute;left:50%;bottom:36px;transform:translateX(-50%);width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 42% 38%,#3a2c52,#07050b 72%);border:2px solid rgba(190,140,255,.3);z-index:2;box-shadow:inset 0 0 18px #000}
+  /* 激光：宽光柱 + 雾 */
+  #djBooth .dj-lasers{width:2200px;height:1050px;top:-360px;overflow:visible;mix-blend-mode:screen}
+  #djBooth .dj-lasers::before{content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);width:1400px;height:520px;background:radial-gradient(ellipse at 50% 0,rgba(168,85,247,.28),transparent 65%);filter:blur(20px)}
+  #djBooth .dj-lasers i{width:260px;height:1000px;border-radius:0;filter:blur(7px);opacity:.55;clip-path:polygon(47% 0,53% 0,100% 100%,0 100%);background:linear-gradient(180deg,rgba(255,79,216,.65),rgba(255,79,216,.12) 55%,transparent 82%)}
+  #djBooth .dj-lasers i:nth-child(1){left:2%;animation-duration:5.2s;background:linear-gradient(180deg,rgba(255,79,216,.7),rgba(255,79,216,.12) 55%,transparent 82%)}
+  #djBooth .dj-lasers i:nth-child(2){left:14%;animation-duration:6.4s;animation-delay:-1.6s;background:linear-gradient(180deg,rgba(34,211,238,.65),rgba(34,211,238,.1) 55%,transparent 82%)}
+  #djBooth .dj-lasers i:nth-child(3){left:26%;animation-duration:4.6s;animation-delay:-.8s;background:linear-gradient(180deg,rgba(168,85,247,.75),rgba(168,85,247,.12) 55%,transparent 82%)}
+  #djBooth .dj-lasers i:nth-child(4){left:38%;animation-duration:6.8s;animation-delay:-2.4s;background:linear-gradient(180deg,rgba(255,209,102,.6),rgba(255,209,102,.1) 55%,transparent 82%)}
+  #djBooth .dj-lasers i:nth-child(5){left:50%;animation-duration:5.6s;animation-delay:-1s;background:linear-gradient(180deg,rgba(255,79,216,.7),rgba(255,79,216,.1) 55%,transparent 82%)}
+  #djBooth .dj-lasers i:nth-child(6){left:62%;animation-duration:6.2s;animation-delay:-2.8s;background:linear-gradient(180deg,rgba(34,211,238,.65),rgba(34,211,238,.1) 55%,transparent 82%)}
+  #djBooth .dj-lasers i:nth-child(7){left:74%;animation-duration:4.9s;animation-delay:-1.8s;background:linear-gradient(180deg,rgba(168,85,247,.7),rgba(168,85,247,.1) 55%,transparent 82%)}
+  #djBooth .dj-lasers i:nth-child(8){left:86%;animation-duration:5.8s;animation-delay:-2.2s;background:linear-gradient(180deg,rgba(255,209,102,.6),rgba(255,209,102,.1) 55%,transparent 82%)}
+  #djBooth .dj-haze{position:absolute;left:50%;bottom:60px;transform:translateX(-50%);width:1500px;height:520px;background:radial-gradient(ellipse at 50% 100%,rgba(124,58,237,.22),transparent 62%);filter:blur(18px);z-index:1;pointer-events:none}
+  #djBooth .dj-strobe{position:absolute;inset:-200px -300px;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.22),transparent 55%);opacity:0;z-index:8;pointer-events:none}
+  #djBooth.on .dj-strobe{animation:djStrobe 2.8s ease-in-out infinite}
+  @keyframes djStrobe{0%,72%,100%{opacity:0}76%{opacity:.9}80%{opacity:0}84%{opacity:.5}88%{opacity:0}}
+  @keyframes laserSweep{0%{transform:rotate(-16deg) scaleY(.7)}50%{transform:rotate(0deg) scaleY(1)}100%{transform:rotate(16deg) scaleY(.75)}}
   #stage.dj .pet{bottom:260px !important;transition:bottom .45s ease}
   #stage.v #djBooth{width:900px;height:760px;bottom:100px;transform:translateX(-50%) scale(1.05)}
   #stage.v #djBooth .dj-riser{width:800px;height:300px}
@@ -368,7 +390,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   <div class="pool" id="pool"></div>
 
   <div id="djBooth">
-    <div class="dj-lasers"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="dj-lasers"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="dj-sign">XIAOXI · DJ</div>
     <div class="dj-riser"></div>
     <div class="dj-speaker l"><i></i><i></i></div>
