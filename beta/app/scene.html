@@ -583,7 +583,7 @@ fetch('/api/state').then(function(r){ return r.json(); }).then(function(j){
   if (l) { layoutMode = l; fit(); }
   if (j && j.config && j.config.avatar) applyAvatar(j.config.avatar);
     if (j && j.config && j.config.scene && j.config.scene.dj) { djEnabled = j.config.scene.dj.enabled !== false; }
-    if (j && j.songs && j.songs.playing) { songPlaying = true; djShow(true); }
+    if (j && j.songs && j.songs.playing) { songPlaying = true; djShow(true); try { actionStart(); } catch (e) {} }
 }).catch(function(){});
 
 // ── 弹幕池 ──
