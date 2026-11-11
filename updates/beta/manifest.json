@@ -1,10 +1,10 @@
 {
-  "version": "2.6.88",
+  "version": "2.6.89",
   "notes": "修复启动脚本行尾问题；插件安装改为正确的 DSH 注册方式；更新入口整合到主页与顶栏",
-  "package": "xiaoxi-ai-live-2.6.88.zip",
-  "size": 6648953,
-  "sha256": "8bd4b640a580f0d1819fd7e89e80025120fb4358abb25e4cf44697324f84e092",
-  "publishedAt": "2026-11-11T11:28:34.411Z",
+  "package": "xiaoxi-ai-live-2.6.89.zip",
+  "size": 8848692,
+  "sha256": "902ec0228a783c452e6dbd8eee8b2ec366c4e789582ac6bb32fa98bc50fb06d3",
+  "publishedAt": "2026-11-11T11:38:49.336Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -90,8 +90,8 @@
     },
     {
       "path": "scene.html",
-      "size": 93356,
-      "sha256": "2f1c81724ffac0d8baf8e286e4a94da3d14e555a88c90a831b0715102d0b3b8e"
+      "size": 92198,
+      "sha256": "553e0675671853b098bc2fc18daccecd260b35df9e9d6be72ade420d7c552c3d"
     },
     {
       "path": "settings.html",
@@ -100,8 +100,8 @@
     },
     {
       "path": "sprites_hd/actions/song-wave.mp4",
-      "size": 2741307,
-      "sha256": "cf3721f3f064ef4e5da5bdfafb5157ade7810b3b9796321fb1f7b321af005c57"
+      "size": 4941927,
+      "sha256": "4583375b1e731fd86b0785910056036442f60b5eb329c51ac3df803e7cc90568"
     },
     {
       "path": "sprites_hd/angry.png",
@@ -146,12 +146,12 @@
     {
       "path": "VERSION",
       "size": 7,
-      "sha256": "4338ab5fef811bb3241affe740189ecb4ee6180b620cf2dad8be26bb0f9433f3"
+      "sha256": "08da0f37ad8f065361ae130b7e95c871971d0e9519a163d52c4267f6bb314c5d"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 265949,
-      "sha256": "e4c26ab06783ae12fa4548f578e13aaa065a00391313fc86939d0d3e7384897c"
+      "size": 265221,
+      "sha256": "169847bfd25e3d0100657f6b839369a6696a86190afb48b50cc4f5ace3bd97d9"
     }
   ]
 }
