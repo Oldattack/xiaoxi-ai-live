@@ -903,7 +903,7 @@ function showNotice(text, ok){
         for (var mi = 0; mi < mask.length; mi++) {
           var r0 = d[mi * 4], g0 = d[mi * 4 + 1], b0 = d[mi * 4 + 2];
           var l0 = r0 > g0 ? r0 : g0; if (b0 > l0) l0 = b0;
-          var whiteEdge = r0 > 200 && g0 > 200 && b0 > 200 && (l0 - Math.min(r0, g0, b0)) < 28;
+          var whiteEdge = r0 > 150 && g0 > 150 && b0 > 150 && (l0 - Math.min(r0, g0, b0)) < 45;
   mask[mi] = (l0 > 4 && !whiteEdge) ? 1 : 0;
         }
         // 轮廓收缩 1px，去掉压缩白边
