@@ -905,6 +905,20 @@ function showNotice(text, ok){
           if (l < 8) d[i + 3] = 0;
           else if (l < 30) d[i + 3] = Math.round((l - 8) / 22 * 255);
         }
+        var amask = new Uint8ClampedArray(w * h);
+        for (var mi = 0; mi < amask.length; mi++) amask[mi] = d[mi * 4 + 3];
+        for (var pass = 0; pass < 2; pass++) {
+          var next = new Uint8ClampedArray(amask);
+          for (var yy = 1; yy < h - 1; yy++) {
+            for (var xx = 1; xx < w - 1; xx++) {
+              var mi2 = yy * w + xx;
+              if (!amask[mi2]) continue;
+              if (!amask[mi2 - 1] || !amask[mi2 + 1] || !amask[mi2 - w] || !amask[mi2 + w]) next[mi2] = 0;
+            }
+          }
+          amask = next;
+        }
+        for (var mi3 = 0; mi3 < amask.length; mi3++) d[mi3 * 4 + 3] = amask[mi3];
         actCtx.putImageData(img, 0, 0);
       } catch (e) {}
     }
