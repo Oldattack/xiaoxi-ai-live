@@ -106,7 +106,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #djBooth .dj-eq b:nth-child(5n){animation-duration:.55s;animation-delay:-.32s}
   @keyframes djEq{from{height:12%}to{height:96%}}
   #djBooth .dj-ledlabel{position:absolute;left:0;right:0;top:16px;text-align:center;font:900 20px/1 ui-monospace,Consolas,monospace;letter-spacing:6px;color:#fff;text-shadow:0 0 8px #ff2d55,0 0 24px #2f7bff;z-index:2;opacity:.9}
-  #djBooth .dj-song{position:absolute;left:20px;right:20px;top:46px;z-index:3;text-align:center;text-shadow:0 2px 12px rgba(0,0,0,.9)}
+  #djBooth .dj-song{position:absolute;left:50%;top:92px;transform:translateX(-50%);max-width:70%;z-index:9;text-align:center;text-shadow:0 2px 12px rgba(0,0,0,.95),0 0 18px rgba(255,45,85,.55)}
   #djBooth .dj-song b{display:block;font:900 26px/1.2 "Microsoft YaHei",sans-serif;color:#fff;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #djBooth .dj-song span{display:block;margin-top:4px;font-size:13px;color:rgba(255,220,235,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #stage:not(.dj) > .dj-desk{display:none}
@@ -391,8 +391,9 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <div class="dj-rig"></div>
     <div class="dj-array l"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="dj-array r"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <div class="dj-ledwall"><img id="djCover" alt=""><div class="dj-eq"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div><div class="dj-ledlabel">XIAOXI · LIVE</div><div class="dj-song"><b id="djSongName">—</b><span id="djSongArtist"></span></div></div>
+    <div class="dj-ledwall"><img id="djCover" alt=""><div class="dj-eq"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div><div class="dj-ledlabel">XIAOXI · LIVE</div></div>
     <div class="dj-sign">XIAOXI · DJ</div>
+    <div class="dj-song"><b id="djSongName">—</b><span id="djSongArtist"></span></div>
     <div class="dj-riser"><span>LIVE</span></div>
     <div class="dj-strobe"></div>
   </div>
@@ -722,11 +723,11 @@ function showNotice(text, ok){
       var ang = Math.sin(t * hd.sp + hd.ph) * 0.42;
       var tip = hd.x + Math.tan(ang) * 1250;
       var cone = g.createLinearGradient(hd.x, 0, tip, H);
-      cone.addColorStop(0, "rgba(" + hd.c + ",.55)");
-      cone.addColorStop(0.5, "rgba(" + hd.c + ",.18)");
+      cone.addColorStop(0, "rgba(" + hd.c + ",.32)");
+      cone.addColorStop(0.5, "rgba(" + hd.c + ",.10)");
       cone.addColorStop(1, "rgba(" + hd.c + ",0)");
       g.fillStyle = cone;
-      g.globalAlpha = 0.75;
+      g.globalAlpha = 0.55;
       g.beginPath();
       g.moveTo(hd.x - 14, -10);
       g.lineTo(hd.x + 14, -10);
