@@ -143,8 +143,8 @@
     "maxQueue": 8
   },
   "avatar": {
-    "kind": "default",
-    "model": "",
+    "kind": "image",
+    "model": "/sprites_hd/normal.png",
     "video": "",
     "mh": 560,
     "mb": 206,

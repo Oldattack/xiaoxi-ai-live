@@ -1,4 +1,4 @@
-小汐AI直播平台 v2.6.91
+小汐AI直播平台 v2.6.92
 
 AGENT.md
 VERSION
@@ -22,6 +22,7 @@ sprites_hd/angry.png
 sprites_hd/cry.png
 sprites_hd/happy.png
 sprites_hd/idle.png
+sprites_hd/normal.png
 sprites_hd/sad.png
 sprites_hd/stomp.png
 supervisor.mjs
