@@ -43,14 +43,12 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   background:radial-gradient(50% 50% at 50% 50%, rgba(120,90,255,.30), transparent 70%);filter:blur(20px)}
 
 /* ── 模型区（正面立绘，像素风） ── */
-  #djBooth{position:absolute;left:50%;bottom:150px;transform:translateX(-50%);width:820px;height:470px;z-index:2;opacity:0;pointer-events:none;transition:opacity .5s ease}
+  #djBooth{position:absolute;left:50%;bottom:60px;transform:translateX(-50%);width:840px;height:640px;z-index:2;opacity:0;pointer-events:none;transition:opacity .5s ease}
   #djBooth.on{opacity:1}
-  #djBooth .dj-sign{position:absolute;left:50%;top:-112px;transform:translateX(-50%);font:800 30px/1 ui-monospace,Consolas,monospace;letter-spacing:5px;color:#ffd8ff;text-shadow:0 0 8px #ff4fd8,0 0 22px #a855f7,0 0 40px #7c3aed;white-space:nowrap;opacity:.95}
-  #djBooth .dj-speaker{position:absolute;bottom:0;width:108px;height:300px;border-radius:14px;background:linear-gradient(180deg,#1b1626,#0d0a14);border:1px solid rgba(190,140,255,.35);box-shadow:0 10px 30px rgba(0,0,0,.5),inset 0 0 24px rgba(124,58,237,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
-  #djBooth .dj-speaker.l{left:0}
-  #djBooth .dj-speaker.r{right:0}
-  #djBooth .dj-speaker i{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3a2c52,#0a0810 70%);border:2px solid rgba(190,140,255,.28);box-shadow:inset 0 0 16px #000}
-  #djBooth .dj-desk{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:560px;height:132px;border-radius:16px 16px 10px 10px;background:linear-gradient(180deg,#241a33,#120d1c 70%,#0b0812);border:1px solid rgba(190,140,255,.4);box-shadow:0 -4px 40px rgba(168,85,247,.28),inset 0 1px 0 rgba(255,255,255,.09)}
+  #djBooth .dj-riser{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:660px;height:150px;border-radius:14px 14px 4px 4px;background:linear-gradient(180deg,#2a1b3d 0%,#160f22 45%,#0a0710 100%);border:1px solid rgba(190,140,255,.35);box-shadow:0 -2px 30px rgba(168,85,247,.25),inset 0 2px 0 rgba(255,255,255,.18)}
+  #djBooth .dj-riser::before{content:"";position:absolute;left:10px;right:10px;top:-3px;height:6px;border-radius:6px;background:linear-gradient(90deg,#22d3ee,#ff4fd8,#a855f7);filter:blur(1px);box-shadow:0 0 18px rgba(255,79,216,.8)}
+  #djBooth .dj-riser::after{content:"";position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);width:760px;height:26px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(168,85,247,.5),transparent 70%);filter:blur(6px)}
+  #djBooth .dj-desk{position:absolute;left:50%;bottom:150px;transform:translateX(-50%);width:560px;height:132px;z-index:6;border-radius:16px 16px 10px 10px;background:linear-gradient(180deg,#241a33,#120d1c 70%,#0b0812);border:1px solid rgba(190,140,255,.45);box-shadow:0 -4px 44px rgba(168,85,247,.3),inset 0 1px 0 rgba(255,255,255,.1)}
   #djBooth .dj-platter{position:absolute;top:-42px;width:132px;height:132px;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,#16101f 0 2px,#0b0811 2px 4px);border:3px solid #2b2038;box-shadow:0 0 0 4px rgba(255,79,216,.14),0 10px 22px rgba(0,0,0,.55)}
   #djBooth .dj-platter.l{left:52px}
   #djBooth .dj-platter.r{right:52px}
@@ -60,15 +58,33 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #djBooth .dj-mixer b{width:7px;height:30px;border-radius:4px;background:linear-gradient(#ff4fd8,#7c3aed);box-shadow:0 0 10px rgba(255,79,216,.55)}
   #djBooth .dj-led{position:absolute;left:8px;right:8px;bottom:8px;height:7px;border-radius:6px;background:repeating-linear-gradient(90deg,#ff4fd8 0 10px,#7c3aed 10px 20px,#22d3ee 20px 30px);filter:blur(.6px);opacity:.75;animation:djLed 1.2s linear infinite}
   @keyframes djLed{0%{opacity:.45}50%{opacity:.95}100%{opacity:.45}}
+  #djBooth .dj-sign{position:absolute;left:50%;top:-92px;transform:translateX(-50%);font:800 30px/1 ui-monospace,Consolas,monospace;letter-spacing:5px;color:#ffd8ff;text-shadow:0 0 8px #ff4fd8,0 0 22px #a855f7,0 0 40px #7c3aed;white-space:nowrap;opacity:.95}
+  #djBooth .dj-speaker{position:absolute;bottom:0;width:120px;height:330px;border-radius:14px;background:linear-gradient(180deg,#1b1626,#0d0a14);border:1px solid rgba(190,140,255,.35);box-shadow:0 14px 36px rgba(0,0,0,.55),inset 0 0 24px rgba(124,58,237,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:5}
+  #djBooth .dj-speaker.l{left:0}
+  #djBooth .dj-speaker.r{right:0}
+  #djBooth .dj-speaker i{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3a2c52,#0a0810 70%);border:2px solid rgba(190,140,255,.28);box-shadow:inset 0 0 16px #000}
+  #djBooth .dj-lasers{position:absolute;left:50%;top:-260px;transform:translateX(-50%);width:1600px;height:820px;overflow:hidden;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .5s}
+  #djBooth.on .dj-lasers{opacity:.9}
+  #djBooth .dj-lasers i{position:absolute;top:0;width:4px;height:780px;border-radius:4px;transform-origin:top center;filter:blur(1.2px);animation:laserSweep 3.6s ease-in-out infinite alternate,laserHue 6s linear infinite}
+  #djBooth .dj-lasers i:nth-child(1){left:8%;background:linear-gradient(#ff4fd8,transparent);animation-duration:3.1s}
+  #djBooth .dj-lasers i:nth-child(2){left:22%;background:linear-gradient(#22d3ee,transparent);animation-duration:4.2s;animation-delay:-1s}
+  #djBooth .dj-lasers i:nth-child(3){left:38%;background:linear-gradient(#a855f7,transparent);animation-duration:2.8s;animation-delay:-.6s}
+  #djBooth .dj-lasers i:nth-child(4){left:55%;background:linear-gradient(#ffd166,transparent);animation-duration:4.8s;animation-delay:-2s}
+  #djBooth .dj-lasers i:nth-child(5){left:72%;background:linear-gradient(#ff4fd8,transparent);animation-duration:3.4s;animation-delay:-1.4s}
+  #djBooth .dj-lasers i:nth-child(6){left:88%;background:linear-gradient(#22d3ee,transparent);animation-duration:4.1s;animation-delay:-2.6s}
+  @keyframes laserSweep{0%{transform:rotate(-24deg) scaleY(.55)}50%{transform:rotate(2deg) scaleY(1)}100%{transform:rotate(26deg) scaleY(.6)}}
+  @keyframes laserHue{to{filter:blur(1.2px) hue-rotate(360deg)}}
   #djBooth.on .dj-platter{animation:djSpin 2.6s linear infinite}
   #djBooth.on .dj-platter.r{animation-duration:2.2s;animation-direction:reverse}
   @keyframes djSpin{to{transform:rotate(360deg)}}
   #djBooth.on .dj-speaker i{animation:djPump .55s ease-in-out infinite alternate}
   #djBooth.on .dj-speaker.r i{animation-delay:.16s}
-  @keyframes djPump{from{transform:scale(.94);box-shadow:inset 0 0 16px #000}to{transform:scale(1.04);box-shadow:inset 0 0 22px #ff4fd8,0 0 18px rgba(255,79,216,.4)}}
-  #stage.v #djBooth{bottom:150px;transform:translateX(-50%) scale(1.05)}
+  @keyframes djPump{from{transform:scale(.94);box-shadow:inset 0 0 16px #000}to{transform:scale(1.05);box-shadow:inset 0 0 22px #ff4fd8,0 0 18px rgba(255,79,216,.4)}}
+  #stage.dj .pet{bottom:210px;transition:bottom .45s ease}
+  #stage.v #djBooth{width:880px;height:710px;bottom:120px;transform:translateX(-50%) scale(1.02)}
+  #stage.v #djBooth .dj-riser{width:700px;height:170px}
   #stage.video #djBooth,#stage.game #djBooth{display:none}
-  #djBooth:not(.on) .dj-sign{opacity:0}
+  #djBooth:not(.on){pointer-events:none}
 .pet{position:absolute;left:50%;bottom:206px;transform:translateX(-50%);width:440px;height:600px;
   display:flex;align-items:flex-end;justify-content:center}
 .pet .halo{position:absolute;left:50%;bottom:40px;width:420px;height:420px;transform:translateX(-50%);
@@ -341,7 +357,9 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   <div class="pool" id="pool"></div>
 
   <div id="djBooth">
+    <div class="dj-lasers"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="dj-sign">XIAOXI · DJ</div>
+    <div class="dj-riser"></div>
     <div class="dj-speaker l"><i></i><i></i></div>
     <div class="dj-speaker r"><i></i><i></i></div>
     <div class="dj-desk">
@@ -603,6 +621,8 @@ function showNotice(text, ok){
     var b = document.getElementById("djBooth");
     if (!b) return;
     b.classList.toggle("on", Boolean(on) && djEnabled);
+    var st = document.getElementById("stage");
+    if (st) st.classList.toggle("dj", Boolean(on) && djEnabled);
   }
 function setSong(d){
     songPlaying = !!d.playing;
