@@ -1555,7 +1555,7 @@ function speak(text, emotion){
     document.getElementById('vidBy').textContent = d.owner ? ('@' + d.owner) : '';
     vidForVod = true;
     vidEl.src = d.url;
-    try { vidEl.muted = false; vidEl.volume = 1; } catch (e) {}
+    try { vidEl.muted = !IS_OBS; vidEl.volume = 1; } catch (e) {}
     vidEl.currentTime = 0;
     var p = vidEl.play();
     if (p && p.catch) p.catch(function () { /* 自动播放被拦，等用户交互 */ });
