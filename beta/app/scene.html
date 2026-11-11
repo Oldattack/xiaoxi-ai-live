@@ -75,7 +75,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #djBooth .dj-led{position:absolute;left:8px;right:8px;bottom:8px;height:8px;border-radius:4px;background:repeating-linear-gradient(90deg,#ff2d55 0 10px,#2f7bff 10px 20px,#fff 20px 24px);filter:blur(.4px);opacity:.85;animation:djLed 1s linear infinite}
   @keyframes djLed{0%,100%{opacity:.5}50%{opacity:1}}
   #djBooth .dj-crowd{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:1500px;height:190px;z-index:9;pointer-events:none}
-  #djBooth .dj-crowd i{position:absolute;bottom:0;width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 50% 35%,#1a1224,#020104 72%);box-shadow:0 -4px 22px rgba(0,0,0,.9)}
+  #djBooth .dj-crowd i{position:absolute;bottom:0;width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 50% 35%,#22162c,#020104 72%);box-shadow:0 -4px 22px rgba(0,0,0,.9),0 -1px 0 rgba(255,70,130,.45),0 0 18px rgba(255,45,85,.18)}
   #djBooth .dj-crowd i::before{content:"";position:absolute;left:50%;bottom:60px;width:9px;height:86px;background:#05030a;border-radius:5px;transform-origin:bottom center}
   #djBooth .dj-crowd i::after{content:"";position:absolute;left:50%;bottom:138px;width:20px;height:20px;border-radius:50%;background:#07040c;box-shadow:0 0 14px rgba(255,45,85,.35)}
   #djBooth .dj-crowd i:nth-child(1){left:1%;width:92px;height:92px}
@@ -96,7 +96,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   @keyframes djSpin{to{transform:rotate(360deg)}}
   #djBooth.on .dj-array i::before{animation:djPump .5s ease-in-out infinite alternate}
   @keyframes djPump{from{box-shadow:inset 0 0 18px #000}to{box-shadow:inset 0 0 20px #ff2d55,0 0 12px rgba(255,45,85,.5)}}
-  #stage.dj .pet{bottom:190px !important;transition:bottom .5s ease}
+  #stage.dj .pet{bottom:190px !important;z-index:7 !important;transition:bottom .5s ease}
   #stage.v #djBooth .dj-desk{bottom:210px}
   #stage.video #djBooth,#stage.game #djBooth{display:none}
 .pet{position:absolute;left:50%;bottom:206px;transform:translateX(-50%);width:440px;height:600px;
