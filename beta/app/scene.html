@@ -63,6 +63,16 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #djBooth.beat #djCover{transform:scale(1.04);filter:saturate(1.4) brightness(1.15)}
   #djBooth #djCover{transition:transform .18s ease,filter .18s ease}
   #djLaserCanvas{position:absolute;left:-12%;top:-14%;width:124%;height:128%;z-index:1;pointer-events:none;mix-blend-mode:screen}
+  #djBooth .dj-array{width:150px;height:540px;top:46px;gap:5px;filter:drop-shadow(0 18px 26px rgba(0,0,0,.8))}
+  #djBooth .dj-array::before{content:"";position:absolute;left:50%;top:-70px;width:3px;height:70px;transform:translateX(-50%);background:repeating-linear-gradient(180deg,#3a3444 0 4px,#15121c 4px 8px);box-shadow:0 0 6px rgba(255,255,255,.15)}
+  #djBooth .dj-array i{background:linear-gradient(145deg,#242230,#0a080f 70%);border:1px solid rgba(255,90,130,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 18px #000,0 0 14px rgba(255,45,85,.12)}
+  #djBooth .dj-array i::before{width:82px;height:82px;border:2px solid #4a3a58;background:radial-gradient(circle at 42% 36%,#3a3048,#050308 72%);box-shadow:inset 0 0 18px #000,0 0 10px rgba(255,45,85,.2)}
+  #djBooth .dj-array i::after{width:58px;height:58px;border:2px solid #4a3a58;background:radial-gradient(circle at 42% 36%,#2a2238,#040207 72%);box-shadow:inset 0 0 14px #000}
+  #djBooth .dj-sub{position:absolute;bottom:0;width:200px;height:240px;z-index:5;border-radius:10px;background:linear-gradient(180deg,#211a2a,#09060d);border:1px solid rgba(255,90,130,.35);box-shadow:0 14px 36px rgba(0,0,0,.7),inset 0 0 24px #000}
+  #djBooth .dj-sub.l{left:14px}
+  #djBooth .dj-sub.r{right:14px}
+  #djBooth .dj-sub i{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 42% 36%,#2e2438,#040207 72%);border:3px solid #3a2c52;box-shadow:inset 0 0 24px #000,0 0 16px rgba(255,45,85,.25)}
+  #djBooth .dj-sub::after{content:"";position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);width:170px;height:20px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,45,85,.35),transparent 70%);filter:blur(6px)}
   #djBooth .dj-rig{position:absolute;left:0;right:0;top:0;height:120px;z-index:3;background:linear-gradient(180deg,rgba(8,5,14,.95),rgba(8,5,14,.35) 70%,transparent);border-bottom:1px solid rgba(255,60,120,.25);box-shadow:0 0 40px rgba(255,40,100,.25)}
   #djBooth .dj-rig::before{content:"";position:absolute;left:6%;right:6%;top:22px;height:10px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.12) 0 2px,transparent 2px 26px);opacity:.6}
   #djBooth .dj-array{position:absolute;top:54px;width:120px;height:430px;z-index:4;display:flex;flex-direction:column;gap:6px;filter:drop-shadow(0 12px 20px rgba(0,0,0,.7))}
@@ -439,7 +449,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <div class="dj-frame r"></div>
     <canvas id="djLaserCanvas"></canvas>
     <div class="dj-rig"></div>
-    <div class="dj-array l"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="dj-sub l"><i></i></div><div class="dj-sub r"><i></i></div><div class="dj-array l"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="dj-array r"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="dj-ledwall"><img id="djCover" alt=""><div class="dj-eq"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div><div class="dj-ledlabel">XIAOXI · LIVE</div></div>
     <div class="dj-sign">XIAOXI · DJ</div>
