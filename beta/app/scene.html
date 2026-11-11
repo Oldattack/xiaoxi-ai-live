@@ -124,6 +124,19 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #djBooth .dj-song{position:absolute;left:50%;top:92px;transform:translateX(-50%);max-width:70%;z-index:9;text-align:center;text-shadow:0 2px 12px rgba(0,0,0,.95),0 0 18px rgba(255,45,85,.55)}
   #djBooth .dj-song b{display:block;font:900 26px/1.2 "Microsoft YaHei",sans-serif;color:#fff;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #djBooth .dj-song span{display:block;margin-top:4px;font-size:13px;color:rgba(255,220,235,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #djBooth .dj-smoke{position:absolute;bottom:96px;width:180px;height:520px;z-index:3;pointer-events:none;opacity:.55;filter:blur(18px)}
+  #djBooth .dj-smoke.l{left:-30px}
+  #djBooth .dj-smoke.r{right:-30px;transform:scaleX(-1)}
+  #djBooth .dj-smoke i{position:absolute;bottom:0;left:50%;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(220,225,255,.5),rgba(160,180,255,.15) 55%,transparent 72%);animation:djSmoke 5s ease-in-out infinite}
+  #djBooth .dj-smoke i:nth-child(2){animation-delay:-1.7s;animation-duration:6.2s}
+  #djBooth .dj-smoke i:nth-child(3){animation-delay:-3.1s;animation-duration:4.4s}
+  @keyframes djSmoke{0%{transform:translate(-50%,0) scale(.55);opacity:.15}45%{opacity:.6}100%{transform:translate(-50%,-330px) scale(1.8);opacity:0}}
+  #djBooth .dj-smoke.burst{opacity:1;filter:blur(12px)}
+  #stage.dj > .dj-desk{transition:transform .16s ease,box-shadow .16s ease}
+  #stage.dj > .dj-desk.beat{transform:translateX(-50%) translateY(-7px) rotate(-1.2deg);box-shadow:0 -10px 60px rgba(255,45,85,.65)}
+  #djBooth .dj-ledwall{transition:filter .16s ease,transform .16s ease}
+  #djBooth .dj-ledwall.glitch{animation:djGlitch .55s steps(3) both}
+  @keyframes djGlitch{0%{filter:hue-rotate(0) saturate(1.6);transform:skewX(0)}20%{transform:skewX(3deg) translateX(6px);filter:hue-rotate(40deg) saturate(2)}40%{transform:skewX(-4deg) translateX(-8px);filter:hue-rotate(-30deg)}60%{transform:skewX(2deg) translateX(4px);filter:hue-rotate(70deg) saturate(2.2)}100%{transform:skewX(0);filter:none}}
   #stage:not(.dj) > .dj-desk{display:none}
   #stage > .dj-desk{position:absolute;left:50%;bottom:190px;transform:translateX(-50%);width:620px;height:150px;z-index:8}
   #stage.dj .pet{bottom:190px !important;z-index:7 !important;transform:translateX(-50%) scale(.86);transform-origin:bottom center;transition:bottom .5s ease,transform .5s ease}
@@ -414,7 +427,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <div class="dj-sign">XIAOXI · DJ</div>
     <div class="dj-song"><b id="djSongName">—</b><span id="djSongArtist"></span></div>
     <div class="dj-riser"><span>LIVE</span></div>
-    <div class="dj-strobe"></div>
+    <div class="dj-smoke l"><i></i><i></i><i></i></div><div class="dj-smoke r"><i></i><i></i><i></i></div><div class="dj-strobe"></div>
   </div>
 
   <div class="pet">
@@ -670,7 +683,7 @@ function showNotice(text, ok){
 
   var djEnabled = true;
   var songPlaying = false;
-  var djRaf = 0, djBeams = [], djLast = 0, djSparks = [], djPrevE = 0, djBeatTimer = 0;
+  var djRaf = 0, djBeams = [], djLast = 0, djSparks = [], djPrevE = 0, djBeatTimer = 0, djBurst = 0, djCam = 0;
   function djLaserBuild() {
     var cv = document.getElementById("djLaserCanvas");
     if (!cv) return null;
@@ -709,7 +722,14 @@ function showNotice(text, ok){
         boothEl.classList.add("beat");
         var fl = boothEl.querySelector(".dj-flash");
         if (fl) fl.style.opacity = (0.18 + energy * 0.3).toFixed(2);
+        djBurst = 1; djCam = 0.012;
+        var deskEl = document.querySelector('#stage > .dj-desk');
+        if (deskEl) deskEl.classList.add('beat');
+        var smokes = boothEl.querySelectorAll('.dj-smoke');
+        for (var sm = 0; sm < smokes.length; sm++) smokes[sm].classList.add('burst');
         djBeatTimer = setTimeout(function () {
+          if (deskEl) deskEl.classList.remove('beat');
+          for (var sm2 = 0; sm2 < smokes.length; sm2++) smokes[sm2].classList.remove('burst');
           boothEl.classList.remove("beat");
           var f2 = boothEl.querySelector(".dj-flash");
           if (f2) f2.style.opacity = "0";
@@ -727,6 +747,10 @@ function showNotice(text, ok){
     bg.addColorStop(1, "rgba(0,0,0,0)");
     g.fillStyle = bg; g.fillRect(0, 0, W, H);
     // 交叉激光
+    if (djBurst > 0) djBurst *= 0.9; else djBurst = 0;
+    if (djCam > 0) djCam *= 0.9; else djCam = 0;
+    var stageEl = document.getElementById("stage");
+    if (stageEl) stageEl.style.scale = (1 + energy * 0.004 + djCam).toFixed(4);
     for (var i = 0; i < djBeams.length; i++) {
       var b = djBeams[i];
       var tx = b.tx + Math.sin(t * b.sp + b.ph) * 320;
@@ -775,6 +799,14 @@ function showNotice(text, ok){
       g.fillStyle = "rgba(" + hd.c + ",.95)";
       g.shadowBlur = 30;
       g.beginPath(); g.arc(hd.x, 10, 9, 0, Math.PI * 2); g.fill();
+    }
+    if (djBurst > 0.15) {
+      g.globalAlpha = djBurst * 0.9;
+      for (var bb = 0; bb < 14; bb++) {
+        var bx = Math.random() * W, bc = Math.random() > 0.5 ? "#ff2d55" : "#7fd4ff";
+        g.strokeStyle = bc; g.lineWidth = 1.5 + Math.random() * 2; g.shadowBlur = 22; g.shadowColor = bc;
+        g.beginPath(); g.moveTo(bx, -20); g.lineTo(bx + (Math.random() - 0.5) * 700, H + 20); g.stroke();
+      }
     }
     // 火花粒子
     if (!djSparks.length) {
