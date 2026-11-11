@@ -909,7 +909,7 @@ function showNotice(text, ok){
           for (var x = 1; x < w - 1; x++) {
             var p4 = (y * w + x) * 4;
             if (d[p4 + 3] === 0) continue;
-            if (d[p4 - 3] === 0 || d[p4 + 7] === 0 || d[p4 - w * 4 + 3] === 0 || d[p4 + w * 4 + 3] === 0) d[p4 + 3] = 0;
+            if (d[p4 - 1] === 0 || d[p4 + 7] === 0 || d[p4 - w * 4 + 3] === 0 || d[p4 + w * 4 + 3] === 0) d[p4 + 3] = 0;
           }
         }
         actCtx.putImageData(img, 0, 0);
