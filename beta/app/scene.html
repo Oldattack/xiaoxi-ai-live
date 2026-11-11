@@ -134,14 +134,14 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #djBooth .dj-song{position:absolute;left:50%;top:92px;transform:translateX(-50%);max-width:70%;z-index:9;text-align:center;text-shadow:0 2px 12px rgba(0,0,0,.95),0 0 18px rgba(255,45,85,.55)}
   #djBooth .dj-song b{display:block;font:900 26px/1.2 "Microsoft YaHei",sans-serif;color:#fff;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #djBooth .dj-song span{display:block;margin-top:4px;font-size:13px;color:rgba(255,220,235,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #djBooth .dj-smoke{position:absolute;bottom:96px;width:180px;height:520px;z-index:3;pointer-events:none;opacity:.55;filter:blur(18px)}
+  #djBooth .dj-smoke{position:absolute;bottom:96px;width:180px;height:520px;z-index:3;pointer-events:none;opacity:.45;filter:none}
   #djBooth .dj-smoke.l{left:-30px}
   #djBooth .dj-smoke.r{right:-30px;transform:scaleX(-1)}
   #djBooth .dj-smoke i{position:absolute;bottom:0;left:50%;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(220,225,255,.5),rgba(160,180,255,.15) 55%,transparent 72%);animation:djSmoke 5s ease-in-out infinite}
   #djBooth .dj-smoke i:nth-child(2){animation-delay:-1.7s;animation-duration:6.2s}
   #djBooth .dj-smoke i:nth-child(3){animation-delay:-3.1s;animation-duration:4.4s}
   @keyframes djSmoke{0%{transform:translate(-50%,0) scale(.55);opacity:.15}45%{opacity:.6}100%{transform:translate(-50%,-330px) scale(1.8);opacity:0}}
-  #djBooth .dj-smoke.burst{opacity:1;filter:blur(12px)}
+  #djBooth .dj-smoke.burst{opacity:.9;filter:none}
   #stage.dj > .dj-desk{transition:transform .16s ease,box-shadow .16s ease}
   #stage.dj > .dj-desk.beat{transform:translateX(-50%) translateY(-7px) rotate(-1.2deg);box-shadow:0 -10px 60px rgba(255,45,85,.65)}
   #djBooth .dj-ledwall{transition:filter .16s ease,transform .16s ease}
@@ -463,7 +463,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <img class="fig" id="fig" src="sprites_hd/idle.png" alt="小汐">
     <video id="petVid" class="figvid" muted loop playsinline preload="auto"></video>
       <video id="actVideo" crossorigin="anonymous" muted loop playsinline preload="auto" src="/sprites_hd/actions/music-loop.mp4" style="display:none"></video>
-      <canvas id="actCanvas" class="actcanvas" width="360" height="640"></canvas>
+      <canvas id="actCanvas" class="actcanvas" width="180" height="320"></canvas>
     <div class="emo" id="emo">开心</div>
       <div class="grooveFx"><span class="glasses"></span><span class="hand l"></span><span class="hand r"></span></div>
   </div>
@@ -718,17 +718,19 @@ function showNotice(text, ok){
   function djLaserBuild() {
     var cv = document.getElementById("djLaserCanvas");
     if (!cv) return null;
-    if (!cv.width || cv.width < 100) { cv.width = 1600; cv.height = 1000; }
+    if (cv.width !== 960) { cv.width = 960; cv.height = 540; }
     var g = cv.getContext("2d");
     if (!djBeams.length) {
       var cols = ["#ff2d55", "#2f7bff", "#a855f7", "#ff5c8a", "#4d9bff", "#ffffff"];
-      for (var k = 0; k < 30; k++) {
+      for (var k = 0; k < 22; k++) {
         djBeams.push({ sx: Math.random() * 1600, tx: Math.random() * 1600, sp: 0.4 + Math.random() * 1.2, ph: Math.random() * 6.28, c: cols[k % cols.length], w: 1 + Math.random() * 2.2 });
       }
     }
     return { cv: cv, g: g };
   }
   function djLaserFrame(ts) {
+    if (ts - djLast < 33) { djRaf = requestAnimationFrame(djLaserFrame); return; }
+    djLast = ts;
     var o = djLaserBuild();
     if (!o) return;
     var g = o.g, W = o.cv.width, H = o.cv.height;
@@ -793,14 +795,10 @@ function showNotice(text, ok){
     for (var i = 0; i < djBeams.length; i++) {
       var b = djBeams[i];
       var tx = b.tx + Math.sin(t * b.sp + b.ph) * 320;
-      var grad = g.createLinearGradient(b.sx, -40, tx, H + 40);
-      grad.addColorStop(0, b.c);
-      grad.addColorStop(0.55, b.c);
-      grad.addColorStop(1, "rgba(0,0,0,0)");
-      g.strokeStyle = grad;
+      g.strokeStyle = b.c;
       g.globalAlpha = (0.5 + 0.45 * energy) * (0.8 + 0.2 * Math.sin(t * 2 + b.ph));
       g.lineWidth = b.w * (0.9 + 1.8 * energy);
-      g.shadowBlur = 16;
+      g.shadowBlur = 0;
       g.shadowColor = b.c;
       g.beginPath(); g.moveTo(b.sx, -40); g.lineTo(tx, H + 40); g.stroke();
     }
@@ -836,20 +834,20 @@ function showNotice(text, ok){
       // 灯头亮点
       g.globalAlpha = 1;
       g.fillStyle = "rgba(" + hd.c + ",.95)";
-      g.shadowBlur = 30;
+      g.shadowBlur = 0;
       g.beginPath(); g.arc(hd.x, 10, 9, 0, Math.PI * 2); g.fill();
     }
     if (djBurst > 0.15) {
       g.globalAlpha = djBurst * 0.9;
-      for (var bb = 0; bb < 24; bb++) {
+      for (var bb = 0; bb < 12; bb++) {
         var bx = Math.random() * W, bc = Math.random() > 0.5 ? "#ff2d55" : "#7fd4ff";
-        g.strokeStyle = bc; g.lineWidth = 1.5 + Math.random() * 2; g.shadowBlur = 22; g.shadowColor = bc;
+        g.strokeStyle = bc; g.lineWidth = 1.5 + Math.random() * 2; g.shadowBlur = 0; g.shadowColor = bc;
         g.beginPath(); g.moveTo(bx, -20); g.lineTo(bx + (Math.random() - 0.5) * 700, H + 20); g.stroke();
       }
     }
     // 火花粒子
     if (!djSparks.length) {
-      for (var s = 0; s < 26; s++) {
+      for (var s = 0; s < 16; s++) {
         djSparks.push({ x: Math.random() * W, y: H * (0.45 + Math.random() * 0.55), vx: (Math.random() - 0.5) * 1.4, vy: -(0.6 + Math.random() * 1.6), c: Math.random() > 0.5 ? "#ff2d55" : "#7fd4ff" });
       }
     }
@@ -869,7 +867,7 @@ function showNotice(text, ok){
       lg.addColorStop(0, "rgba(255,45,85,0)");
       lg.addColorStop(0.5, j % 2 ? "#2f7bff" : "#ff2d55");
       lg.addColorStop(1, "rgba(47,123,255,0)");
-      g.strokeStyle = lg; g.lineWidth = 1.2; g.shadowBlur = 12;
+      g.strokeStyle = lg; g.lineWidth = 1.2; g.shadowBlur = 0;
       g.beginPath(); g.moveTo(0, y); g.lineTo(W, y + Math.sin(t + j) * 20); g.stroke();
     }
     g.restore();
@@ -895,8 +893,8 @@ function showNotice(text, ok){
   }
   var actVideo = document.getElementById("actVideo");
   var actCanvas = document.getElementById("actCanvas");
-  var actCtx = actCanvas ? actCanvas.getContext("2d") : null;
-  var actActive = false, actRaf = 0, lastActSong = 0, actStopTimer = 0, actRestartTimer = 0;
+  var actCtx = actCanvas ? actCanvas.getContext("2d", { willReadFrequently: true }) : null;
+  var actActive = false, actRaf = 0, lastActSong = 0, actStopTimer = 0, actRestartTimer = 0, actLastKey = 0;
   if (actCtx) actCtx.imageSmoothingEnabled = false;
   function actionStop() {
     actActive = false;
@@ -911,13 +909,14 @@ function showNotice(text, ok){
     if (typeof AVATAR !== "undefined" && AVATAR && AVATAR.kind === "video" && pvA) { pvA.style.display = "block"; if (figA) figA.style.display = "none"; }
     else { if (figA) figA.style.display = ""; if (pvA) pvA.style.display = "none"; }
   }
-  function actionLoop() {
+  function actionLoop(ts) {
     if (!actActive || !actVideo || !actCtx) return;
     if (actVideo.duration && actVideo.currentTime > actVideo.duration - 0.08) {
       try { actVideo.currentTime = 0; } catch (e) {}
       try { actVideo.play(); } catch (e) {}
     }
-    if (actVideo.readyState >= 2) {
+    if (actVideo.readyState >= 2 && (!ts || ts - actLastKey > 60)) {
+      actLastKey = ts || 0;
       var w = actCanvas.width, h = actCanvas.height;
       actCtx.drawImage(actVideo, 0, 0, w, h);
       try {
