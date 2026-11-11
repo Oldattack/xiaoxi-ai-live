@@ -894,6 +894,10 @@ function showNotice(text, ok){
   }
   function actionLoop() {
     if (!actActive || !actVideo || !actCtx) return;
+    if (actVideo.duration && actVideo.currentTime > actVideo.duration - 0.08) {
+      try { actVideo.currentTime = 0; } catch (e) {}
+      try { actVideo.play(); } catch (e) {}
+    }
     if (actVideo.readyState >= 2) {
       var w = actCanvas.width, h = actCanvas.height;
       actCtx.drawImage(actVideo, 0, 0, w, h);
