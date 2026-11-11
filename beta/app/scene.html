@@ -777,6 +777,9 @@ function setSong(d){
     djShow(songPlaying);
   if (d.notice && d.notice.text) showNotice(d.notice.text, d.notice.ok);
   var p = d.playing;
+  var djName = document.getElementById("djSongName"), djArtist = document.getElementById("djSongArtist");
+  if (djName) djName.textContent = p ? (p.name || "正在播放") : "—";
+  if (djArtist) djArtist.textContent = p ? (p.artist || (p.user ? "由 " + p.user + " 点播" : "")) : "";
   var djCover = document.getElementById("djCover");
   if (djCover) {
     if (p && p.cover) { djCover.src = p.cover; djCover.style.display = "block"; }
