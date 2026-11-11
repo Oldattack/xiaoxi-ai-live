@@ -924,11 +924,7 @@ function showNotice(text, ok){
     if (!actVideo || !actCanvas) return;
     actActive = true;
     actVideo.loop = true;
-    if (actRestartTimer) clearInterval(actRestartTimer);
-    actRestartTimer = setInterval(function () {
-      if (!actActive) return;
-      try { actVideo.currentTime = 0; actVideo.play(); } catch (e) {}
-    }, 6500);
+
     var petA = document.querySelector(".pet");
     if (petA) petA.classList.add("action");
     var figA = document.getElementById("fig"), pvA = document.getElementById("petVid");
