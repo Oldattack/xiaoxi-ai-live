@@ -704,7 +704,7 @@ function showNotice(text, ok){
 
   var djEnabled = true;
   var songPlaying = false;
-  var djRaf = 0, djBeams = [], djLast = 0, djSparks = [], djPrevE = 0, djBeatTimer = 0, djBurst = 0, djCam = 0;
+  var djRaf = 0, djBeams = [], djLast = 0, djSparks = [], djPrevE = 0, djBeatTimer = 0, djBurst = 0, djCam = 0, djShake = 0;
   function djLaserBuild() {
     var cv = document.getElementById("djLaserCanvas");
     if (!cv) return null;
@@ -739,11 +739,11 @@ function showNotice(text, ok){
     var boothEl = document.getElementById("djBooth");
     if (boothEl) {
       boothEl.style.setProperty("--e", energy.toFixed(2));
-      if (energy > djPrevE + 0.12 && !djBeatTimer) {
+      if (energy > djPrevE + 0.05 && !djBeatTimer) {
         boothEl.classList.add("beat");
         var fl = boothEl.querySelector(".dj-flash");
-        if (fl) fl.style.opacity = (0.18 + energy * 0.3).toFixed(2);
-        djBurst = 1; djCam = 0.012;
+        if (fl) fl.style.opacity = (0.35 + energy * 0.45).toFixed(2);
+        djBurst = 1; djCam = 0.04; djShake = 14;
         var deskEl = document.querySelector('#stage > .dj-desk');
         if (deskEl) deskEl.classList.add('beat');
         var smokes = boothEl.querySelectorAll('.dj-smoke');
@@ -771,7 +771,15 @@ function showNotice(text, ok){
     if (djBurst > 0) djBurst *= 0.9; else djBurst = 0;
     if (djCam > 0) djCam *= 0.9; else djCam = 0;
     var stageEl = document.getElementById("stage");
-    if (stageEl) stageEl.style.scale = (1 + energy * 0.004 + djCam).toFixed(4);
+    if (stageEl) {
+      stageEl.style.scale = (1 + energy * 0.006 + djCam).toFixed(4);
+      if (djShake > 0.2) {
+        djShake *= 0.82;
+        stageEl.style.translate = ((Math.random() * 2 - 1) * djShake).toFixed(1) + 'px ' + ((Math.random() * 2 - 1) * djShake * 0.6).toFixed(1) + 'px';
+      } else if (stageEl.style.translate) {
+        stageEl.style.translate = '0px 0px';
+      }
+    }
     for (var i = 0; i < djBeams.length; i++) {
       var b = djBeams[i];
       var tx = b.tx + Math.sin(t * b.sp + b.ph) * 320;
@@ -780,8 +788,8 @@ function showNotice(text, ok){
       grad.addColorStop(0.55, b.c);
       grad.addColorStop(1, "rgba(0,0,0,0)");
       g.strokeStyle = grad;
-      g.globalAlpha = (0.28 + 0.55 * energy) * (0.8 + 0.2 * Math.sin(t * 2 + b.ph));
-      g.lineWidth = b.w * (0.7 + 1.2 * energy);
+      g.globalAlpha = (0.5 + 0.45 * energy) * (0.8 + 0.2 * Math.sin(t * 2 + b.ph));
+      g.lineWidth = b.w * (0.9 + 1.8 * energy);
       g.shadowBlur = 16;
       g.shadowColor = b.c;
       g.beginPath(); g.moveTo(b.sx, -40); g.lineTo(tx, H + 40); g.stroke();
@@ -803,11 +811,11 @@ function showNotice(text, ok){
       var ang = Math.sin(t * hd.sp + hd.ph) * 0.42;
       var tip = hd.x + Math.tan(ang) * 1250;
       var cone = g.createLinearGradient(hd.x, 0, tip, H);
-      cone.addColorStop(0, "rgba(" + hd.c + ",.32)");
+      cone.addColorStop(0, "rgba(" + hd.c + ",.42)");
       cone.addColorStop(0.5, "rgba(" + hd.c + ",.10)");
       cone.addColorStop(1, "rgba(" + hd.c + ",0)");
       g.fillStyle = cone;
-      g.globalAlpha = 0.55;
+      g.globalAlpha = 0.72;
       g.beginPath();
       g.moveTo(hd.x - 14, -10);
       g.lineTo(hd.x + 14, -10);
@@ -823,7 +831,7 @@ function showNotice(text, ok){
     }
     if (djBurst > 0.15) {
       g.globalAlpha = djBurst * 0.9;
-      for (var bb = 0; bb < 14; bb++) {
+      for (var bb = 0; bb < 24; bb++) {
         var bx = Math.random() * W, bc = Math.random() > 0.5 ? "#ff2d55" : "#7fd4ff";
         g.strokeStyle = bc; g.lineWidth = 1.5 + Math.random() * 2; g.shadowBlur = 22; g.shadowColor = bc;
         g.beginPath(); g.moveTo(bx, -20); g.lineTo(bx + (Math.random() - 0.5) * 700, H + 20); g.stroke();
