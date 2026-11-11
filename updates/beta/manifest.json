@@ -1,10 +1,10 @@
 {
-  "version": "2.6.102",
+  "version": "2.6.103",
   "notes": "修复启动脚本行尾问题；插件安装改为正确的 DSH 注册方式；更新入口整合到主页与顶栏",
-  "package": "xiaoxi-ai-live-2.6.102.zip",
-  "size": 9526752,
-  "sha256": "049f070b71c57bc31d58089a863120cf805e8577297f13165a40ce7cf5dbc688",
-  "publishedAt": "2026-11-11T12:37:56.915Z",
+  "package": "xiaoxi-ai-live-2.6.103.zip",
+  "size": 6605930,
+  "sha256": "c02df7f9cc07bbc3a4ce80b840910c99d9ae6c0e4718140b29cda594a0488b1e",
+  "publishedAt": "2026-11-11T12:47:09.097Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -90,8 +90,8 @@
     },
     {
       "path": "scene.html",
-      "size": 95090,
-      "sha256": "b55926ee84862bbe68e4918f7bb54a1dc1883a5845ba2490645695a33543797e"
+      "size": 92832,
+      "sha256": "50bff29fcd7b83835864c98387c2048c109d96cbeabb725a55ab085208bce707"
     },
     {
       "path": "settings.html",
@@ -99,9 +99,9 @@
       "sha256": "ff6a4439376b61e38e890d5e739837fa0d1dd8bf2c4cd867e77c1d1b70c251f0"
     },
     {
-      "path": "sprites_hd/actions/music-loop.mp4",
-      "size": 4941927,
-      "sha256": "4583375b1e731fd86b0785910056036442f60b5eb329c51ac3df803e7cc90568"
+      "path": "sprites_hd/actions/music-loop.webp",
+      "size": 2006338,
+      "sha256": "12d262fbc366fa02c836bc574dc1ee50da4628102194443e9d677ca41320df23"
     },
     {
       "path": "sprites_hd/angry.png",
@@ -151,12 +151,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "e5876962c788865f055eaddddc246fe6f7405407a5de2718a1e34dba5db80c47"
+      "sha256": "b3061a7c7f2b0e5ef10c50be9789ba8622d4f5d1f32cc98efda16338b5756cb5"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 267113,
-      "sha256": "cfc6d6df797787713a094dde72da9206e56006ab11cc5ac08f42f7666fdc3d32"
+      "size": 265979,
+      "sha256": "e216bed861ec09a9ea8f33331527d2e5250264ba590870343111b90e5d0d2d32"
     }
   ]
 }

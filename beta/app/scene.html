@@ -175,7 +175,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   filter:blur(12px);animation:breathe 5s ease-in-out infinite}
 @keyframes breathe{50%{opacity:.7;transform:translateX(-50%) scale(1.07)}}
 
-  .actcanvas{display:none;height:calc(var(--fig-h,520px) * 1.65);width:auto;image-rendering:pixelated;border-radius:6px}
+  .actimg{display:none;height:calc(var(--fig-h,520px) * 1.65);width:auto;image-rendering:auto;border-radius:6px}
   .pet.action .fig,.pet.action .figvid,.pet.action .grooveFx{display:none !important}
   .figvid{display:none;height:var(--fig-h,520px);width:auto;object-fit:contain;image-rendering:auto;border-radius:6px}
   #stage.v .figvid{height:var(--fig-hp,700px)}
@@ -462,8 +462,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <div class="halo"></div>
     <img class="fig" id="fig" src="sprites_hd/idle.png" alt="小汐">
     <video id="petVid" class="figvid" muted loop playsinline preload="auto"></video>
-      <video id="actVideo" crossorigin="anonymous" muted loop playsinline preload="auto" src="/sprites_hd/actions/music-loop.mp4" style="display:none"></video>
-      <canvas id="actCanvas" class="actcanvas" width="180" height="320"></canvas>
+      <img id="actImg" class="actimg" src="/sprites_hd/actions/music-loop.webp" alt="">
     <div class="emo" id="emo">开心</div>
       <div class="grooveFx"><span class="glasses"></span><span class="hand l"></span><span class="hand r"></span></div>
   </div>
@@ -891,73 +890,27 @@ function showNotice(text, ok){
     if (st) st.classList.toggle("dj", Boolean(on) && djEnabled);
     if (Boolean(on) && djEnabled) djLaserStart(); else djLaserStop();
   }
-  var actVideo = document.getElementById("actVideo");
-  var actCanvas = document.getElementById("actCanvas");
-  var actCtx = actCanvas ? actCanvas.getContext("2d", { willReadFrequently: true }) : null;
-  var actActive = false, actRaf = 0, lastActSong = 0, actStopTimer = 0, actRestartTimer = 0, actLastKey = 0;
-  if (actCtx) actCtx.imageSmoothingEnabled = false;
+  var actImg = document.getElementById("actImg");
+  var actActive = false, lastActSong = 0, actStopTimer = 0;
   function actionStop() {
     actActive = false;
-    if (actRestartTimer) { clearInterval(actRestartTimer); actRestartTimer = 0; }
-    if (actRaf) cancelAnimationFrame(actRaf);
-    actRaf = 0;
-    if (actVideo) { try { actVideo.pause(); } catch (e) {} }
-    if (actCanvas) actCanvas.style.display = "none";
+    if (actImg) actImg.style.display = "none";
     var petA = document.querySelector(".pet");
     if (petA) petA.classList.remove("action");
     var figA = document.getElementById("fig"), pvA = document.getElementById("petVid");
     if (typeof AVATAR !== "undefined" && AVATAR && AVATAR.kind === "video" && pvA) { pvA.style.display = "block"; if (figA) figA.style.display = "none"; }
     else { if (figA) figA.style.display = ""; if (pvA) pvA.style.display = "none"; }
   }
-  function actionLoop(ts) {
-    if (!actActive || !actVideo || !actCtx) return;
-    if (actVideo.duration && actVideo.currentTime > actVideo.duration - 0.08) {
-      try { actVideo.currentTime = 0; } catch (e) {}
-      try { actVideo.play(); } catch (e) {}
-    }
-    if (actVideo.readyState >= 2 && (!ts || ts - actLastKey > 60)) {
-      actLastKey = ts || 0;
-      var w = actCanvas.width, h = actCanvas.height;
-      actCtx.drawImage(actVideo, 0, 0, w, h);
-      try {
-        var img = actCtx.getImageData(0, 0, w, h), d = img.data;
-        var img = actCtx.getImageData(0, 0, w, h), d = img.data;
-        for (var gi = 0; gi < d.length; gi += 4) {
-          var gr = d[gi], gg = d[gi + 1], gb = d[gi + 2];
-          var gd = gg - Math.max(gr, gb);
-          if (gg > 70 && gd > 38) { d[gi + 3] = 0; }
-          else if (gd > 12) {
-            d[gi + 3] = Math.round(255 * (1 - (gd - 12) / 26));
-            var cap = Math.max(gr, gb);
-            if (gg > cap) d[gi + 1] = cap;
-          }
-        }
-        actCtx.putImageData(img, 0, 0);
-      } catch (e) {}
-    }
-    actRaf = requestAnimationFrame(actionLoop);
-  }
   function actionStart() {
-    if (!actVideo || !actCanvas) return;
+    if (!actImg) return;
     actActive = true;
-    actVideo.loop = true;
-
     var petA = document.querySelector(".pet");
     if (petA) petA.classList.add("action");
     var figA = document.getElementById("fig"), pvA = document.getElementById("petVid");
     if (figA) figA.style.display = "none";
     if (pvA) pvA.style.display = "none";
-    actCanvas.style.display = "block";
-    try { actVideo.currentTime = 0; } catch (e) {}
-    var pr = actVideo.play(); if (pr && pr.catch) pr.catch(function () { actionStop(); });
-    if (actRaf) cancelAnimationFrame(actRaf);
-    actRaf = requestAnimationFrame(actionLoop);
+    actImg.style.display = "block";
   }
-  if (actVideo) actVideo.addEventListener("ended", function () {
-    if (typeof songPlaying !== "undefined" && songPlaying) {
-      try { actVideo.currentTime = 0; actVideo.play(); } catch (e) {}
-    } else actionStop();
-  });
 function setSong(d){
     songPlaying = !!d.playing;
     var petEl0 = document.querySelector('.pet');
