@@ -106,6 +106,9 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #djBooth .dj-eq b:nth-child(5n){animation-duration:.55s;animation-delay:-.32s}
   @keyframes djEq{from{height:12%}to{height:96%}}
   #djBooth .dj-ledlabel{position:absolute;left:0;right:0;top:16px;text-align:center;font:900 20px/1 ui-monospace,Consolas,monospace;letter-spacing:6px;color:#fff;text-shadow:0 0 8px #ff2d55,0 0 24px #2f7bff;z-index:2;opacity:.9}
+  #djBooth .dj-song{position:absolute;left:20px;right:20px;top:46px;z-index:3;text-align:center;text-shadow:0 2px 12px rgba(0,0,0,.9)}
+  #djBooth .dj-song b{display:block;font:900 26px/1.2 "Microsoft YaHei",sans-serif;color:#fff;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #djBooth .dj-song span{display:block;margin-top:4px;font-size:13px;color:rgba(255,220,235,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #stage:not(.dj) > .dj-desk{display:none}
   #stage > .dj-desk{position:absolute;left:50%;bottom:190px;transform:translateX(-50%);width:620px;height:150px;z-index:8}
   #stage.dj .pet{bottom:190px !important;z-index:7 !important;transform:translateX(-50%) scale(.86);transform-origin:bottom center;transition:bottom .5s ease,transform .5s ease}
@@ -388,7 +391,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <div class="dj-rig"></div>
     <div class="dj-array l"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="dj-array r"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <div class="dj-ledwall"><img id="djCover" alt=""><div class="dj-eq"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div><div class="dj-ledlabel">XIAOXI · LIVE</div></div>
+    <div class="dj-ledwall"><img id="djCover" alt=""><div class="dj-eq"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div><div class="dj-ledlabel">XIAOXI · LIVE</div><div class="dj-song"><b id="djSongName">—</b><span id="djSongArtist"></span></div></div>
     <div class="dj-sign">XIAOXI · DJ</div>
     <div class="dj-riser"><span>LIVE</span></div>
     <div class="dj-strobe"></div>
@@ -667,6 +670,18 @@ function showNotice(text, ok){
     var g = o.g, W = o.cv.width, H = o.cv.height;
     g.clearRect(0, 0, W, H);
     var t = ts / 1000;
+    var energy = 0;
+    try {
+      if (viz && viz.analyser && viz.data) {
+        viz.analyser.getByteFrequencyData(viz.data);
+        var sum = 0, cnt = Math.min(32, viz.data.length);
+        for (var q = 0; q < cnt; q++) sum += viz.data[q];
+        energy = sum / (cnt * 255);
+      }
+    } catch (e) {}
+    if (!energy) energy = 0.42 + 0.3 * Math.pow(Math.max(0, Math.sin(t * Math.PI * 2 * 1.85)), 6) + 0.18 * Math.pow(Math.max(0, Math.sin(t * Math.PI * 2 * 3.7)), 8);
+    energy = Math.max(0, Math.min(1, energy));
+    window.__djEnergy = Math.round(energy * 100) / 100;
     g.save();
     g.globalCompositeOperation = "lighter";
     // 背景红蓝舞台光
@@ -684,19 +699,24 @@ function showNotice(text, ok){
       grad.addColorStop(0.55, b.c);
       grad.addColorStop(1, "rgba(0,0,0,0)");
       g.strokeStyle = grad;
-      g.globalAlpha = 0.55 + 0.3 * Math.sin(t * 2 + b.ph);
-      g.lineWidth = b.w;
+      g.globalAlpha = (0.28 + 0.55 * energy) * (0.8 + 0.2 * Math.sin(t * 2 + b.ph));
+      g.lineWidth = b.w * (0.7 + 1.2 * energy);
       g.shadowBlur = 16;
       g.shadowColor = b.c;
       g.beginPath(); g.moveTo(b.sx, -40); g.lineTo(tx, H + 40); g.stroke();
     }
     // 摇头灯：4 个灯头来回扫
     var djHeads = [
-      { x: 260, c: "127,212,255", sp: 0.55, ph: 0 },
-      { x: 640, c: "255,92,138", sp: 0.42, ph: 1.7 },
-      { x: 980, c: "179,136,255", sp: 0.5, ph: 3.1 },
-      { x: 1360, c: "255,209,102", sp: 0.38, ph: 4.4 }
+      { x: 140, c: "127,212,255", sp: 0.55, ph: 0 },
+      { x: 360, c: "255,92,138", sp: 0.42, ph: 1.7 },
+      { x: 560, c: "179,136,255", sp: 0.5, ph: 3.1 },
+      { x: 740, c: "255,209,102", sp: 0.38, ph: 4.4 },
+      { x: 920, c: "127,212,255", sp: 0.47, ph: 5.2 },
+      { x: 1100, c: "255,92,138", sp: 0.36, ph: 2.3 },
+      { x: 1280, c: "179,136,255", sp: 0.52, ph: 0.8 },
+      { x: 1460, c: "255,209,102", sp: 0.44, ph: 3.8 }
     ];
+    window.__djHeads = djHeads.length;
     for (var h = 0; h < djHeads.length; h++) {
       var hd = djHeads[h];
       var ang = Math.sin(t * hd.sp + hd.ph) * 0.42;
