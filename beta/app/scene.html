@@ -80,6 +80,17 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #djBooth.on .dj-speaker i{animation:djPump .55s ease-in-out infinite alternate}
   #djBooth.on .dj-speaker.r i{animation-delay:.16s}
   @keyframes djPump{from{transform:scale(.94);box-shadow:inset 0 0 16px #000}to{transform:scale(1.05);box-shadow:inset 0 0 22px #ff4fd8,0 0 18px rgba(255,79,216,.4)}}
+  #djBooth .dj-riser::before{content:"LIVE";position:absolute;left:50%;top:58px;transform:translateX(-50%);font:900 40px/1 ui-monospace,Consolas,monospace;letter-spacing:10px;color:rgba(255,216,255,.9);text-shadow:0 0 10px #ff4fd8,0 0 30px #a855f7;opacity:.85}
+  #djBooth .dj-crowd{position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);width:1080px;height:110px;z-index:9;pointer-events:none}
+  #djBooth .dj-crowd i{position:absolute;bottom:0;width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 50% 35%,#241a33,#050308 70%);box-shadow:0 -6px 22px rgba(0,0,0,.8);filter:blur(.4px)}
+  #djBooth .dj-crowd i:nth-child(1){left:2%;width:86px;height:86px}
+  #djBooth .dj-crowd i:nth-child(2){left:14%;height:66px;width:66px}
+  #djBooth .dj-crowd i:nth-child(3){left:26%;width:92px;height:92px}
+  #djBooth .dj-crowd i:nth-child(4){left:42%;height:70px;width:70px}
+  #djBooth .dj-crowd i:nth-child(5){left:55%;width:88px;height:88px}
+  #djBooth .dj-crowd i:nth-child(6){left:70%;height:72px;width:72px}
+  #djBooth .dj-crowd i:nth-child(7){left:84%;width:84px;height:84px}
+  #djBooth .dj-crowd i::after{content:"";position:absolute;left:50%;top:-10px;transform:translateX(-50%);width:34%;height:34%;border-radius:50%;background:rgba(255,79,216,.18);filter:blur(6px)}
   #stage.dj .pet{bottom:260px !important;transition:bottom .45s ease}
   #stage.v #djBooth{width:900px;height:760px;bottom:100px;transform:translateX(-50%) scale(1.05)}
   #stage.v #djBooth .dj-riser{width:800px;height:300px}
@@ -364,6 +375,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <div class="dj-speaker r"><i></i><i></i></div>
     <div class="dj-desk">
       <div class="dj-platter l"><span></span></div>
+    <div class="dj-crowd"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="dj-mixer"><b></b><b></b><b></b><b></b></div>
       <div class="dj-platter r"><span></span></div>
       <div class="dj-led"></div>
