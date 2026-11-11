@@ -932,6 +932,8 @@ function setSong(d){
     djShow(songPlaying);
   if (d.notice && d.notice.text) showNotice(d.notice.text, d.notice.ok);
   var p = d.playing;
+  if (p && p.id && p.id !== lastActSong) { lastActSong = p.id; actionStart(); }
+  else if (!p) actionStop();
   var djName = document.getElementById("djSongName"), djArtist = document.getElementById("djSongArtist");
   if (djName) djName.textContent = p ? (p.name || "正在播放") : "—";
   if (djArtist) djArtist.textContent = p ? (p.artist || (p.user ? "由 " + p.user + " 点播" : "")) : "";
