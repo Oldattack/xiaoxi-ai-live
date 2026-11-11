@@ -855,6 +855,16 @@
             <div class="hint">推流时电脑吃力的话可以关掉，省一点显卡</div>
           </div>
         </div>
+
+          <div class="row">
+            <label>DJ 台</label>
+            <div>
+              <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+                <input type="checkbox" id="djOn" checked> 放歌时出现
+              </label>
+              <div class="hint">打碟机 + 音柱 + 灯带，只在放歌时亮，不放歌自动收起</div>
+            </div>
+          </div>
       </div>
 
       <div class="card">
@@ -1258,6 +1268,8 @@ async function load() {
   catch (e) { toast('连不上本地服务：' + e.message); return; }
   ST = st;
   try { fill(st); } catch (e) { toast('界面渲染出错：' + e.message); console.error(e); }
+    var djEl = document.getElementById('djOn');
+    if (djEl && st && st.config && st.config.scene && st.config.scene.dj) djEl.checked = st.config.scene.dj.enabled !== false;
   if (!window.APPEARANCE_APPLIED && st && st.config && st.config.appearance) {
     window.APPEARANCE_APPLIED = true;
     var ap = st.config.appearance;
@@ -1279,6 +1291,14 @@ function parseRules(text) {
     return match && reply ? { match: match, reply: reply } : null;
   }).filter(Boolean);
 }
+
+  var djEl2 = document.getElementById('djOn');
+  if (djEl2) djEl2.onchange = async function () {
+    try {
+      await api('/api/config', { scene: { dj: { enabled: this.checked } } });
+      toast(this.checked ? 'DJ 台已打开' : 'DJ 台已关闭');
+    } catch (e) { toast('切换失败：' + e.message); }
+  };
 
 $('save').onclick = async function () {
   var body = {
