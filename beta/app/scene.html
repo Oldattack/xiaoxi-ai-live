@@ -154,29 +154,15 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #stage.video #djBooth,#stage.game #djBooth{display:none}
 .pet{position:absolute;left:50%;bottom:206px;transform:translateX(-50%);width:440px;height:600px;
   display:flex;align-items:flex-end;justify-content:center}
-  .grooveFx{position:absolute;inset:0;pointer-events:none;display:none;z-index:3}
-  .pet.groove .grooveFx{display:block}
-  .pet.groove{animation:grooveSway 1.6s ease-in-out infinite}
-  @keyframes grooveSway{0%,100%{transform:translateX(-50%) rotate(-2.2deg)}50%{transform:translateX(-50%) rotate(2.2deg)}}
-  #stage.dj .pet.groove{animation:none}
-  .grooveFx .glasses{position:absolute;left:50%;top:37%;width:118px;height:40px;transform:translateX(-50%) rotate(-2deg);filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
-  .grooveFx .glasses::before,.grooveFx .glasses::after{content:"";position:absolute;top:6px;width:44px;height:26px;border-radius:8px 8px 12px 12px;background:linear-gradient(160deg,#1a1622,#05040a 65%);border:3px solid #2c2438;box-shadow:inset 6px 4px 0 rgba(127,212,255,.35),0 0 10px rgba(168,85,247,.35)}
-  .grooveFx .glasses::before{left:0}
-  .grooveFx .glasses::after{right:0}
-  .grooveFx .hand{display:none;position:absolute;top:43%;width:22px;height:62px;z-index:5;border-radius:14px;background:linear-gradient(180deg,#f2d6c8,#d9b49f 72%,#2a2038 73%);border:2px solid #3a2c52;box-shadow:inset 0 0 8px rgba(0,0,0,.6),0 0 12px rgba(168,85,247,.25);transform-origin:bottom center}
-  .grooveFx .hand::after{content:"";position:absolute;left:50%;top:-9px;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:#f2d6c8;border:2px solid #3a2c52}
-  .grooveFx .hand.l{left:6px;animation:waveL .9s ease-in-out infinite}
-  .grooveFx .hand.r{right:6px;animation:waveR .9s ease-in-out infinite}
   @keyframes waveL{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(24deg)}}
   @keyframes waveR{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-24deg)}}
-  #stage.video .grooveFx,#stage.game .grooveFx{display:none !important}
 .pet .halo{position:absolute;left:50%;bottom:40px;width:420px;height:420px;transform:translateX(-50%);
   border-radius:99px;background:radial-gradient(50% 50% at 50% 50%, rgba(150,110,255,.28), transparent 70%);
   filter:blur(12px);animation:breathe 5s ease-in-out infinite}
 @keyframes breathe{50%{opacity:.7;transform:translateX(-50%) scale(1.07)}}
 
   .actimg{display:none;height:calc(var(--fig-h,520px) * 1.65);width:auto;image-rendering:auto;border-radius:6px}
-  .pet.action .fig,.pet.action .figvid,.pet.action .grooveFx{display:none !important}
+  .pet.action .fig,.pet.action .figvid{display:none !important}
   .figvid{display:none;height:var(--fig-h,520px);width:auto;object-fit:contain;image-rendering:auto;border-radius:6px}
   #stage.v .figvid{height:var(--fig-hp,700px)}
 .fig{position:relative;display:block;height:var(--fig-h,520px);width:auto;image-rendering:auto;
@@ -464,7 +450,6 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <video id="petVid" class="figvid" muted loop playsinline preload="auto"></video>
       <img id="actImg" class="actimg" src="/sprites_hd/actions/music-loop.webp" alt="">
     <div class="emo" id="emo">开心</div>
-      <div class="grooveFx"><span class="glasses"></span><span class="hand l"></span><span class="hand r"></span></div>
   </div>
     <div class="dj-desk">
       <div class="dj-platter l"><span></span></div>
@@ -914,7 +899,6 @@ function showNotice(text, ok){
 function setSong(d){
     songPlaying = !!d.playing;
     var petEl0 = document.querySelector('.pet');
-    if (petEl0) petEl0.classList.toggle('groove', songPlaying);
     djShow(songPlaying);
   if (d.notice && d.notice.text) showNotice(d.notice.text, d.notice.ok);
   var p = d.playing;
