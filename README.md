@@ -26,7 +26,7 @@
 
 **1. 装 Node.js**（只需一次）：<https://nodejs.org> 选 LTS，一路下一步
 
-**2. 下载并解压**：[整包下载](updates/xiaoxi-ai-live-2.6.153.zip)（3.7 MB）→ 解压到 `D:\xiaoxi-ai-live`
+**2. 下载并解压**：[整包下载](downloads/xiaoxi-ai-live-2.6.153-full.zip)（6.4 MB）→ 解压到 `D:\xiaoxi-ai-live`
 
 **3. 双击 `启动.cmd`**
 

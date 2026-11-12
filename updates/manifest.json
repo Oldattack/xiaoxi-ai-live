@@ -3,7 +3,7 @@
   "notes": "修复启动脚本行尾问题；插件安装改为正确的 DSH 注册方式；更新入口整合到主页与顶栏",
   "package": "xiaoxi-ai-live-2.5.65.zip",
   "size": 3907136,
-  "sha256": "e4afef91b66a476d719fc541e713ca74f86c588ff6f92b717b5600ba5c64c431",
+  "sha256": "29888e8273ff886ba1924e979ffed93933e49020ca839f7d41db50e6e38785be",
   "publishedAt": "2026-11-10T12:12:40.340Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/app/",

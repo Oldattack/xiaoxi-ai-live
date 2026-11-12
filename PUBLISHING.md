@@ -12,13 +12,19 @@ xiaoxi-ai-live/
 │  ├─ plugin/               DSH 插件
 │  ├─ 启动.cmd / 停止.cmd
 │  └─ 安装到DSH.cmd / 修复DSH.cmd
+├─ downloads/
+│  ├─ xiaoxi-ai-live-<版本>-full.zip   完整安装包（含 config.json / plugin / 安装脚本）
+├─ beta/                    beta 的 app/（增量更新用）
 ├─ updates/
-│  ├─ manifest.json         版本清单（客户端只读这个）
-│  ├─ xiaoxi-ai-live-X.zip  最近两个版本的整包
+│  ├─ manifest.json         稳定版清单（客户端只读这个）
+│  ├─ xiaoxi-ai-live-X.zip  增量包（**不含 config.json / plugin，不能当安装包用**）
+│  └─ beta/                 测试版清单 + 增量包
 └─ README.md
 ```
 
-**客户端只认 `updates/manifest.json`**，里面写着版本号和 zip 文件名。
+**客户端只认 `updates/manifest.json`（beta 走 `updates/beta/manifest.json`）**，里面写着版本号和 zip 文件名。
+
+**注意**：README 里「整包下载」必须指 `downloads/*-full.zip`；`updates/` 里的是增量包，缺 `config.json`，新客户解压后会起不来。`publish-github.mjs` 已经自动把整包同步到 `downloads/` 并改 README。
 
 ## 发布一个新版本
 
