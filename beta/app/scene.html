@@ -402,8 +402,9 @@ html,body{height:100%;background:#05060a;overflow:hidden;
 .songs .empty{font-size:12px;color:#5f5a7d;padding:10px 0 4px}
 
   /* ── 常态常驻菜单 ── */
-  #stageMenu{position:absolute;inset:0;z-index:9;pointer-events:none;color:#fff;font-family:"Microsoft YaHei","Segoe UI",sans-serif}
+  #stageMenu{position:absolute;inset:0;z-index:9;pointer-events:none;color:#fff;transition:opacity .32s ease,transform .32s ease;font-family:"Microsoft YaHei","Segoe UI",sans-serif}
   #stage.video #stageMenu,#stage.game #stageMenu,#stage.v #stageMenu{display:none}
+  #stage.dj #stageMenu{opacity:0;transform:translateY(28px);pointer-events:none}
   #stage .songs{display:none !important}
   .sm-card{position:absolute;border-radius:16px;padding:14px 16px;background:linear-gradient(160deg,rgba(48,28,68,.97),rgba(18,10,30,.98));border:1px solid rgba(255,120,170,.42);box-shadow:0 12px 32px rgba(0,0,0,.45)}
   .sm-h{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;letter-spacing:.5px;color:#fff}
