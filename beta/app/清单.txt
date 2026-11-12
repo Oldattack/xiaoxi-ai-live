@@ -1,4 +1,4 @@
-小汐AI直播平台 v2.6.114
+小汐AI直播平台 v2.6.115
 
 AGENT.md
 VERSION

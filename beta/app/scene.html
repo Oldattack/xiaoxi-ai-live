@@ -149,7 +149,8 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   @keyframes djGlitch{0%{filter:hue-rotate(0) saturate(1.6);transform:skewX(0)}20%{transform:skewX(3deg) translateX(6px);filter:hue-rotate(40deg) saturate(2)}40%{transform:skewX(-4deg) translateX(-8px);filter:hue-rotate(-30deg)}60%{transform:skewX(2deg) translateX(4px);filter:hue-rotate(70deg) saturate(2.2)}100%{transform:skewX(0);filter:none}}
   #stage:not(.dj) > .dj-desk{display:none}
   #stage > .dj-desk{position:absolute;left:50%;bottom:190px;transform:translateX(-50%);width:620px;height:150px;z-index:12}
-  #stage:not(.dj):not(.video):not(.game) .pet{transform:translateX(-50%) scale(1.22);transform-origin:bottom center;transition:transform .4s ease}
+  #stage:not(.video):not(.game) .badge{display:none}
+  #stage:not(.dj):not(.video):not(.game) .pet{transform:translateX(-50%) scale(1.3);transform-origin:bottom center;transition:transform .4s ease}
   #stage.dj .pet{bottom:190px !important;z-index:7 !important;transform:translateX(-50%) scale(1.45);transform-origin:bottom center;transition:bottom .5s ease,transform .5s ease}
   #stage.v #djBooth .dj-desk{bottom:210px}
   #stage.video #djBooth,#stage.game #djBooth{display:none}
@@ -411,6 +412,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   .sm-left{left:24px;top:64px;width:430px}
   .sm-right{right:24px;top:64px;width:400px}
   .sm-queue{left:24px;bottom:70px;width:430px}
+  .sm-info{right:24px;bottom:70px;width:400px}
   .sm-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px}
   .sm-row:last-child{border-bottom:0}
   .sm-row .e{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;background:rgba(255,255,255,.08);flex:none}
@@ -500,6 +502,12 @@ html,body{height:100%;background:#05060a;overflow:hidden;
         <div class="sm-row"><span class="e">🎫</span><span class="nm">1 人气票</span><span class="ds">点歌 +1</span></div>
         <div class="sm-row"><span class="e">🌹</span><span class="nm">送玫瑰</span><span class="ds">画图券</span></div>
         <div class="sm-row"><span class="e">⭐</span><span class="nm">榜一</span><span class="ds">优先点歌</span></div>
+      </div>
+      <div class="sm-card sm-info">
+        <div class="sm-h"><span class="d"></span>本场<span class="tag">实时</span></div>
+        <div class="sm-row"><span class="e">▶</span><span class="nm">当前</span><span class="ds" id="smNow">还没人点歌</span></div>
+        <div class="sm-row"><span class="e">🎵</span><span class="nm">排队</span><span class="ds"><b id="smCnt2">0</b> 首</span></div>
+        <div class="sm-row"><span class="e">💬</span><span class="nm">参与</span><span class="ds">发弹幕就行</span></div>
       </div>
       <div class="sm-card sm-queue">
         <div class="sm-h"><span class="d"></span>点歌队列<span class="tag"><b id="smCnt">0</b> 首</span></div>
@@ -1023,6 +1031,7 @@ function renderQueue(q){
       var smc = document.getElementById("smCnt"), smq = document.getElementById("smQ"), smb = document.getElementById("smQueue");
       if (smc) smc.textContent = q.length;
       if (smq) smq.textContent = q.length;
+      var smc2 = document.getElementById("smCnt2"); if (smc2) smc2.textContent = q.length;
       if (smb) {
         smb.innerHTML = "";
         if (!q.length) smb.innerHTML = '<div class="sm-empty">点歌的是第一位</div>';
