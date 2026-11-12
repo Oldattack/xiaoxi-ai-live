@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小汐 · 右下角</title>
+<style>
+html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+#wrap{position:fixed;inset:0;pointer-events:none}
+#fig{position:absolute;right:46px;bottom:-6px;height:600px;width:auto;
+  filter:drop-shadow(0 18px 40px rgba(0,0,0,.55))}
+#glow{position:absolute;right:20px;bottom:-40px;width:520px;height:520px;border-radius:50%;
+  background:radial-gradient(circle,rgba(150,80,255,.28),transparent 68%);filter:blur(18px)}
+body.video #fig{right:96px;bottom:118px;height:382px}
+body.video #glow{right:60px;bottom:40px;width:360px;height:360px}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="glow"></div>
+  <img id="fig" src="/sprites_hd/normal.png" alt="小汐">
+</div>
+<script>
+if (/[?&]mode=video/.test(location.search)) document.body.classList.add('video');
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #080d06;
+  overflow: hidden;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#game {
+  display: block;
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: min(100vh, calc(100vw * 9 / 16));
+  background: #0e180b;
+  cursor: pointer;
+  touch-action: none;
+}
+#err {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  max-width: 90vw;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(120, 20, 10, 0.92);
+  color: #fff3d2;
+  font: 13px/1.5 "Microsoft YaHei", sans-serif;
+  z-index: 10;
+  white-space: pre-wrap;
+}

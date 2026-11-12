@@ -149,11 +149,11 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   @keyframes djGlitch{0%{filter:hue-rotate(0) saturate(1.6);transform:skewX(0)}20%{transform:skewX(3deg) translateX(6px);filter:hue-rotate(40deg) saturate(2)}40%{transform:skewX(-4deg) translateX(-8px);filter:hue-rotate(-30deg)}60%{transform:skewX(2deg) translateX(4px);filter:hue-rotate(70deg) saturate(2.2)}100%{transform:skewX(0);filter:none}}
   #stage:not(.dj) > .dj-desk{display:none}
   #stage > .dj-desk{position:absolute;left:50%;bottom:190px;transform:translateX(-50%);width:620px;height:150px;z-index:12}
-  #stage:not(.video):not(.game) .badge{display:none}
-  #stage:not(.dj):not(.video):not(.game) .pet{transform:translateX(-50%) scale(1.3);transform-origin:bottom center;transition:transform .4s ease}
+  #stage:not(.video) .badge{display:none}
+  #stage:not(.dj):not(.video) .pet{transform:translateX(-50%) scale(1.3);transform-origin:bottom center;transition:transform .4s ease}
   #stage.dj .pet{bottom:190px !important;z-index:7 !important;transform:translateX(-50%) scale(1.45);transform-origin:bottom center;transition:bottom .5s ease,transform .5s ease}
   #stage.v #djBooth .dj-desk{bottom:210px}
-  #stage.video #djBooth,#stage.game #djBooth{display:none}
+  #stage.video #djBooth{display:none}
 .pet{position:absolute;left:50%;bottom:206px;transform:translateX(-50%);width:440px;height:600px;
   display:flex;align-items:flex-end;justify-content:center}
   @keyframes waveL{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(24deg)}}
@@ -201,24 +201,6 @@ html,body{height:100%;background:#05060a;overflow:hidden;
 #stage.video .pet .halo{opacity:0}
 #stage.video .pool{width:470px}
 #stage.video .songs{opacity:0;pointer-events:none;transition:opacity .3s}
-  #gameLayer{position:absolute;inset:0;z-index:20;display:none;padding:38px 46px 40px;background:linear-gradient(180deg,rgba(10,8,18,.94),rgba(16,10,28,.96))}
-  #gameLayer.on{display:block}
-  .g-head{display:flex;align-items:center;gap:14px;margin-bottom:26px}
-  .g-head b{font-size:30px;letter-spacing:1px;color:#fff}
-  .g-head .g-timer{margin-left:auto;font:700 26px ui-monospace,Consolas,monospace;color:#ffd166;padding:4px 16px;border-radius:10px;background:rgba(255,209,102,.12)}
-  .g-head .g-tip{font-size:14px;color:#c9bfdc;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.08)}
-  .g-track{padding-right:250px}
-  .g-lane{display:flex;align-items:center;gap:16px;margin:20px 0}
-  .g-name{width:70px;flex:none;font-size:20px;font-weight:700;color:#fff}
-  .g-run{position:relative;flex:1;height:58px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09)}
-  .g-fill{position:absolute;left:0;top:0;bottom:0;border-radius:16px;opacity:.28;transition:width .35s linear}
-  .g-run i{position:absolute;left:0;top:50%;transform:translate(-52%,-50%);font-size:38px;font-style:normal;transition:left .35s linear;filter:drop-shadow(0 3px 8px rgba(0,0,0,.4))}
-  .g-win{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:46px;font-weight:900;color:#ffd166;text-shadow:0 6px 30px rgba(255,209,102,.45);text-align:center;pointer-events:none}
-  #stage.game .pet{left:auto;right:40px;bottom:26px;width:220px;height:300px;transform:none;z-index:26;transition:none}
-  #stage.game .pet .fig{height:270px;animation:none}
-  #stage.game .pet .figvid{height:270px}
-  #stage.game .pet .halo{opacity:0}
-  #stage.game .cap,#stage.game .songs,#stage.game .pool,#stage.game .welcome{opacity:0;pointer-events:none}
 #stage.video .cap{left:auto;right:430px;bottom:250px;transform:none;text-align:right;max-width:640px;z-index:9}
 #stage.video .cap .bubble{text-align:left;border-radius:18px}
 .vid-tag{position:absolute;left:16px;top:16px;z-index:2;display:flex;align-items:center;gap:7px;
@@ -403,11 +385,11 @@ html,body{height:100%;background:#05060a;overflow:hidden;
 
   /* ── 常态常驻菜单 ── */
   #stageMenu{position:absolute;inset:0;z-index:9;pointer-events:none;color:#fff;transition:opacity .32s ease,transform .32s ease;font-family:"Microsoft YaHei","Segoe UI",sans-serif}
-  #stage.video #stageMenu,#stage.game #stageMenu,#stage.v #stageMenu{display:none}
-  #stage:not(.video):not(.game) .pool{display:none !important}
-  #stage:not(.dj):not(.video):not(.game) .cap,
-  #stage:not(.dj):not(.video):not(.game) .welcome,
-  #stage:not(.dj):not(.video):not(.game) .emo{display:none !important}
+  #stage.video #stageMenu,#stage.v #stageMenu{display:none}
+  #stage:not(.video) .pool{display:none !important}
+  #stage:not(.dj):not(.video) .cap,
+  #stage:not(.dj):not(.video) .welcome,
+  #stage:not(.dj):not(.video) .emo{display:none !important}
   #stage.dj #stageMenu{opacity:0;transform:translateY(28px);pointer-events:none}
   #stage .songs{display:none !important}
   .sm-card{position:absolute;border-radius:16px;padding:14px 16px;background:linear-gradient(160deg,rgba(48,28,68,.97),rgba(18,10,30,.98));border:1px solid rgba(255,120,170,.42);box-shadow:0 12px 32px rgba(0,0,0,.45)}
@@ -450,6 +432,27 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #stage.dj .sm-say{display:none}
   .sm-line{font-size:12px;color:#d8c8ea;line-height:1.7;margin-top:7px}
   .sm-note{font-size:11px;color:#a995c2;line-height:1.7;margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.08)}
+
+  /* ── 陪玩层（透明，人物右下） ── */
+  html.companion, html.companion body{background:transparent !important}
+  #stage.companion{background:transparent !important}
+  #stage.companion #djBooth,#stage.companion #stageMenu,#stage.companion .badge,
+  #stage.companion .songs,#stage.companion .pool,#stage.companion .welcome,
+  #stage.companion .cap,#stage.companion .emo{display:none !important}
+  #companionUI{display:none}
+  #stage.companion #companionUI{display:block}
+  #companionUI .cp-title{position:absolute;left:28px;top:24px;padding:8px 13px;border-radius:999px;font-size:13px;color:#ffd7e6;background:rgba(18,10,28,.82);border:1px solid rgba(255,90,150,.4)}
+  #companionUI .cp-chat{position:absolute;left:28px;bottom:28px;width:430px;max-height:280px;padding:12px 14px;border-radius:14px;background:linear-gradient(160deg,rgba(20,12,30,.9),rgba(10,6,18,.94));border:1px solid rgba(255,255,255,.12);overflow:hidden}
+  #companionUI .cp-h{display:flex;align-items:center;gap:7px;font-size:12px;color:#c9b8dd;margin-bottom:6px}
+  #companionUI .cp-h i{width:6px;height:6px;border-radius:50%;background:#ff4d8d;box-shadow:0 0 8px #ff4d8d}
+  #cpChat{max-height:230px;overflow:auto}
+  #companionUI .sm-empty{padding:6px 0}
+  #companionUI .cp-say{position:absolute;right:300px;bottom:560px;width:360px;padding:12px 16px;border-radius:16px;background:linear-gradient(180deg,rgba(28,16,40,.96),rgba(16,9,24,.97));border:1px solid rgba(255,120,170,.45);box-shadow:0 12px 30px rgba(0,0,0,.45);font-size:15px;line-height:1.55}
+  #companionUI .cp-say b{display:block;font-size:10px;letter-spacing:2px;color:#ff9ec3;margin-bottom:4px;font-weight:400}
+  #stage.companion .pet{left:auto !important;right:300px !important;bottom:10px !important;width:440px !important;height:560px !important;transform:none !important;z-index:30 !important}
+  #stage.companion .pet .fig{height:520px !important;animation:none !important}
+  #stage.companion .pet .figvid{height:520px !important}
+  #stage.companion .pet .halo{opacity:0 !important}
 </style>
 </head>
 <body>
@@ -465,16 +468,6 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <video id="vid" playsinline preload="auto"></video>
     <div class="vid-tag"><i></i>一起看</div>
     <div class="vid-info"><span class="t" id="vidTitle"></span><span class="by" id="vidBy"></span></div>
-  </div>
-
-  <div id="gameLayer">
-    <div class="g-head">
-      <b>🐎 弹幕赛马</b>
-      <span class="g-tip">发 1 / 2 / 3 给你的队加速</span>
-      <span class="g-timer" id="gTimer">60</span>
-    </div>
-    <div class="g-track" id="gTrack"></div>
-    <div class="g-win" id="gWin"></div>
   </div>
 
   <div class="pool" id="pool"></div>
@@ -508,6 +501,15 @@ html,body{height:100%;background:#05060a;overflow:hidden;
       <div class="dj-mixer"><b></b><b></b><b></b><b></b></div>
       <div class="dj-platter r"><span></span></div>
       <div class="dj-led"></div><div class="dj-frontled"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div>
+    </div>
+
+    <div id="companionUI">
+      <div class="cp-title">🌱 小汐陪玩中</div>
+      <div class="cp-chat">
+        <div class="cp-h"><i></i>弹幕互动</div>
+        <div id="cpChat"><div class="sm-empty">等待弹幕...</div></div>
+      </div>
+      <div class="cp-say" id="cpSay"><b>小汐在说</b>我来陪你打这局，缺阳光喊我。</div>
     </div>
 
   <div class="cap" id="cap"><div class="bubble"><span class="who" id="who">小汐</span><span id="say"></span></div></div>
@@ -567,6 +569,13 @@ html,body{height:100%;background:#05060a;overflow:hidden;
 <script>
 // ── 等比缩放到窗口（横屏 1920×1080 / 竖屏 1080×1920，布局由设置页决定）──
 var stageEl = document.getElementById('stage');
+  var COMPANION = /[?&]companion=1/.test(location.search);
+  if (COMPANION) {
+    document.documentElement.classList.add('companion');
+    if (stageEl) stageEl.classList.add('companion');
+    if (document.body) document.body.style.background = 'transparent';
+    if (stageEl) stageEl.style.background = 'transparent';
+  }
 var forceVertical = new URLSearchParams(location.search).has('v');
 var layoutMode = 'auto';   // auto | landscape | portrait，来自 /api/state
 
@@ -1145,6 +1154,17 @@ function pushStageChat(kind, user, text){
   box.appendChild(el);
   while (box.children.length > 12) box.removeChild(box.firstChild);
   box.scrollTop = box.scrollHeight;
+  var cp = document.getElementById("cpChat");
+  if (cp) {
+    var ce = cp.querySelector(".sm-empty"); if (ce) cp.innerHTML = "";
+    var cl = document.createElement("div"); cl.className = "sm-chat-line " + (kind || "");
+    cl.innerHTML = '<b></b><span></span>';
+    cl.querySelector("b").textContent = user || "";
+    cl.querySelector("span").textContent = text || "";
+    cp.appendChild(cl);
+    while (cp.children.length > 10) cp.removeChild(cp.firstChild);
+    cp.scrollTop = cp.scrollHeight;
+  }
 }
 function addLine(kind, user, text){
   var el = document.createElement('div');
@@ -1292,6 +1312,7 @@ function speakOut(sp){
 function speak(text, emotion){
   whoEl.textContent = '小汐';
   sayEl.textContent = text;
+    var cpSay = document.getElementById('cpSay'); if (cpSay) cpSay.innerHTML = '<b>小汐在说</b>' + String(text || '').replace(/</g, '&lt;');
   capEl.classList.add('on');
   clearTimeout(capTimer);
   capTimer = setTimeout(function(){ capEl.classList.remove('on'); }, Math.max(6000, text.length * 320));
@@ -1726,48 +1747,6 @@ function speak(text, emotion){
     return false;
   }
 
-  // ── 弹幕赛马渲染 ──
-  var GCOLORS = { 1: "#ff6b6b", 2: "#5aa9ff", 3: "#ffd166" };
-  function gameBuild(s) {
-    var box = document.getElementById("gTrack");
-    if (!box || box.dataset.built) return;
-    box.dataset.built = "1";
-    (s.horses || []).forEach(function (h) {
-      var d = document.createElement("div"); d.className = "g-lane"; d.dataset.lane = h.lane;
-      d.innerHTML = "<span class=\"g-name\">" + h.name + "</span><div class=\"g-run\"><div class=\"g-fill\"></div><i>🐎</i></div>";
-      box.appendChild(d);
-    });
-  }
-  function gameRender(s) {
-    if (!s || !s.horses) return;
-    var layer = document.getElementById("gameLayer"), stage = document.getElementById("stage");
-    gameBuild(s);
-    if (layer) layer.classList.add("on");
-    if (stage) stage.classList.add("game");
-    (s.horses || []).forEach(function (h) {
-      var lane = document.querySelector(".g-lane[data-lane=\"" + h.lane + "\"]");
-      if (!lane) return;
-      var fill = lane.querySelector(".g-fill"), horse = lane.querySelector("i");
-      var p = Math.max(0, Math.min(100, Number(h.progress) || 0));
-      if (fill) { fill.style.width = p + "%"; fill.style.background = GCOLORS[h.lane] || "#fff"; }
-      if (horse) horse.style.left = p + "%";
-    });
-    var tm = document.getElementById("gTimer");
-    if (tm) tm.textContent = s.active ? Math.max(0, Math.ceil((s.endsAt - Date.now()) / 1000)) : (s.winner ? "结束" : "0");
-    var win = document.getElementById("gWin");
-    if (win) win.textContent = s.winner ? (s.winner.name + " 赢啦！") : "";
-  }
-  function gameHide() {
-    var layer = document.getElementById("gameLayer"), stage = document.getElementById("stage");
-    if (layer) layer.classList.remove("on");
-    if (stage) stage.classList.remove("game");
-  }
-  function onGame(d) {
-    if (!d) return;
-    if (d.action === "stop") { gameHide(); return; }
-    gameRender(d);
-    if (d.action === "end") { setTimeout(function () { if (!document.getElementById("gameLayer").classList.contains("on")) return; setTimeout(gameHide, 9000); }, 0); }
-  }
   function handle(d, replay){
     // 断线重连会重发最近 20 条（backlog），已经显示过的不再重复上屏
     if (d && d.at) {
@@ -1805,8 +1784,7 @@ function speak(text, emotion){
   } else if (d.kind === 'backlog') {
     // 刚连上时补发最近的消息，OBS 重启 / 刷新不会一片空白
     (d.items || []).forEach(function(it){ handle(it, true); });
-  } else if (d.kind === 'game') { onGame(d);
-    } else if (d.kind === 'video') {
+  } else if (d.kind === 'video') {
       if (!replay) {
         if (d.action === 'play') playVideo(d);
         else if (d.action === 'stop') stopVideo();

@@ -380,6 +380,7 @@
       <div class="grp">内容</div>
       <a data-p="p8">点歌台</a>
       <a data-p="p13">视频点播</a>
+      <a data-p="p16">刷抖音</a>
       <div class="grp">系统</div>
       <a data-p="p4">状态与更新</a>
 
@@ -881,6 +882,21 @@
       </div>
     </div>
 
+
+      <!-- ══════ 刷抖音 ══════ -->
+      <div class="pane" id="p16">
+        <div class="card">
+          <h3>弹幕刷抖音<span class="live">自动打开 OBS</span></h3>
+          <p class="sub">开启后，弹幕说「刷抖音」，平台会自己打开 OBS 并切到抖音推荐流；说「停止刷抖音」就切回来。不用手动开 OBS。</p>
+          <label class="sw"><input type="checkbox" id="dyEnabled"><span class="tr"></span><span class="t">允许弹幕启动刷抖音<i>关闭后弹幕说「刷抖音」不会触发</i></span></label>
+          <div class="hint" style="margin-top:8px">弹幕：刷抖音 / 停止刷抖音 / 下一条</div>
+          <div class="hint">刷抖音时播放抖音原声（直播伴侣要开「系统声音」才收得进直播间）；说「停止刷抖音」会连同声音一起停。</div>
+        </div>
+        <div class="card">
+          <h3>说明</h3>
+          <p class="sub">OBS 未打开时平台会自动启动它；如果 OBS 正在直播，不会强制重启，避免中断直播。</p>
+        </div>
+      </div>
 
     <!-- ══════ 运行状态 ══════ -->
     <div class="pane" id="p4">
@@ -2423,6 +2439,30 @@ loadVideoState();
 vidTimer = setInterval(function () { if (!document.hidden) loadVideoState(); }, 4000);
 
 if ($('btnMock')) $('btnMock').onclick = mockToggle;
+
+/* ─────────── 弹幕刷抖音开关 ─────────── */
+async function loadDouyinEnabled() {
+  var el = $('dyEnabled');
+  if (!el) return;
+  try {
+    var r = await api('/api/douyin/enabled', {});
+    el.checked = !!(r && r.enabled);
+  } catch (e) {}
+}
+if ($('dyEnabled')) {
+  $('dyEnabled').onchange = async function () {
+    var on = $('dyEnabled').checked;
+    try {
+      var r = await api('/api/douyin/enabled', { enabled: on });
+      if (r && r.enabled !== on) throw new Error('保存失败');
+      toast(on ? '已开启弹幕刷抖音' : '已关闭弹幕刷抖音');
+    } catch (e) {
+      $('dyEnabled').checked = !on;
+      toast('保存失败：' + e.message);
+    }
+  };
+}
+loadDouyinEnabled();
 
 /* 统一按钮类型：避免任何按钮触发默认行为 */
 document.querySelectorAll('button:not([type])').forEach(function (b) { b.type = 'button'; });

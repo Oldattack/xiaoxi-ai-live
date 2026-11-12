@@ -1,9 +1,23 @@
-小汐AI直播平台 v2.6.129
+小汐AI直播平台 v2.6.153
 
 AGENT.md
 VERSION
+avatar-overlay.html
 config.json
 dsh-check.ps1
+games/lawn/README.md
+games/lawn/dev-server.mjs
+games/lawn/index.html
+games/lawn/js/commands.mjs
+games/lawn/js/config.js
+games/lawn/js/data.js
+games/lawn/js/draw.js
+games/lawn/js/game.js
+games/lawn/js/main.js
+games/lawn/js/sfx.js
+games/lawn/package.json
+games/lawn/style.css
+games/lawn/test-commands.mjs
 install-plugin.ps1
 open-browser.vbs
 plugin/README.md
