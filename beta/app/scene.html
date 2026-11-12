@@ -149,6 +149,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   @keyframes djGlitch{0%{filter:hue-rotate(0) saturate(1.6);transform:skewX(0)}20%{transform:skewX(3deg) translateX(6px);filter:hue-rotate(40deg) saturate(2)}40%{transform:skewX(-4deg) translateX(-8px);filter:hue-rotate(-30deg)}60%{transform:skewX(2deg) translateX(4px);filter:hue-rotate(70deg) saturate(2.2)}100%{transform:skewX(0);filter:none}}
   #stage:not(.dj) > .dj-desk{display:none}
   #stage > .dj-desk{position:absolute;left:50%;bottom:190px;transform:translateX(-50%);width:620px;height:150px;z-index:12}
+  #stage:not(.dj):not(.video):not(.game) .pet{transform:translateX(-50%) scale(1.22);transform-origin:bottom center;transition:transform .4s ease}
   #stage.dj .pet{bottom:190px !important;z-index:7 !important;transform:translateX(-50%) scale(1.45);transform-origin:bottom center;transition:bottom .5s ease,transform .5s ease}
   #stage.v #djBooth .dj-desk{bottom:210px}
   #stage.video #djBooth,#stage.game #djBooth{display:none}
@@ -403,18 +404,18 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #stageMenu{position:absolute;inset:0;z-index:9;pointer-events:none;font-family:"Microsoft YaHei","Segoe UI",sans-serif}
   #stage.video #stageMenu,#stage.game #stageMenu,#stage.v #stageMenu{display:none}
   #stage .songs{display:none !important}
-  .sm-card{position:absolute;border-radius:16px;padding:12px 14px;background:linear-gradient(160deg,rgba(30,18,44,.92),rgba(12,8,20,.95));border:1px solid rgba(255,120,170,.28);box-shadow:0 12px 32px rgba(0,0,0,.45)}
-  .sm-h{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;letter-spacing:.5px}
+  .sm-card{position:absolute;border-radius:16px;padding:14px 16px;background:linear-gradient(160deg,rgba(30,18,44,.92),rgba(12,8,20,.95));border:1px solid rgba(255,120,170,.28);box-shadow:0 12px 32px rgba(0,0,0,.45)}
+  .sm-h{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;letter-spacing:.5px}
   .sm-h .d{width:7px;height:7px;border-radius:50%;background:#ff4d8d;box-shadow:0 0 10px #ff4d8d}
   .sm-h .tag{margin-left:auto;font-size:9px;color:#ffb3cc;background:rgba(255,45,111,.13);border:1px solid rgba(255,45,111,.28);padding:2px 6px;border-radius:999px}
-  .sm-left{left:24px;top:76px;width:392px}
-  .sm-right{right:24px;top:76px;width:372px}
-  .sm-queue{left:24px;bottom:78px;width:392px}
-  .sm-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px}
+  .sm-left{left:24px;top:64px;width:430px}
+  .sm-right{right:24px;top:64px;width:400px}
+  .sm-queue{left:24px;bottom:70px;width:430px}
+  .sm-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px}
   .sm-row:last-child{border-bottom:0}
   .sm-row .e{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;background:rgba(255,255,255,.08);flex:none}
   .sm-row .nm{font-weight:600;white-space:nowrap}
-  .sm-row .ds{font-size:10px;color:#a995c2;margin-left:auto;white-space:nowrap}
+  .sm-row .ds{font-size:11px;color:#a995c2;margin-left:auto;white-space:nowrap}
   .sm-row .st{font-size:10px;color:#ffb3cc;white-space:nowrap}
   .sm-q{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:11px;color:#d9cce8}
   .sm-q .n{font-family:Consolas,monospace;color:#ffd166;width:18px}
