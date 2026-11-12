@@ -1,10 +1,10 @@
 {
-  "version": "2.6.129",
+  "version": "2.6.152",
   "notes": "修复启动脚本行尾问题；插件安装改为正确的 DSH 注册方式；更新入口整合到主页与顶栏",
-  "package": "xiaoxi-ai-live-2.6.129.zip",
-  "size": 6608137,
-  "sha256": "8c11d3c84f93f34c99c02df974bb367701fb643765b45a728c6816d499cfa7a4",
-  "publishedAt": "2026-11-12T07:19:21.097Z",
+  "package": "xiaoxi-ai-live-2.6.152.zip",
+  "size": 6643941,
+  "sha256": "eb569f5019e04451286372f40c6ed66de68d6e05069cb5116e99aaecb5650cd9",
+  "publishedAt": "2026-11-12T18:48:07.238Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -30,8 +30,8 @@
     },
     {
       "path": "使用说明.md",
-      "size": 4543,
-      "sha256": "6da5b1bf5a0296e70e9963bd7624e36871bbdc50546b4894ac62bc99d0b25f10"
+      "size": 4479,
+      "sha256": "6ec213a218c646f8f13e26d4bd6736aca9b3551e4f9e30f01430ebb2a31c2fe0"
     },
     {
       "path": "停止.cmd",
@@ -79,9 +79,79 @@
       "sha256": "c92bd76d34398da32638dd692be349df1db0d6d47a785da474f0bbeb8932c156"
     },
     {
+      "path": "avatar-overlay.html",
+      "size": 972,
+      "sha256": "b78f0c3c59c492f903578f5962bcbacfd0a4d786c9021af4e8d1a01161f64994"
+    },
+    {
       "path": "dsh-check.ps1",
       "size": 2741,
       "sha256": "1454a3312d34b37fc01908c3e61cba370adf7f24f9c7d62f8987a9aff5d813c6"
+    },
+    {
+      "path": "games/lawn/dev-server.mjs",
+      "size": 3378,
+      "sha256": "c5f04323045c6d06acc9d1b589dc5aea01833f90ef4a9d288105b97d48c07892"
+    },
+    {
+      "path": "games/lawn/index.html",
+      "size": 393,
+      "sha256": "7fd9f61e96d5a447220cbc5f84d404ba56a387538b736faf18bdb7c14ab8dd1f"
+    },
+    {
+      "path": "games/lawn/js/commands.mjs",
+      "size": 4450,
+      "sha256": "1a207d1c04a6f58df96465ac5236fb1bc0bbf9e75a4128240ef78b85832763fe"
+    },
+    {
+      "path": "games/lawn/js/config.js",
+      "size": 1017,
+      "sha256": "6148ac862cac4ad011de5cdd9706021ad2644f156c48e5bb92234eb9d91028f3"
+    },
+    {
+      "path": "games/lawn/js/data.js",
+      "size": 2288,
+      "sha256": "79823b9120533d993640721f4cec1eb604972e1f5bfa856c458cbe075e22366f"
+    },
+    {
+      "path": "games/lawn/js/draw.js",
+      "size": 41041,
+      "sha256": "bfe8ecbd0add2e99c09f6e58048cd980b5197244979a095b9f8be87ee98c9506"
+    },
+    {
+      "path": "games/lawn/js/game.js",
+      "size": 25699,
+      "sha256": "7bfda185f953e485087fc5825080cbe7989ff6b4277ea0f59b407d5b79d7fbd9"
+    },
+    {
+      "path": "games/lawn/js/main.js",
+      "size": 1634,
+      "sha256": "d9d4240b252599fcbae7cbd2835c9d4c53888de005a8cce6be637f8529a57558"
+    },
+    {
+      "path": "games/lawn/js/sfx.js",
+      "size": 3254,
+      "sha256": "d7f6e22057dbc1ec2d4d866308248016b40f08a0f2e62fb8dcf21d3bc7615cba"
+    },
+    {
+      "path": "games/lawn/package.json",
+      "size": 159,
+      "sha256": "4600c71122f9b37b58d9e96021680cf235ec4122807c07e039fbbd0ff858103e"
+    },
+    {
+      "path": "games/lawn/README.md",
+      "size": 2661,
+      "sha256": "f8708a31e9d10b5d6df0eb11b388076d7b6283ea99daa21351f34bd16a91068b"
+    },
+    {
+      "path": "games/lawn/style.css",
+      "size": 638,
+      "sha256": "4ab7523ec14309f25890d2bb9ae0bdb7117d6d4b595b22512002fcf72898187d"
+    },
+    {
+      "path": "games/lawn/test-commands.mjs",
+      "size": 2241,
+      "sha256": "6c6117f8e9b9a9e704c8428a8115ec511f4019ca0964404b296333d4b11967ae"
     },
     {
       "path": "open-browser.vbs",
@@ -90,13 +160,13 @@
     },
     {
       "path": "scene.html",
-      "size": 99315,
-      "sha256": "aa569f75b85ba9d7b3156e2c1eb2dc56a6abf10d381894649b64d2dbfe97b00e"
+      "size": 98391,
+      "sha256": "dbcc42666897ddb605dd6a2736ab324787b05e9a3b74444efc022264c7d7afef"
     },
     {
       "path": "settings.html",
-      "size": 137509,
-      "sha256": "ff6a4439376b61e38e890d5e739837fa0d1dd8bf2c4cd867e77c1d1b70c251f0"
+      "size": 141916,
+      "sha256": "e0b9df50bb99b233325bbab5fc430546ae501adcedeefd496637fb25365685bb"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -151,12 +221,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "7749b1a1911fa98cd3bcd1fd9442b166f5ba336a779066854dc09a8146ec0fc3"
+      "sha256": "6b441925cfc2f3c007b00c83bc3e96dcf5aaaa3a797e6edcb6f338256f5e68ce"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 267261,
-      "sha256": "d57555ad77df2181f6a2f313007e38d11a527c4e235544dd0882c739d3941c01"
+      "size": 280143,
+      "sha256": "481e19a706fefeca90fb688250ee9c82c31c279ce47a007ca4c4332595c4248a"
     }
   ]
 }
