@@ -409,7 +409,8 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   .sm-h{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;letter-spacing:.5px;color:#fff}
   .sm-h .d{width:7px;height:7px;border-radius:50%;background:#ff4d8d;box-shadow:0 0 10px #ff4d8d}
   .sm-h .tag{margin-left:auto;font-size:9px;color:#ffb3cc;background:rgba(255,45,111,.13);border:1px solid rgba(255,45,111,.28);padding:2px 6px;border-radius:999px}
-  .sm-left{left:24px;top:64px;width:540px;min-height:390px}
+  .sm-left{left:24px;top:64px;width:540px;min-height:300px}
+  .sm-left .sm-row{padding-left:0}
   .sm-right{right:24px;top:64px;width:540px;min-height:320px}
   .sm-chat{left:24px;bottom:56px;width:600px;min-height:330px}
   .sm-gift{right:24px;bottom:56px;width:500px;min-height:300px}
@@ -513,26 +514,24 @@ html,body{height:100%;background:#05060a;overflow:hidden;
         <div class="sm-h"><span class="d"></span>小汐在说<span class="tag">AI 主播</span></div>
         <div class="sm-say-text" id="smSay">欢迎来到直播间，想听什么歌？发弹幕告诉我。</div>
       </div>
-      <div class="sm-card sm-left">
-        <div class="sm-h"><span class="d"></span>玩法<span class="tag">发弹幕参与</span></div>
-        <div class="sm-row"><span class="e">🎵</span><span class="nm">点歌</span><span class="ds">点歌 晴天</span></div>
-        <div class="sm-row"><span class="e">🎬</span><span class="nm">点视频</span><span class="ds">视频 BV号</span></div>
-        <div class="sm-row"><span class="e">🕹️</span><span class="nm">游戏</span><span class="ds">发「玩」</span></div>
-        <div class="sm-row"><span class="e">🎁</span><span class="nm">盲盒</span><span class="ds">送任意礼物</span></div>
-        <div class="sm-row"><span class="e">💬</span><span class="nm">聊天</span><span class="ds">直接发弹幕</span></div>
-        <div class="sm-note">点歌：弹幕「点歌 晴天」<br>点视频：弹幕「视频 BV号」<br>游戏：弹幕「玩」</div>
-      </div>
+        <div class="sm-card sm-left">
+          <div class="sm-h"><span class="d"></span>玩法<span class="tag">发弹幕参与</span></div>
+          <div class="sm-row"><span class="nm">点歌</span><span class="ds">发「点歌 歌名」</span></div>
+          <div class="sm-row"><span class="nm">看视频</span><span class="ds">发「看视频 视频名」</span></div>
+          <div class="sm-row"><span class="nm">聊天</span><span class="ds">直接发弹幕</span></div>
+          <div class="sm-note">点歌：弹幕「点歌 晴天」<br>看视频：弹幕「看视频 猫和老鼠」<br>聊天：直接发弹幕</div>
+        </div>
       <div class="sm-card sm-chat">
         <div class="sm-h"><span class="d"></span>弹幕互动<span class="tag">实时</span></div>
         <div id="smChat"><div class="sm-empty">等待弹幕...</div></div>
       </div>
       <div class="sm-card sm-gift">
         <div class="sm-h"><span class="d"></span>礼物玩法<span class="tag">送礼物触发</span></div>
-        <div class="sm-row"><span class="e">🎁</span><span class="nm">任意礼物</span><span class="ds">盲盒随机事件</span></div>
+        <div class="sm-row"><span class="e">🎁</span><span class="nm">任意礼物</span><span class="ds">随机表演</span></div>
         <div class="sm-row"><span class="e">🎫</span><span class="nm">1 人气票</span><span class="ds">点歌 +1</span></div>
         <div class="sm-row"><span class="e">🌹</span><span class="nm">送玫瑰</span><span class="ds">画图券</span></div>
         <div class="sm-row"><span class="e">⭐</span><span class="nm">榜一</span><span class="ds">优先点歌</span></div>
-        <div class="sm-note">礼物触发盲盒随机事件<br>人气票可以给点歌加一条<br>所有礼物都会现场回应</div>
+        <div class="sm-note">送礼物会触发随机表演<br>人气票可以给点歌加一条<br>所有礼物都会现场回应</div>
       </div>
     </div>
 
