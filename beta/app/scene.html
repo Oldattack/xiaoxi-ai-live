@@ -484,6 +484,28 @@ html,body{height:100%;background:#05060a;overflow:hidden;
 
   <div class="welcome" id="welcome"><span class="star">✦</span>欢迎 <b id="wName">小鱼干</b><span class="sub">进入直播间</span></div>
 
+    <div id="stageMenu">
+      <div class="sm-card sm-left">
+        <div class="sm-h"><span class="d"></span>玩法<span class="tag">发弹幕参与</span></div>
+        <div class="sm-row"><span class="e">🎵</span><span class="nm">点歌</span><span class="ds">点歌 晴天</span><span class="st">排队 <b id="smQ">0</b></span></div>
+        <div class="sm-row"><span class="e">🎬</span><span class="nm">点视频</span><span class="ds">视频 BV号</span></div>
+        <div class="sm-row"><span class="e">🕹️</span><span class="nm">游戏</span><span class="ds">发「玩」</span></div>
+        <div class="sm-row"><span class="e">🎁</span><span class="nm">盲盒</span><span class="ds">送任意礼物</span></div>
+        <div class="sm-row"><span class="e">💬</span><span class="nm">聊天</span><span class="ds">直接发弹幕</span></div>
+      </div>
+      <div class="sm-card sm-right">
+        <div class="sm-h"><span class="d"></span>礼物玩法</div>
+        <div class="sm-row"><span class="e">🎁</span><span class="nm">任意礼物</span><span class="ds">盲盒随机事件</span></div>
+        <div class="sm-row"><span class="e">🎫</span><span class="nm">1 人气票</span><span class="ds">点歌 +1</span></div>
+        <div class="sm-row"><span class="e">🌹</span><span class="nm">送玫瑰</span><span class="ds">画图券</span></div>
+        <div class="sm-row"><span class="e">⭐</span><span class="nm">榜一</span><span class="ds">优先点歌</span></div>
+      </div>
+      <div class="sm-card sm-queue">
+        <div class="sm-h"><span class="d"></span>点歌队列<span class="tag"><b id="smCnt">0</b> 首</span></div>
+        <div id="smQueue"><div class="sm-empty">点歌的是第一位</div></div>
+      </div>
+    </div>
+
   <div class="songs" id="songs">
     <div class="tip"><i>♪</i>点歌方式：<b>点歌</b> + 歌名</div>
     <div class="cover" id="sCover"><span class="ph">暂无封面</span></div>
@@ -996,6 +1018,23 @@ function setSong(d){
   renderQueue(d.queue || []);
 }
 function renderQueue(q){
+    try {
+      var smc = document.getElementById("smCnt"), smq = document.getElementById("smQ"), smb = document.getElementById("smQueue");
+      if (smc) smc.textContent = q.length;
+      if (smq) smq.textContent = q.length;
+      if (smb) {
+        smb.innerHTML = "";
+        if (!q.length) smb.innerHTML = '<div class="sm-empty">点歌的是第一位</div>';
+        else q.slice(0, 3).forEach(function (s, i2) {
+          var d = document.createElement("div"); d.className = "sm-q";
+          d.innerHTML = '<span class="n"></span><span class="t"></span><span class="u"></span>';
+          d.querySelector(".n").textContent = String(i2 + 1).padStart(2, "0");
+          d.querySelector(".t").textContent = s.name;
+          d.querySelector(".u").textContent = s.user || "";
+          smb.appendChild(d);
+        });
+      }
+    } catch (e) {}
   document.getElementById('sCnt').textContent = q.length + ' 首排队';
   var box = document.getElementById('sQueue');
   box.innerHTML = '';
