@@ -409,10 +409,10 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   .sm-h{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;letter-spacing:.5px;color:#fff}
   .sm-h .d{width:7px;height:7px;border-radius:50%;background:#ff4d8d;box-shadow:0 0 10px #ff4d8d}
   .sm-h .tag{margin-left:auto;font-size:9px;color:#ffb3cc;background:rgba(255,45,111,.13);border:1px solid rgba(255,45,111,.28);padding:2px 6px;border-radius:999px}
-  .sm-left{left:24px;top:64px;width:430px}
-  .sm-right{right:24px;top:64px;width:400px}
-  .sm-queue{left:24px;bottom:70px;width:430px}
-  .sm-info{right:24px;bottom:70px;width:400px}
+  .sm-left{left:24px;top:64px;width:540px;min-height:390px}
+  .sm-right{right:24px;top:64px;width:540px;min-height:320px}
+  .sm-queue{left:24px;bottom:56px;width:600px;min-height:330px}
+  .sm-info{right:24px;bottom:56px;width:500px;min-height:180px}
   .sm-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px}
   .sm-row:last-child{border-bottom:0}
   .sm-row .e{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;background:rgba(255,255,255,.08);flex:none}
@@ -422,7 +422,10 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   .sm-q{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:11.5px;color:#fff}
   .sm-q .n{font-family:Consolas,monospace;color:#ffd166;width:18px}
   .sm-q .u{margin-left:auto;color:#8d7aa8;font-size:10px}
-  .sm-empty{font-size:11px;color:#8d7aa8;padding:5px 0}
+  .sm-empty{font-size:12px;color:#a995c2;padding:8px 0}
+  .sm-top{left:50%;top:54px;transform:translateX(-50%);width:560px;min-height:120px;text-align:left}
+  .sm-line{font-size:12px;color:#d8c8ea;line-height:1.7;margin-top:7px}
+  .sm-note{font-size:11px;color:#a995c2;line-height:1.7;margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.08)}
 </style>
 </head>
 <body>
@@ -488,6 +491,10 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   <div class="welcome" id="welcome"><span class="star">✦</span>欢迎 <b id="wName">小鱼干</b><span class="sub">进入直播间</span></div>
 
     <div id="stageMenu">
+      <div class="sm-card sm-top">
+        <div class="sm-h"><span class="d"></span>今晚玩什么<span class="tag">发弹幕参与</span></div>
+        <div class="sm-line">点歌 / 点视频 / 游戏 / 盲盒，发弹幕就能玩。不用点按钮。</div>
+      </div>
       <div class="sm-card sm-left">
         <div class="sm-h"><span class="d"></span>玩法<span class="tag">发弹幕参与</span></div>
         <div class="sm-row"><span class="e">🎵</span><span class="nm">点歌</span><span class="ds">点歌 晴天</span><span class="st">排队 <b id="smQ">0</b></span></div>
@@ -495,6 +502,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
         <div class="sm-row"><span class="e">🕹️</span><span class="nm">游戏</span><span class="ds">发「玩」</span></div>
         <div class="sm-row"><span class="e">🎁</span><span class="nm">盲盒</span><span class="ds">送任意礼物</span></div>
         <div class="sm-row"><span class="e">💬</span><span class="nm">聊天</span><span class="ds">直接发弹幕</span></div>
+        <div class="sm-note">点歌：弹幕「点歌 晴天」<br>点视频：弹幕「视频 BV号」<br>游戏：弹幕「玩」</div>
       </div>
       <div class="sm-card sm-right">
         <div class="sm-h"><span class="d"></span>礼物玩法</div>
@@ -502,6 +510,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
         <div class="sm-row"><span class="e">🎫</span><span class="nm">1 人气票</span><span class="ds">点歌 +1</span></div>
         <div class="sm-row"><span class="e">🌹</span><span class="nm">送玫瑰</span><span class="ds">画图券</span></div>
         <div class="sm-row"><span class="e">⭐</span><span class="nm">榜一</span><span class="ds">优先点歌</span></div>
+        <div class="sm-note">礼物触发盲盒随机事件<br>人气票可以给点歌加一条<br>所有礼物都会现场回应</div>
       </div>
       <div class="sm-card sm-info">
         <div class="sm-h"><span class="d"></span>本场<span class="tag">实时</span></div>
@@ -1035,7 +1044,7 @@ function renderQueue(q){
       if (smb) {
         smb.innerHTML = "";
         if (!q.length) smb.innerHTML = '<div class="sm-empty">点歌的是第一位</div>';
-        else q.slice(0, 3).forEach(function (s, i2) {
+        else q.slice(0, 6).forEach(function (s, i2) {
           var d = document.createElement("div"); d.className = "sm-q";
           d.innerHTML = '<span class="n"></span><span class="t"></span><span class="u"></span>';
           d.querySelector(".n").textContent = String(i2 + 1).padStart(2, "0");
