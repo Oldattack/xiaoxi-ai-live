@@ -411,8 +411,8 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   .sm-h .tag{margin-left:auto;font-size:9px;color:#ffb3cc;background:rgba(255,45,111,.13);border:1px solid rgba(255,45,111,.28);padding:2px 6px;border-radius:999px}
   .sm-left{left:24px;top:64px;width:540px;min-height:390px}
   .sm-right{right:24px;top:64px;width:540px;min-height:320px}
-  .sm-queue{left:24px;bottom:56px;width:600px;min-height:330px}
-  .sm-info{right:24px;bottom:56px;width:500px;min-height:180px}
+  .sm-chat{left:24px;bottom:56px;width:600px;min-height:330px}
+  .sm-gift{right:24px;bottom:56px;width:500px;min-height:300px}
   .sm-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px}
   .sm-row:last-child{border-bottom:0}
   .sm-row .e{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;background:rgba(255,255,255,.08);flex:none}
@@ -423,6 +423,12 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   .sm-q .n{font-family:Consolas,monospace;color:#ffd166;width:18px}
   .sm-q .u{margin-left:auto;color:#8d7aa8;font-size:10px}
   .sm-empty{font-size:12px;color:#a995c2;padding:8px 0}
+  #smChat{max-height:270px;overflow:auto;margin-top:6px}
+  .sm-chat-line{display:flex;gap:8px;font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);line-height:1.45}
+  .sm-chat-line:last-child{border-bottom:0}
+  .sm-chat-line b{color:#ff9ec3;font-weight:600;flex:none;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sm-chat-line span{color:#e6d9f2;overflow:hidden;text-overflow:ellipsis}
+  .sm-chat-line.gift b{color:#ffd166}.sm-chat-line.enter b{color:#7fffd4}
   .sm-say{left:50%;top:50px;transform:translateX(-50%);width:620px;min-height:112px;text-align:left}
   .sm-say-text{font-size:15px;line-height:1.6;color:#fff;margin-top:8px;min-height:44px}
   .sm-badges{position:absolute;left:24px;top:14px;display:flex;gap:8px}
@@ -498,41 +504,35 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   <div class="welcome" id="welcome"><span class="star">✦</span>欢迎 <b id="wName">小鱼干</b><span class="sub">进入直播间</span></div>
 
     <div id="stageMenu">
-        <div class="sm-badges">
-          <span class="sm-bd blue">AI 虚拟主播 · 非真人</span>
-          <span class="sm-bd pink">新人主播</span>
-          <span class="sm-bd gold">求关注 · 求点赞</span>
-        </div>
-        <div class="sm-card sm-say">
-          <div class="sm-h"><span class="d"></span>小汐在说<span class="tag">AI 主播</span></div>
-          <div class="sm-say-text" id="smSay">欢迎来到直播间，想听什么歌？发弹幕告诉我。</div>
-        </div>
+      <div class="sm-badges">
+        <span class="sm-bd blue">AI 虚拟主播 · 非真人</span>
+        <span class="sm-bd pink">新人主播</span>
+        <span class="sm-bd gold">求关注 · 求点赞</span>
+      </div>
+      <div class="sm-card sm-say">
+        <div class="sm-h"><span class="d"></span>小汐在说<span class="tag">AI 主播</span></div>
+        <div class="sm-say-text" id="smSay">欢迎来到直播间，想听什么歌？发弹幕告诉我。</div>
+      </div>
       <div class="sm-card sm-left">
         <div class="sm-h"><span class="d"></span>玩法<span class="tag">发弹幕参与</span></div>
-        <div class="sm-row"><span class="e">🎵</span><span class="nm">点歌</span><span class="ds">点歌 晴天</span><span class="st">排队 <b id="smQ">0</b></span></div>
+        <div class="sm-row"><span class="e">🎵</span><span class="nm">点歌</span><span class="ds">点歌 晴天</span></div>
         <div class="sm-row"><span class="e">🎬</span><span class="nm">点视频</span><span class="ds">视频 BV号</span></div>
         <div class="sm-row"><span class="e">🕹️</span><span class="nm">游戏</span><span class="ds">发「玩」</span></div>
         <div class="sm-row"><span class="e">🎁</span><span class="nm">盲盒</span><span class="ds">送任意礼物</span></div>
         <div class="sm-row"><span class="e">💬</span><span class="nm">聊天</span><span class="ds">直接发弹幕</span></div>
         <div class="sm-note">点歌：弹幕「点歌 晴天」<br>点视频：弹幕「视频 BV号」<br>游戏：弹幕「玩」</div>
       </div>
-      <div class="sm-card sm-right">
-        <div class="sm-h"><span class="d"></span>礼物玩法</div>
+      <div class="sm-card sm-chat">
+        <div class="sm-h"><span class="d"></span>弹幕互动<span class="tag">实时</span></div>
+        <div id="smChat"><div class="sm-empty">等待弹幕...</div></div>
+      </div>
+      <div class="sm-card sm-gift">
+        <div class="sm-h"><span class="d"></span>礼物玩法<span class="tag">送礼物触发</span></div>
         <div class="sm-row"><span class="e">🎁</span><span class="nm">任意礼物</span><span class="ds">盲盒随机事件</span></div>
         <div class="sm-row"><span class="e">🎫</span><span class="nm">1 人气票</span><span class="ds">点歌 +1</span></div>
         <div class="sm-row"><span class="e">🌹</span><span class="nm">送玫瑰</span><span class="ds">画图券</span></div>
         <div class="sm-row"><span class="e">⭐</span><span class="nm">榜一</span><span class="ds">优先点歌</span></div>
         <div class="sm-note">礼物触发盲盒随机事件<br>人气票可以给点歌加一条<br>所有礼物都会现场回应</div>
-      </div>
-      <div class="sm-card sm-info">
-        <div class="sm-h"><span class="d"></span>本场<span class="tag">实时</span></div>
-        <div class="sm-row"><span class="e">▶</span><span class="nm">当前</span><span class="ds" id="smNow">还没人点歌</span></div>
-        <div class="sm-row"><span class="e">🎵</span><span class="nm">排队</span><span class="ds"><b id="smCnt2">0</b> 首</span></div>
-        <div class="sm-row"><span class="e">💬</span><span class="nm">参与</span><span class="ds">发弹幕就行</span></div>
-      </div>
-      <div class="sm-card sm-queue">
-        <div class="sm-h"><span class="d"></span>点歌队列<span class="tag"><b id="smCnt">0</b> 首</span></div>
-        <div id="smQueue"><div class="sm-empty">点歌的是第一位</div></div>
       </div>
     </div>
 
@@ -1111,6 +1111,18 @@ function setTxt(id, v){
   var el = document.getElementById(id);
   if (el) el.textContent = v;
 }
+function pushStageChat(kind, user, text){
+  var box = document.getElementById("smChat");
+  if (!box) return;
+  var empty = box.querySelector(".sm-empty"); if (empty) box.innerHTML = "";
+  var el = document.createElement("div"); el.className = "sm-chat-line " + (kind || "");
+  el.innerHTML = '<b></b><span></span>';
+  el.querySelector("b").textContent = user || "";
+  el.querySelector("span").textContent = text || "";
+  box.appendChild(el);
+  while (box.children.length > 12) box.removeChild(box.firstChild);
+  box.scrollTop = box.scrollHeight;
+}
 function addLine(kind, user, text){
   var el = document.createElement('div');
   el.className = 'line ' + kind;
@@ -1119,6 +1131,7 @@ function addLine(kind, user, text){
   el.querySelector('.t').textContent = text || '';
   poolEl.appendChild(el);
   while (poolEl.children.length > (stageEl.classList.contains('v') ? 8 : 10)) poolEl.removeChild(poolEl.firstChild);
+  pushStageChat(kind, user, text);
 }
 
 // ── 出声：用系统自带语音合成（免装引擎，设置里的语速/音调/静音时段立刻生效）──
