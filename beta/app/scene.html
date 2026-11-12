@@ -430,6 +430,12 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   .sm-chat-line b{color:#ff9ec3;font-weight:600;flex:none;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .sm-chat-line span{color:#e6d9f2;overflow:hidden;text-overflow:ellipsis}
   .sm-chat-line.gift b{color:#ffd166}.sm-chat-line.enter b{color:#7fffd4}
+  .sm-gifts{right:24px;top:64px;width:540px;min-height:300px}
+  #smGifts{margin-top:6px;max-height:230px;overflow:auto}
+  .sm-gift-line{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px}
+  .sm-gift-line:last-child{border-bottom:0}
+  .sm-gift-line b{color:#ffd166;font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sm-gift-line span{color:#ffb3cc;margin-left:auto;font-size:11px}
   .sm-say{left:50%;top:50px;transform:translateX(-50%);width:620px;min-height:112px;text-align:left}
   .sm-say-text{font-size:15px;line-height:1.6;color:#fff;margin-top:8px;min-height:44px}
   .sm-badges{position:absolute;left:24px;top:14px;display:flex;gap:8px}
@@ -514,7 +520,11 @@ html,body{height:100%;background:#05060a;overflow:hidden;
         <div class="sm-h"><span class="d"></span>小汐在说<span class="tag">AI 主播</span></div>
         <div class="sm-say-text" id="smSay">欢迎来到直播间，想听什么歌？发弹幕告诉我。</div>
       </div>
-        <div class="sm-card sm-left">
+        <div class="sm-card sm-gifts">
+        <div class="sm-h"><span class="d"></span>礼物动态<span class="tag">实时</span></div>
+        <div id="smGifts"><div class="sm-empty">还没有收到礼物</div></div>
+      </div>
+      <div class="sm-card sm-left">
           <div class="sm-h"><span class="d"></span>玩法<span class="tag">发弹幕参与</span></div>
           <div class="sm-row"><span class="nm">点歌</span><span class="ds">发「点歌 歌名」</span></div>
           <div class="sm-row"><span class="nm">看视频</span><span class="ds">发「看视频 视频名」</span></div>
@@ -1110,6 +1120,17 @@ function setTxt(id, v){
   var el = document.getElementById(id);
   if (el) el.textContent = v;
 }
+function pushStageGift(user, text){
+  var box = document.getElementById("smGifts");
+  if (!box) return;
+  var empty = box.querySelector(".sm-empty"); if (empty) box.innerHTML = "";
+  var el = document.createElement("div"); el.className = "sm-gift-line";
+  el.innerHTML = '<b></b><span></span>';
+  el.querySelector("b").textContent = user || "";
+  el.querySelector("span").textContent = text || "";
+  box.insertBefore(el, box.firstChild);
+  while (box.children.length > 5) box.removeChild(box.lastChild);
+}
 function pushStageChat(kind, user, text){
   var box = document.getElementById("smChat");
   if (!box) return;
@@ -1131,6 +1152,7 @@ function addLine(kind, user, text){
   poolEl.appendChild(el);
   while (poolEl.children.length > (stageEl.classList.contains('v') ? 8 : 10)) poolEl.removeChild(poolEl.firstChild);
   pushStageChat(kind, user, text);
+  if (kind === 'gift') pushStageGift(user, text);
 }
 
 // ── 出声：用系统自带语音合成（免装引擎，设置里的语速/音调/静音时段立刻生效）──
