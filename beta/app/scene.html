@@ -949,7 +949,14 @@ function showNotice(text, ok){
     if (!b) return;
     b.classList.toggle("on", Boolean(on) && djEnabled);
     var st = document.getElementById("stage");
-    if (st) st.classList.toggle("dj", Boolean(on) && djEnabled);
+      if (st) {
+        st.classList.toggle("dj", Boolean(on) && djEnabled);
+        if (!on) {
+          st.style.scale = ""; st.style.translate = "";
+          setTimeout(function () { st.style.scale = ""; st.style.translate = ""; }, 260);
+          setTimeout(function () { st.style.scale = ""; st.style.translate = ""; }, 1200);
+        }
+      }
     if (Boolean(on) && djEnabled) djLaserStart(); else djLaserStop();
   }
   var actImg = document.getElementById("actImg");
