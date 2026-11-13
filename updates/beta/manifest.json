@@ -1,10 +1,10 @@
 {
   "version": "2.6.157",
-  "notes": "刷抖音右下角改成人物视频叠加层；修复叠加层被当重复源删除、位置重置；人物视频作为官方默认资源打包（新装/未自定义客户启用）；扫码窗口与启动自愈修复",
+  "notes": "官方默认人物视频打包；刷抖音右下角视频叠加层；修复叠加层被删/位置重置；还原状态回到官方视频；扫码与启动自愈修复",
   "package": "xiaoxi-ai-live-2.6.157.zip",
-  "size": 29361208,
-  "sha256": "fa03efb2ff8b8abf899e0e5584b4d1a4463e691032081c7e6db53cc7be35f222",
-  "publishedAt": "2026-11-13T09:10:39.510Z",
+  "size": 29361784,
+  "sha256": "c256dd796a7816eaca5a10caec6361c7db182abeb0fbf7321a3119cf09c1c766",
+  "publishedAt": "2026-11-13T09:15:44.914Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -250,8 +250,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 314755,
-      "sha256": "11c20e0f92af3740c94c7f8c46d3aa94b0dbcf6f1c5d6402bbfd3a31a66ae134"
+      "size": 315954,
+      "sha256": "4c6c84b3e58eeebdca2e4bf441b28fd9ef1f244e1a2a30d972499d584ffda37b"
     }
   ]
 }
