@@ -365,20 +365,19 @@
     <div class="nav">
       <div class="grp">日常</div>
       <a class="on" data-p="p0">主页</a>
-      <a data-p="p14">预览与互动</a>
       <div class="grp">连接</div>
       <a data-p="p3">抖音接入</a>
       <div class="grp">互动</div>
       <a data-p="p1">弹幕回复</a>
       <a data-p="p2">欢迎与热场</a>
+      <div class="grp">人物</div>
+      <a data-p="p11">人物形象</a>
       <a data-p="p6">声音与说话</a>
-      <div class="grp">主播</div>
       <a data-p="p5">AI 大脑</a>
-      <a data-p="p11">形象</a>
       <div class="grp">画面</div>
       <a data-p="p9">直播画面</a>
       <a data-p="p12">界面外观</a>
-      <a data-p="p15">舞台后台</a>
+      <a data-p="p15">快捷控制</a>
       <div class="grp">内容</div>
       <a data-p="p8">点歌台</a>
       <a data-p="p13">视频点播</a>
@@ -555,6 +554,16 @@
     </div>
 
     <!-- ══════ 进场欢迎 ══════ -->
+    
+        <div class="card">
+          <h3>声音路由</h3>
+          <div class="row"><label>声音</label><div>
+          <label class="sw"><input type="checkbox" id="audioViaObs"><span class="tr"></span><span class="t">声音走 OBS 混音<i>OBS 需要听到声音（OBS 直接推流/录制）时打开；直播伴侣抓系统声音时保持关闭</i></span></label>
+        </div></div>
+        <div class="row"><label></label><div class="tiny" id="audioRouteHint">当前：声音放给系统（直播伴侣抓「系统声音」即可）</div></div>
+        </div>
+      </div>
+
     <div class="pane" id="p2">
       <div class="card">
         <h3>欢迎新观众</h3>
@@ -583,86 +592,8 @@
       <!-- ══════ 舞台后台 ══════ -->
 
       <div class="pane" id="p15">
-        <div class="card">
-          <h3>画面预览<span class="live">实时</span></h3>
-          <div class="pv live-pv" style="max-width:920px"><iframe id="stgPv" src="/?clean=1&mute=1" scrolling="no"></iframe></div>
-        </div>
-
 <div class="card">
-          <h3>舞台背景<span class="live">换背景 / 换颜色</span></h3>
-          <p class="sub">改完点「保存背景」，画面立即生效（OBS 不用动）。</p>
-          <div class="row"><label>类型</label><div style="display:flex;gap:8px">
-            <button class="btn sm" data-bgkind="gradient">渐变</button>
-            <button class="btn sm" data-bgkind="color">纯色</button>
-            <button class="btn sm" data-bgkind="image">图片</button>
-          </div></div>
-          <div id="bgGradBox">
-            <div class="row"><label>预设</label><div id="bgPresets" style="display:flex;flex-wrap:wrap;gap:8px">
-              <button class="btn sm" data-bgpreset="aurora">极光紫</button>
-              <button class="btn sm" data-bgpreset="midnight">午夜蓝</button>
-              <button class="btn sm" data-bgpreset="sakura">樱花粉</button>
-              <button class="btn sm" data-bgpreset="ocean">深海青</button>
-              <button class="btn sm" data-bgpreset="sunset">日落橙</button>
-              <button class="btn sm" data-bgpreset="forest">森林绿</button>
-              <button class="btn sm" data-bgpreset="mono">灰调</button>
-              <button class="btn sm" data-bgpreset="custom">自定义</button>
-            </div></div>
-            <div class="row" id="bgCustomRow"><label>两个颜色</label><div style="display:flex;gap:8px;align-items:center">
-              <input type="color" id="bgColor1" style="width:52px;height:34px;border:0;background:none">
-              <input type="color" id="bgColor2" style="width:52px;height:34px;border:0;background:none">
-            </div></div>
-          </div>
-          <div id="bgColorBox" style="display:none">
-            <div class="row"><label>颜色</label><div><input type="color" id="bgSolid" style="width:52px;height:34px;border:0;background:none"></div></div>
-          </div>
-          <div id="bgImageBox" style="display:none">
-            <div class="row"><label>背景图</label><div style="display:flex;gap:8px;align-items:center">
-              <button class="btn sm" id="bgPick">选择图片</button>
-              <button class="btn sm" id="bgClear">清除</button>
-              <span class="mini" id="bgFileName">未选择</span>
-              <input type="file" id="bgFile" accept="image/png,image/jpeg,image/webp" style="display:none">
-            </div></div>
-            <div id="bgPreview" style="width:260px;height:146px;border-radius:10px;background:rgba(127,127,127,.12);background-size:cover;background-position:center;margin:4px 0 6px"></div>
-          </div>
-          <div class="row"><label>暗化</label><div><input class="inp" id="bgDim" type="range" min="0" max="80" step="5"><div class="hint" id="bgDimHint">0%</div></div></div>
-          <div class="row"><label>模糊</label><div><input class="inp" id="bgBlur" type="range" min="0" max="40" step="2"><div class="hint" id="bgBlurHint">0px（图片/视频）</div></div></div>
-          <div class="row"><label>音乐可视化</label><div>
-            <label class="sw"><input type="checkbox" id="vizEnabled"><span class="tr"></span><span class="t">放歌时跟着节奏动<i>随机：底部频谱 / 人物圆环 / 漂浮粒子，只在放歌时出现</i></span></label>
-          </div></div>
-          <div class="row"><label></label><div><button class="btn pri" id="bgSave">保存背景</button></div></div>
-        </div>
-        <div class="card">
-          <h3>背景视频<span class="live">横屏 / 竖屏分开</span></h3>
-          <p class="sub">和人物形象分开。切到横屏播横屏视频，切到竖屏播竖屏视频；纯房间背景不要勾「隐藏立绘」。</p>
-          <div class="two">
-            <div style="padding:12px;border-radius:12px;background:rgba(127,127,127,.08)">
-              <b>横屏 16:9</b>
-              <div class="hint">≤1920×1080 · 3~20 秒 · MP4/WebM · ≤40MB</div>
-              <video id="bgvLandPrev" muted loop playsinline style="width:100%;height:130px;border-radius:10px;background:#05060a;object-fit:cover;margin:6px 0;display:none"></video>
-              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                <button class="btn sm" id="bgvLandPick">选择视频</button>
-                <button class="btn sm" id="bgvLandClear">清除</button>
-                <span class="mini" id="bgvLandName">未选择</span>
-                <input type="file" id="bgvLandFile" accept="video/mp4,video/webm" style="display:none">
-              </div>
-              <label class="sw" style="margin-top:8px"><input type="checkbox" id="bgvLandHide"><span class="tr"></span><span class="t">视频已含人物，隐藏立绘</span></label>
-            </div>
-            <div style="padding:12px;border-radius:12px;background:rgba(127,127,127,.08)">
-              <b>竖屏 9:16</b>
-              <div class="hint">≤1080×1920 · 3~20 秒 · MP4/WebM · ≤40MB</div>
-              <video id="bgvPortPrev" muted loop playsinline style="width:100%;height:180px;border-radius:10px;background:#05060a;object-fit:cover;margin:6px 0;display:none"></video>
-              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                <button class="btn sm" id="bgvPortPick">选择视频</button>
-                <button class="btn sm" id="bgvPortClear">清除</button>
-                <span class="mini" id="bgvPortName">未选择</span>
-                <input type="file" id="bgvPortFile" accept="video/mp4,video/webm" style="display:none">
-              </div>
-              <label class="sw" style="margin-top:8px"><input type="checkbox" id="bgvPortHide"><span class="tr"></span><span class="t">视频已含人物，隐藏立绘</span></label>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <h3>舞台后台<span class="live">打字就能控</span></h3>
+          <h3>快捷控制<span class="live">打字就能控</span></h3>
           <p class="sub">输入指令直接改舞台：换背景、放歌、说话、切横竖屏、开关可视化。</p>
           <div class="row"><label>指令</label><div style="display:flex;gap:8px">
             <input class="inp" id="stageCmd" placeholder="例如：换背景 樱花 / 放歌 晴天 / 说 大家好">
@@ -680,9 +611,9 @@
           </div>
           <div id="stageLog" class="mini" style="margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto">还没有指令</div>
         </div>
-      </div>
+      
+    </div>
 
-    <!-- ══════ 点歌台 ══════ -->
     <div class="pane" id="p8">
       <div class="card">
         <h3>点歌规则</h3>
@@ -794,6 +725,13 @@
 
     <!-- ══════ 直播画面 ══════ -->
     <div class="pane" id="p9">
+<div class="card">
+          <h3>画面预览<span class="live">实时</span></h3>
+          <div class="pv live-pv" style="max-width:920px"><iframe id="stgPv" src="/?clean=1&mute=1" scrolling="no"></iframe></div>
+        </div>
+
+
+
       <div class="card">
         <h3>画面方向</h3>
         <div class="two">
@@ -824,14 +762,84 @@
             <button class="btn" id="btnPreview">打开画面</button>
           </div></div>
         <div class="row"><label>状态</label><div class="mini" id="sceneState">—</div></div>
-        <div class="row"><label>声音</label><div>
-          <label class="sw"><input type="checkbox" id="audioViaObs"><span class="tr"></span><span class="t">声音走 OBS 混音<i>OBS 需要听到声音（OBS 直接推流/录制）时打开；直播伴侣抓系统声音时保持关闭</i></span></label>
-        </div></div>
-        <div class="row"><label></label><div class="tiny" id="audioRouteHint">当前：声音放给系统（直播伴侣抓「系统声音」即可）</div></div>
-      </div>
+        </div>
+<div class="card">
+          <h3>舞台背景<span class="live">换背景 / 换颜色</span></h3>
+          <p class="sub">改完点「保存背景」，画面立即生效（OBS 不用动）。</p>
+          <div class="row"><label>类型</label><div style="display:flex;gap:8px">
+            <button class="btn sm" data-bgkind="gradient">渐变</button>
+            <button class="btn sm" data-bgkind="color">纯色</button>
+            <button class="btn sm" data-bgkind="image">图片</button>
+          </div></div>
+          <div id="bgGradBox">
+            <div class="row"><label>预设</label><div id="bgPresets" style="display:flex;flex-wrap:wrap;gap:8px">
+              <button class="btn sm" data-bgpreset="aurora">极光紫</button>
+              <button class="btn sm" data-bgpreset="midnight">午夜蓝</button>
+              <button class="btn sm" data-bgpreset="sakura">樱花粉</button>
+              <button class="btn sm" data-bgpreset="ocean">深海青</button>
+              <button class="btn sm" data-bgpreset="sunset">日落橙</button>
+              <button class="btn sm" data-bgpreset="forest">森林绿</button>
+              <button class="btn sm" data-bgpreset="mono">灰调</button>
+              <button class="btn sm" data-bgpreset="custom">自定义</button>
+            </div></div>
+            <div class="row" id="bgCustomRow"><label>两个颜色</label><div style="display:flex;gap:8px;align-items:center">
+              <input type="color" id="bgColor1" style="width:52px;height:34px;border:0;background:none">
+              <input type="color" id="bgColor2" style="width:52px;height:34px;border:0;background:none">
+            </div></div>
+          </div>
+          <div id="bgColorBox" style="display:none">
+            <div class="row"><label>颜色</label><div><input type="color" id="bgSolid" style="width:52px;height:34px;border:0;background:none"></div></div>
+          </div>
+          <div id="bgImageBox" style="display:none">
+            <div class="row"><label>背景图</label><div style="display:flex;gap:8px;align-items:center">
+              <button class="btn sm" id="bgPick">选择图片</button>
+              <button class="btn sm" id="bgClear">清除</button>
+              <span class="mini" id="bgFileName">未选择</span>
+              <input type="file" id="bgFile" accept="image/png,image/jpeg,image/webp" style="display:none">
+            </div></div>
+            <div id="bgPreview" style="width:260px;height:146px;border-radius:10px;background:rgba(127,127,127,.12);background-size:cover;background-position:center;margin:4px 0 6px"></div>
+          </div>
+          <div class="row"><label>暗化</label><div><input class="inp" id="bgDim" type="range" min="0" max="80" step="5"><div class="hint" id="bgDimHint">0%</div></div></div>
+          <div class="row"><label>模糊</label><div><input class="inp" id="bgBlur" type="range" min="0" max="40" step="2"><div class="hint" id="bgBlurHint">0px（图片/视频）</div></div></div>
+          <div class="row"><label>音乐可视化</label><div>
+            <label class="sw"><input type="checkbox" id="vizEnabled"><span class="tr"></span><span class="t">放歌时跟着节奏动<i>随机：底部频谱 / 人物圆环 / 漂浮粒子，只在放歌时出现</i></span></label>
+          </div></div>
+          <div class="row"><label></label><div><button class="btn pri" id="bgSave">保存背景</button></div></div>
+        </div>
+        
+<div class="card">
+          <h3>背景视频<span class="live">横屏 / 竖屏分开</span></h3>
+          <p class="sub">和人物形象分开。切到横屏播横屏视频，切到竖屏播竖屏视频；纯房间背景不要勾「隐藏立绘」。</p>
+          <div class="two">
+            <div style="padding:12px;border-radius:12px;background:rgba(127,127,127,.08)">
+              <b>横屏 16:9</b>
+              <div class="hint">≤1920×1080 · 3~20 秒 · MP4/WebM · ≤40MB</div>
+              <video id="bgvLandPrev" muted loop playsinline style="width:100%;height:130px;border-radius:10px;background:#05060a;object-fit:cover;margin:6px 0;display:none"></video>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <button class="btn sm" id="bgvLandPick">选择视频</button>
+                <button class="btn sm" id="bgvLandClear">清除</button>
+                <span class="mini" id="bgvLandName">未选择</span>
+                <input type="file" id="bgvLandFile" accept="video/mp4,video/webm" style="display:none">
+              </div>
+              <label class="sw" style="margin-top:8px"><input type="checkbox" id="bgvLandHide"><span class="tr"></span><span class="t">视频已含人物，隐藏立绘</span></label>
+            </div>
+            <div style="padding:12px;border-radius:12px;background:rgba(127,127,127,.08)">
+              <b>竖屏 9:16</b>
+              <div class="hint">≤1080×1920 · 3~20 秒 · MP4/WebM · ≤40MB</div>
+              <video id="bgvPortPrev" muted loop playsinline style="width:100%;height:180px;border-radius:10px;background:#05060a;object-fit:cover;margin:6px 0;display:none"></video>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <button class="btn sm" id="bgvPortPick">选择视频</button>
+                <button class="btn sm" id="bgvPortClear">清除</button>
+                <span class="mini" id="bgvPortName">未选择</span>
+                <input type="file" id="bgvPortFile" accept="video/mp4,video/webm" style="display:none">
+              </div>
+              <label class="sw" style="margin-top:8px"><input type="checkbox" id="bgvPortHide"><span class="tr"></span><span class="t">视频已含人物，隐藏立绘</span></label>
+            </div>
+          </div>
+        </div>
+        
     </div>
 
-    <!-- ══════ AI 大脑 ══════ -->
     <div class="pane" id="p5">
       <div class="card">
         <h3>用哪个模型</h3>
