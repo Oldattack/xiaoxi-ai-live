@@ -1,10 +1,10 @@
 {
-  "version": "2.6.178",
+  "version": "2.6.179",
   "notes": "修复退出后后台残留：抖音后台 Chrome 窗口彻底隐藏且无任务栏；supervisor 默认跟随父进程退出；停止标记改粘性，用户主动停止后插件不再自动拉起；启动时清理遗留 Chrome",
-  "package": "xiaoxi-ai-live-2.6.178.zip",
-  "size": 29389760,
-  "sha256": "8bdf1d945e57523cd20349f5209ca592bd38000f977138127b4c33b28833b940",
-  "publishedAt": "2026-11-13T21:11:44.537Z",
+  "package": "xiaoxi-ai-live-2.6.179.zip",
+  "size": 29390035,
+  "sha256": "02afaa38e9e7fa0a3d74a371162a9f3e1f6369f92f9cac55280a4de1b3f17a44",
+  "publishedAt": "2026-11-13T21:13:55.957Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -281,12 +281,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "6348569779c3a96810298385e597b53b5fcef209102e6f18ce2146e830ea3c30"
+      "sha256": "b3870429734876669e82ecb4fc0994a5fc4aca7ec1a1aecd8521ee1f7b353cc5"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 366628,
-      "sha256": "006220560017ed38cf12b3a7bd679f3f81da21a4ebabdc7efd0c07202e225f6d"
+      "size": 364775,
+      "sha256": "54bd717d678866cd07f8bdf4a4df5872191b45e93055876b7e05cec66d6e7330"
     }
   ]
 }
