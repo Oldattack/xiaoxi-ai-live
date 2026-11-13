@@ -2,9 +2,9 @@
   "version": "2.6.159",
   "notes": "两套 OBS 配置一键切换：横屏/竖屏各自 Profile + 场景集合，画布/音频/输出设置互不共用；刷抖音竖屏改为视频卡布局",
   "package": "xiaoxi-ai-live-2.6.159.zip",
-  "size": 29363834,
-  "sha256": "56bcc1af821711d2745fb7f8b01614ef9dcb207fc8300c7f6ebabad705a74739",
-  "publishedAt": "2026-11-13T13:25:30.249Z",
+  "size": 29364921,
+  "sha256": "a4c82bc50b62a2f630af2907393db135a78858585a0f1b8775f5574c7b032d2f",
+  "publishedAt": "2026-11-13T13:29:21.549Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -250,8 +250,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 323608,
-      "sha256": "5c9d81075bcadbdc7e50016da5213383a6d10ccdafa796ff57f79ab783f35be3"
+      "size": 325837,
+      "sha256": "7c9ecb460336a94f9400bf0037de5fe78310ccd4fafcbbff56705fe23d1b92a9"
     }
   ]
 }
