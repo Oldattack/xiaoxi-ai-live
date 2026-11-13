@@ -502,9 +502,19 @@
       </div>
 
       <div class="card">
+        <h3>刷抖音登录<span class="live">横屏/竖屏共用</span></h3>
+        <p class="sub">刷抖音用的抖音登录，横屏和竖屏共用同一个扫码入口。登录一次后，竖屏窗口会自动同步这份登录态。</p>
+        <div class="row"><label>扫码登录</label><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button class="btn pri" id="dyLoginBtn2">打开扫码窗口</button>
+          <span class="hint" id="dyLoginState">未检查</span>
+        </div></div>
+        <div class="hint">打开后 OBS 里会弹出抖音窗口，用手机扫码；扫完点一次「刷抖音」即可自动点推荐。</div>
+      </div>
+
+      <div class="card">
         <h3>为什么不用登录</h3>
-        <p class="sub">登录会把手机和直播伴侣挤下线。这里用匿名旁听，只读弹幕，不发言、不碰账号。</p>
-        <div class="hint" style="color:#a4603f">⚠ 不要在这里登录抖音，一登录直播伴侣会被踢下线。</div>
+        <p class="sub">这里的匿名旁听只读弹幕，不发言、不碰账号。上面的“刷抖音登录”是另一个登录态，不会影响弹幕旁听。</p>
+        <div class="hint" style="color:#a4603f">⚠ 弹幕旁听不要登录抖音；要登录请在「刷抖音登录」里扫码。</div>
       </div>
     </div>
 
@@ -2687,18 +2697,29 @@ if ($('dyEnabled')) {
 loadDouyinEnabled();
 
 /* 抖音扫码登录 / 退出当前登录 */
-if ($('dyLoginBtn')) {
-  $('dyLoginBtn').onclick = async function () {
-    var btn = this;
-    var old = btn.textContent;
-    btn.disabled = true; btn.textContent = '正在打开…';
-    try {
-      var r = await api('/api/douyin/login-window', {});
-      toast((r && r.message) || '已打开扫码窗口');
-    } catch (e) { toast('打开失败：' + e.message); }
-    btn.disabled = false; btn.textContent = old;
-  };
+async function openDouyinLogin(btn) {
+  var old = btn.textContent;
+  btn.disabled = true; btn.textContent = '正在打开…';
+  try {
+    var r = await api('/api/douyin/login-window', {});
+    toast((r && r.message) || '已打开扫码窗口');
+    setTimeout(refreshDouyinLoginState, 1200);
+  } catch (e) { toast('打开失败：' + e.message); }
+  btn.disabled = false; btn.textContent = old;
 }
+async function refreshDouyinLoginState() {
+  var el = $('dyLoginState');
+  if (!el) return;
+  try {
+    var r = await api('/api/douyin/login-status', {});
+    el.textContent = r && r.loggedIn ? '已登录（横竖屏共用）' : '未登录，扫码后自动同步';
+    el.style.color = r && r.loggedIn ? 'var(--brand)' : '';
+  } catch (e) { el.textContent = '未检查'; }
+}
+['dyLoginBtn', 'dyLoginBtn2'].forEach(function (id) {
+  if ($(id)) $(id).onclick = function () { openDouyinLogin(this); };
+});
+refreshDouyinLoginState();
 if ($('dyLogoutBtn')) {
   $('dyLogoutBtn').onclick = async function () {
     if (!confirm('退出后这台电脑的抖音会回到未登录状态，需要用你自己的号重新扫码。继续？')) return;
