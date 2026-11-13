@@ -2,9 +2,9 @@
   "version": "2.6.158",
   "notes": "刷抖音「下一条」修复：手动开的 OBS 自动重启拿调试端口，真正下滑推荐流；不能重启时改刷新推荐流，不再开详情页；弹幕闸门放宽减少漏回复",
   "package": "xiaoxi-ai-live-2.6.158.zip",
-  "size": 29362832,
-  "sha256": "608d0c6adaeed26265a8538f2958c18ecfafb1c2d60573b808adf4728b180a65",
-  "publishedAt": "2026-11-13T09:38:52.403Z",
+  "size": 29362397,
+  "sha256": "1f89c3181c8590382480abc0b3d167edbc6618050822aacd4a62fa40b75fbeca",
+  "publishedAt": "2026-11-13T09:42:18.392Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -250,8 +250,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 318788,
-      "sha256": "627f2b82b634261a631bcabc9c5388ba4f57e1d16d0ebbed7b3bc35e2fa656aa"
+      "size": 319099,
+      "sha256": "955e2e50549857866173e6e839406b42f656b4d945f84b76aec43fbd6836202d"
     }
   ]
 }
