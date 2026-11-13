@@ -1,10 +1,10 @@
 {
-  "version": "2.6.157",
-  "notes": "官方默认人物视频打包；刷抖音右下角视频叠加层；修复叠加层被删/位置重置；还原状态回到官方视频；扫码与启动自愈修复",
-  "package": "xiaoxi-ai-live-2.6.157.zip",
-  "size": 29361784,
-  "sha256": "c256dd796a7816eaca5a10caec6361c7db182abeb0fbf7321a3119cf09c1c766",
-  "publishedAt": "2026-11-13T09:15:44.914Z",
+  "version": "2.6.158",
+  "notes": "刷抖音「下一条」修复：手动开的 OBS 自动重启拿调试端口，真正下滑推荐流；不能重启时改刷新推荐流，不再开详情页；弹幕闸门放宽减少漏回复",
+  "package": "xiaoxi-ai-live-2.6.158.zip",
+  "size": 29362189,
+  "sha256": "19b0e43729063c0683c516b3fd3466449d462e274cc4e981d39d4793cd61dcca",
+  "publishedAt": "2026-11-13T09:35:33.011Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -246,12 +246,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "9361c8f19b52c16f3b0a98260f70b9b7da9e89bf3ad46cbf1bbcf9fcab7b3d82"
+      "sha256": "671fc80b8411f600566e54cafe1758dd34f9074039182fbc0c000c39b718df90"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 315954,
-      "sha256": "4c6c84b3e58eeebdca2e4bf441b28fd9ef1f244e1a2a30d972499d584ffda37b"
+      "size": 318125,
+      "sha256": "81764f31268b97965709f292899149ea6713fa29342b616fb1707df1a83f4946"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "port": 8792,
   "gate": {
-    "cooldownMs": 1500,
+    "cooldownMs": 0,
     "perMinute": 40,
-    "perUserMs": 2000,
-    "dedupMs": 8000,
+    "perUserMs": 1000,
+    "dedupMs": 0,
     "ignoreAdmins": true,
     "selfName": "小汐",
     "banned": [
@@ -16,7 +16,7 @@
       "qq"
     ],
     "enabled": false,
-    "similarMs": 120000
+    "similarMs": 0
   },
   "welcome": {
     "minGapMs": 1000,
@@ -130,7 +130,7 @@
   },
   "speech": {
     "serialize": true,
-    "maxQueue": 3
+    "maxQueue": 6
   },
   "douyin": {
     "webRid": "",
