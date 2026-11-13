@@ -770,6 +770,7 @@
           <button class="btn" data-layout="portrait" id="layPort" style="height:auto;padding:14px;text-align:left">
             <b>竖屏 9:16</b><div class="mini">1080×1920，切竖屏 OBS 配置</div></button>
         </div>
+        <div class="hint" style="margin-top:10px">直播或录制中不能切换，请先停止直播/录制。</div>
       </div>
 <div class="card">
           <h3>画面位置<span class="live">防误拖</span></h3>
@@ -1424,15 +1425,21 @@ var _oldMock = async function () {
   document.querySelectorAll('[data-layout]').forEach(function (b) {
     b.onclick = async function () {
       var portrait = b.dataset.layout === 'portrait';
-      b.disabled = true;
+      var all = document.querySelectorAll('[data-layout]');
+      all.forEach(function (x) { x.disabled = true; });
       try {
         var r = await api('/api/obs/layout', { layout: b.dataset.layout });
-        highlightLayout(b.dataset.layout);
-        if (r && r.ok) toast('已切' + (portrait ? '竖屏' : '横屏') + '，OBS 画布已同步 ' + (portrait ? '1080×1920' : '1920×1080'));
-        else toast('已切' + (portrait ? '竖屏' : '横屏') + '，但 OBS 没同步：' + ((r && (r.error || (r.obs && r.obs.error))) || '请检查 OBS'));
+        var err = (r && (r.error || (r.obs && r.obs.error))) || '';
+        if (r && r.ok) {
+          highlightLayout(b.dataset.layout);
+          toast('已切' + (portrait ? '竖屏' : '横屏') + '，OBS 配置已同步 ' + (portrait ? '1080×1920' : '1920×1080'));
+        } else {
+          if (r && r.layout) highlightLayout(r.layout);
+          toast(err || '切换失败，请检查 OBS');
+        }
         load();
       } catch (e) { toast('切换失败：' + e.message); }
-      b.disabled = false;
+      all.forEach(function (x) { x.disabled = false; });
     };
   });
   /* ─────────── 舞台背景 ─────────── */

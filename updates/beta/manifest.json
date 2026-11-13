@@ -2,9 +2,9 @@
   "version": "2.6.159",
   "notes": "两套 OBS 配置一键切换：横屏/竖屏各自 Profile + 场景集合，画布/音频/输出设置互不共用；刷抖音竖屏改为视频卡布局",
   "package": "xiaoxi-ai-live-2.6.159.zip",
-  "size": 29364584,
-  "sha256": "1328049486a0423b7d6730ffe67d048f64422665ba55a6097c4616c0d95f485a",
-  "publishedAt": "2026-11-13T13:31:02.934Z",
+  "size": 29364560,
+  "sha256": "76145c505aa877904761b0c33abe6ce72b0899178b7e4b68d920c41da37aed31",
+  "publishedAt": "2026-11-13T13:38:29.885Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -165,8 +165,8 @@
     },
     {
       "path": "settings.html",
-      "size": 144583,
-      "sha256": "5b1dd81450313650fd1f9d064ceb9747d3bb778c9c15dadea4b0ea095535f012"
+      "size": 144892,
+      "sha256": "f368977f136b756dd1cb296314b78a13edc73b5093a72a992f90aba6f687dc85"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -250,8 +250,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 325055,
-      "sha256": "fe20675ef7d9f94f3b1cb3a90e631b32f68ab06c8ecf351b1bdcb0942baa61d7"
+      "size": 324847,
+      "sha256": "8f6173ef83133fdeaa9439c787037040f12607e2778f0120a195c2a7463ff04d"
     }
   ]
 }
