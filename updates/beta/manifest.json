@@ -1,10 +1,10 @@
 {
   "version": "2.6.157",
-  "notes": "修复扫码窗口打不开：OBS 正常开着也能打开交互窗口，不再强制调试端口；错误提示写清 WebSocket 和源名问题",
+  "notes": "修复扫码窗口打不开（OBS 正常开着即可扫码，不再要求调试端口）；修复旧版“平静”表情盖住人物形象、换形象不生效；坏视频自动回退常态",
   "package": "xiaoxi-ai-live-2.6.157.zip",
-  "size": 6649810,
-  "sha256": "162f0c54eb02133b9b377e1db28301ac54955655cb3f1cddff85237399f95a85",
-  "publishedAt": "2026-11-13T07:20:30.127Z",
+  "size": 6650083,
+  "sha256": "b8ff58b3a3355aaeb160408aec62c0987a6cf79cad007b2a84caad4bb65e6335",
+  "publishedAt": "2026-11-13T07:29:25.576Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -160,8 +160,8 @@
     },
     {
       "path": "scene.html",
-      "size": 99949,
-      "sha256": "a57624cbf150ac4f3ac8b3eae195c08dee377daa66fb7ce47a9598c9160541c5"
+      "size": 100838,
+      "sha256": "7288c4b8c59dbb68badc4a4b6bdfcf1d47ecd7c5f7730fce511357989cd25406"
     },
     {
       "path": "settings.html",
@@ -225,8 +225,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 292842,
-      "sha256": "849f045bb046c63b1aef5a15b994e9dc5d7e714bf364f6c21070e9e784d7b53f"
+      "size": 293781,
+      "sha256": "4fbf0c560e6a8ccd9e19399e30b4739e5fd0678859617a28ba76c9adac10ba1b"
     }
   ]
 }
