@@ -631,6 +631,9 @@
               <input type="file" id="bgVideoFile" accept="video/mp4,video/webm" style="display:none">
             </div></div>
             <div class="hint">竖屏 1080×1920 以内 · 3~20 秒 · MP4/WebM · ≤40MB · 无声音循环</div>
+            <div class="row" style="margin-top:6px"><label></label><div>
+              <label class="sw"><input type="checkbox" id="bgHideAvatar"><span class="tr"></span><span class="t">视频里已有人物，隐藏小汐立绘<i>避免视频里的人物和平台立绘重影；纯房间背景不要勾</i></span></label>
+            </div></div>
             <video id="bgVideoPreview" muted loop playsinline style="width:260px;height:146px;border-radius:10px;background:#05060a;object-fit:cover;margin:4px 0 6px;display:none"></video>
           </div>
           <div class="row"><label>暗化</label><div><input class="inp" id="bgDim" type="range" min="0" max="80" step="5"><div class="hint" id="bgDimHint">0%</div></div></div>
@@ -1454,7 +1457,7 @@ var _oldMock = async function () {
     };
   });
   /* ─────────── 舞台背景 ─────────── */
-  var bgState = { kind: 'gradient', preset: 'aurora', color: '#0b1020', color2: '#1b3a5c', image: '', video: '', dim: 0, blur: 0 };
+  var bgState = { kind: 'gradient', preset: 'aurora', color: '#0b1020', color2: '#1b3a5c', image: '', video: '', dim: 0, blur: 0, hideAvatar: false };
   var bgPicked = '';   // 新选的图片 dataURL
     var BG_PRESETS = {
       aurora: 'radial-gradient(900px 700px at 22% 18%, #2a2350 0%, transparent 62%),radial-gradient(1100px 800px at 82% 78%, #14364a 0%, transparent 60%),radial-gradient(700px 600px at 62% 12%, #3a2a55 0%, transparent 65%),linear-gradient(160deg,#0d0b18 0%,#0a0d16 55%,#080a10 100%)',
@@ -1471,7 +1474,8 @@ var _oldMock = async function () {
       var payload = {
         kind: bgState.kind, preset: bgState.preset,
         color: bgState.color, color2: bgState.color2,
-        dim: Number(bgState.dim) || 0, blur: Number(bgState.blur) || 0
+        dim: Number(bgState.dim) || 0, blur: Number(bgState.blur) || 0,
+        hideAvatar: Boolean(bgState.hideAvatar)
       };
       if (bgState.kind === 'image' && (bgPicked || bgState.image)) payload.image = bgPicked || bgState.image;
       if (bgTimer) clearTimeout(bgTimer);
@@ -1507,6 +1511,7 @@ var _oldMock = async function () {
       }
     }
     if ($('bgVideoName')) $('bgVideoName').textContent = bgState.video ? '已保存' : '未选择';
+    if ($('bgHideAvatar')) $('bgHideAvatar').checked = Boolean(bgState.hideAvatar);
     if ($('bgColor1')) $('bgColor1').value = bgState.color || '#0b1020';
     if ($('bgColor2')) $('bgColor2').value = bgState.color2 || '#1b3a5c';
     if ($('bgSolid')) $('bgSolid').value = bgState.color || '#0b1020';
@@ -1640,12 +1645,16 @@ var _oldMock = async function () {
     paintBgPanel();
     applyBgNow();
   };
+  if ($('bgHideAvatar')) $('bgHideAvatar').onchange = function () {
+    bgState.hideAvatar = Boolean(this.checked);
+    applyBgNow();
+  };
   if ($('bgClear')) $('bgClear').onclick = function () { bgPicked = ''; bgState.image = ''; paintBgPanel(); };
   if ($('bgSave')) $('bgSave').onclick = async function () {
     var btn = this;
     btn.disabled = true; btn.textContent = '保存中…';
     try {
-      var payload = { kind: bgState.kind, preset: bgState.preset, color: bgState.color, color2: bgState.color2, dim: bgState.dim, blur: bgState.blur };
+      var payload = { kind: bgState.kind, preset: bgState.preset, color: bgState.color, color2: bgState.color2, dim: bgState.dim, blur: bgState.blur, hideAvatar: Boolean(bgState.hideAvatar) };
       if (bgState.kind === 'video' && !bgState.video) throw new Error('先上传竖屏背景视频');
       if (bgState.kind !== 'video' && bgPicked) payload.imageData = bgPicked;
       if (bgState.kind !== 'video' && !bgPicked && !bgState.image) payload.clearImage = true;

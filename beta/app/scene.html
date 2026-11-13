@@ -157,6 +157,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #stage.video #djBooth{display:none}
 .pet{position:absolute;left:50%;bottom:206px;transform:translateX(-50%);width:440px;height:600px;
   display:flex;align-items:flex-end;justify-content:center}
+  #stage.bg-hide-avatar .pet{display:none!important}
   @keyframes waveL{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(24deg)}}
   @keyframes waveR{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-24deg)}}
 .pet .halo{position:absolute;left:50%;bottom:40px;width:420px;height:420px;transform:translateX(-50%);
@@ -610,6 +611,7 @@ function applyLayout(){
     if (!stage || !img || !dim) return;
     var vid = document.getElementById('bgVid');
     var kind = bg.kind || 'gradient';
+    if (stage) stage.classList.toggle('bg-hide-avatar', kind === 'video' && Boolean(bg.hideAvatar));
     dim.style.opacity = String(Math.max(0, Math.min(0.8, (Number(bg.dim) || 0) / 100)));
     if (kind === 'video' && bg.video) {
       stage.style.background = '#05060a';

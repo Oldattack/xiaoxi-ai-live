@@ -2,9 +2,9 @@
   "version": "2.6.161",
   "notes": "竖屏视频背景：1080×1920 以内、3~20 秒、MP4/WebM、≤40MB、无声循环；设置页上传后立即应用，OBS 不用动",
   "package": "xiaoxi-ai-live-2.6.161.zip",
-  "size": 29377832,
-  "sha256": "b02adcb6c0888d6dbc2f77320fb3b54ab4b4a2f6e5bcf10b4471786ba3c72c6d",
-  "publishedAt": "2026-11-13T13:51:37.063Z",
+  "size": 29378364,
+  "sha256": "715b2a674d5979572ace1c910f6c1caaf065ef17a7d898fb94f473248283d7e7",
+  "publishedAt": "2026-11-13T13:53:57.695Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -195,13 +195,13 @@
     },
     {
       "path": "scene.html",
-      "size": 102162,
-      "sha256": "b4885733a63973aedf5187b31c10161e9f624c97788274d9d14f4ceb3a31dd41"
+      "size": 102316,
+      "sha256": "8e3de9f7fb9110c5dea701d1fea600dfcf9d63bd77f850bb40a8242c6e3cc126"
     },
     {
       "path": "settings.html",
-      "size": 149261,
-      "sha256": "08a59ca7b5687f3466d9afbb217c2dced70b0a0147e0b2144fe874efdce76431"
+      "size": 149950,
+      "sha256": "a6b62f42642b18530f723a01f7eea468ff43c88753621b45c6537a128cd86ee8"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -285,8 +285,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 333959,
-      "sha256": "5e8e9f62ee98e56dbdf88ac2ba49f6b0daea7153523d5adad699c3cbd056b577"
+      "size": 333835,
+      "sha256": "e611d6750378aea7821c377d3e94019170fbda01c27b2a618322f840ecad7e9e"
     }
   ]
 }
