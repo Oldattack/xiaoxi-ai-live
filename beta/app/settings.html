@@ -2711,7 +2711,7 @@ async function refreshDouyinLoginState() {
   var el = $('dyLoginState');
   if (!el) return;
   try {
-    var r = await api('/api/douyin/login-status', {});
+    var r = await api('/api/douyin/login-status');
     el.textContent = r && r.loggedIn
       ? (r.synced ? '已登录，已同步到竖屏' : '已登录（横竖屏共用）')
       : '未登录，扫码后自动同步';
