@@ -1901,6 +1901,18 @@ function demoMode(){
   setTimeout(function(){ handle({ kind: 'stats', online: 1284, received: 12, replied: 3, dropped: 2 }); }, 1600);
 }
 
+// ── 版本自检：升级重启后自动重载页面，避免 OBS 一直跑旧 JS ──
+var pageVersion = '';
+function checkVersion(){
+  fetch('/api/version', { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(j){
+    if (!j || !j.version) return;
+    if (!pageVersion) { pageVersion = j.version; return; }
+    if (j.version !== pageVersion) { location.reload(); }
+  }).catch(function(){});
+}
+checkVersion();
+setInterval(checkVersion, 20000);
+
 // ── SSE ──
 var es = null;
 function connect(){
