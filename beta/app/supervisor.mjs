@@ -3,9 +3,9 @@
  *
  * - 更新后主程序 exit(0) → 立刻重启
  * - 崩溃 → 退避重启（2s → 30s）
- * - 父进程（窗口/DSH）没了 → 自己退出，避免"关了软件还在说话"
- * - 想常驻（例如用脚本拉起的后台服务）加 --persist
- * - 想彻底停：关窗口 / 双击「停止.cmd」/ 放一个 stop.flag
+ * - 父进程（窗口/DSH）没了 → 默认仍常驻，避免直播中关窗口把 AI 停掉
+ * - 想退出即停：加 --exit-with-parent
+ * - 想彻底停：关窗口后点「关闭服务」/ 停止.cmd / 放一个 stop.flag
  */
 
 import { spawn } from 'node:child_process';
@@ -97,8 +97,8 @@ function start() {
   });
 }
 
-/* ── 父进程看门狗：默认跟随父进程；只有显式 --persist 才常驻 ── */
-const EXIT_WITH_PARENT = !argv.includes('--persist') && PARENT_PID;
+/* ── 父进程看门狗：默认常驻；显式 --exit-with-parent 才跟随父进程退出 ── */
+const EXIT_WITH_PARENT = argv.includes('--exit-with-parent');
 if (PARENT_PID && EXIT_WITH_PARENT) {
   const timer = setInterval(() => {
     let alive = true;
@@ -111,7 +111,7 @@ if (PARENT_PID && EXIT_WITH_PARENT) {
   timer.unref?.();
   log('已挂上父进程看门狗：PID ' + PARENT_PID);
 } else {
-  log('服务常驻模式（--persist），不跟随父进程退出');
+  log('服务常驻模式：关 DSH/窗口不会停（直播不会中断）；要停请点「关闭服务」');
 }
 
 /* ── 停止信号 ── */
