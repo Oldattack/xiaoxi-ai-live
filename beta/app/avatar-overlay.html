@@ -3,25 +3,60 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>小汐 · 右下角</title>
+<title>小汐 · 刷抖音右下角</title>
 <style>
 html,body{margin:0;height:100%;background:transparent;overflow:hidden}
 #wrap{position:fixed;inset:0;pointer-events:none}
-#fig{position:absolute;right:46px;bottom:-6px;height:600px;width:auto;
-  filter:drop-shadow(0 18px 40px rgba(0,0,0,.55))}
-#glow{position:absolute;right:20px;bottom:-40px;width:520px;height:520px;border-radius:50%;
-  background:radial-gradient(circle,rgba(150,80,255,.28),transparent 68%);filter:blur(18px)}
-body.video #fig{right:96px;bottom:118px;height:382px}
-body.video #glow{right:60px;bottom:40px;width:360px;height:360px}
+#fig,#vid{position:absolute;right:0;bottom:0;height:100%;width:auto;max-width:100%;object-fit:contain;display:none}
 </style>
 </head>
 <body>
 <div id="wrap">
-  <div id="glow"></div>
-  <img id="fig" src="/sprites_hd/normal.png" alt="小汐">
+  <img id="fig" alt="小汐">
+  <video id="vid" muted loop playsinline preload="auto"></video>
 </div>
 <script>
-if (/[?&]mode=video/.test(location.search)) document.body.classList.add('video');
+var AVATAR = {};
+var img = document.getElementById('fig');
+var vid = document.getElementById('vid');
+
+function render(){
+  var a = AVATAR || {};
+  var isVid = a.kind === 'video' && a.video;
+  var src = isVid ? a.video : (a.kind === 'image' && a.model ? a.model : '/sprites_hd/normal.png');
+  if (isVid) {
+    img.style.display = 'none';
+    if (vid.getAttribute('src') !== src) { vid.src = src; try { vid.load(); } catch (e) {} }
+    vid.style.display = 'block';
+    try { var p = vid.play(); if (p && p.catch) p.catch(function(){}); } catch (e) {}
+    return;
+  }
+  try { vid.pause(); } catch (e) {}
+  vid.style.display = 'none';
+  img.style.display = 'block';
+  img.src = src;
+}
+
+function load(){
+  fetch('/api/avatar', { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(j){
+    AVATAR = (j && j.avatar) || {};
+    render();
+  }).catch(function(){});
+}
+load();
+
+// 设置页换了形象/视频，立刻跟着换
+try {
+  var es = new EventSource('/events');
+  es.onmessage = function(e){
+    try {
+      var d = JSON.parse(e.data);
+      if (d && d.kind === 'config' && d.config && d.config.avatar) { AVATAR = d.config.avatar; render(); }
+    } catch (err) {}
+  };
+} catch (e) {}
+
+setInterval(load, 5000);
 </script>
 </body>
 </html>
