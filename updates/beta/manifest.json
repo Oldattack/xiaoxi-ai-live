@@ -2,9 +2,9 @@
   "version": "2.6.157",
   "notes": "修复扫码窗口打不开；修复旧版形象/表情迁移；换形象同步 OBS；刷抖音右下角改成浏览器叠加层，支持人物视频；更新后自动刷新 OBS 画面",
   "package": "xiaoxi-ai-live-2.6.157.zip",
-  "size": 6655590,
-  "sha256": "4051561b1497c5dba563e45a6af08e7eb7591c146dfcd5603fb2ebbac1658000",
-  "publishedAt": "2026-11-13T09:03:27.316Z",
+  "size": 6655346,
+  "sha256": "e6401b308c72a9be8d03673c3e12176f7108ca68be89dd8fa842029c72b01ad8",
+  "publishedAt": "2026-11-13T09:05:16.241Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -225,8 +225,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 313367,
-      "sha256": "2a89661d18b027e3b953db7fd6421a5ec22020bed81c1fb5e76fe819ab9abadb"
+      "size": 312593,
+      "sha256": "f05dd4f63441f09d701a3d346df5ce86c9c64513abd08d9e4b00c6bd45cd2804"
     }
   ]
 }
