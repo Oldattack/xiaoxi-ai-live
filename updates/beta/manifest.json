@@ -1,10 +1,10 @@
 {
-  "version": "2.6.158",
-  "notes": "刷抖音「下一条」修复：手动开的 OBS 自动重启拿调试端口，真正下滑推荐流；不能重启时改刷新推荐流，不再开详情页；弹幕闸门放宽减少漏回复",
-  "package": "xiaoxi-ai-live-2.6.158.zip",
-  "size": 29362397,
-  "sha256": "1f89c3181c8590382480abc0b3d167edbc6618050822aacd4a62fa40b75fbeca",
-  "publishedAt": "2026-11-13T09:42:18.392Z",
+  "version": "2.6.159",
+  "notes": "两套 OBS 配置一键切换：横屏/竖屏各自 Profile + 场景集合，画布/音频/输出设置互不共用；刷抖音竖屏改为视频卡布局",
+  "package": "xiaoxi-ai-live-2.6.159.zip",
+  "size": 29363834,
+  "sha256": "56bcc1af821711d2745fb7f8b01614ef9dcb207fc8300c7f6ebabad705a74739",
+  "publishedAt": "2026-11-13T13:25:30.249Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -166,7 +166,7 @@
     {
       "path": "settings.html",
       "size": 144583,
-      "sha256": "41a2081e20e14b73ad9e74d7f9104d54602086f8f601b4846e4a6ff2a1ec24af"
+      "sha256": "5b1dd81450313650fd1f9d064ceb9747d3bb778c9c15dadea4b0ea095535f012"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -246,12 +246,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "671fc80b8411f600566e54cafe1758dd34f9074039182fbc0c000c39b718df90"
+      "sha256": "e52698bfe4f99db883357a5622ba9f65d70cd256685b178a18bf1288808cebb3"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 319099,
-      "sha256": "955e2e50549857866173e6e839406b42f656b4d945f84b76aec43fbd6836202d"
+      "size": 323608,
+      "sha256": "5c9d81075bcadbdc7e50016da5213383a6d10ccdafa796ff57f79ab783f35be3"
     }
   ]
 }
