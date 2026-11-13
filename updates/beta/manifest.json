@@ -1,10 +1,10 @@
 {
-  "version": "2.6.179",
-  "notes": "修复退出后后台残留：抖音后台 Chrome 窗口彻底隐藏且无任务栏；supervisor 默认跟随父进程退出；停止标记改粘性，用户主动停止后插件不再自动拉起；启动时清理遗留 Chrome",
-  "package": "xiaoxi-ai-live-2.6.179.zip",
-  "size": 29390874,
-  "sha256": "0fcb92b714473e3535ddb8b393a52a9c061479c0d3731d0fa2e4af6153836968",
-  "publishedAt": "2026-11-13T21:25:30.026Z",
+  "version": "2.6.180",
+  "notes": "修复竖屏刷抖音登录与推荐：\n- 设置 → 抖音接入新增「刷抖音登录」，横屏/竖屏共用同一个 OBS 扫码登录\n- 竖屏 Chrome 窗口自动同步 OBS 登录态，同步后自动点击「推荐」\n- 修复扫码窗口空白、登录状态一直“未检查”、每 5 秒重复点推荐、登录态误报\n- 退出登录同时清理 OBS 和竖屏 Chrome 登录\n- 竖屏刷抖音继续使用 Chrome 网页窗口 + OBS 窗口采集，红框裁剪 70/81/5/68",
+  "package": "xiaoxi-ai-live-2.6.180.zip",
+  "size": 29390337,
+  "sha256": "6e82011e4a59d22a0f2a3714777a8ae356ab46d33e14fee0552099472b4697b2",
+  "publishedAt": "2026-11-13T21:32:31.942Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -281,12 +281,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "b3870429734876669e82ecb4fc0994a5fc4aca7ec1a1aecd8521ee1f7b353cc5"
+      "sha256": "4f97159f1ff23ced6afdd8db73cf564088eb19f4c2c719c0c453a620175db58f"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 366938,
-      "sha256": "eebe3fd2d19c58c3ade2e2f79fae871719c646ecc0be0dfcb8a335fc514c46bd"
+      "size": 366053,
+      "sha256": "ca91025e219cd2af0088d66f9330ab09b9137598fea78b0a922bec103aec1e64"
     }
   ]
 }
