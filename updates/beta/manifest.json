@@ -1,10 +1,10 @@
 {
-  "version": "2.6.156",
-  "notes": "修复更新下载超时：优先 jsDelivr / gh-proxy 镜像，失败自动换源；README 增加国内镜像下载；修复整包升级目录条目导致的失败",
-  "package": "xiaoxi-ai-live-2.6.156.zip",
-  "size": 6648123,
-  "sha256": "9a54f23446039faab026ee8b91889f0568a8d0f1c57fef91f7949ccccc377a57",
-  "publishedAt": "2026-11-13T06:57:31.879Z",
+  "version": "2.6.157",
+  "notes": "修复扫码窗口打不开：OBS 正常开着也能打开交互窗口，不再强制调试端口；错误提示写清 WebSocket 和源名问题",
+  "package": "xiaoxi-ai-live-2.6.157.zip",
+  "size": 6649810,
+  "sha256": "162f0c54eb02133b9b377e1db28301ac54955655cb3f1cddff85237399f95a85",
+  "publishedAt": "2026-11-13T07:20:30.127Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -221,12 +221,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "551ba8d4ed78575ca9cd10b15a97af95d844f922bfee511245e5c1ca72ee68ce"
+      "sha256": "9361c8f19b52c16f3b0a98260f70b9b7da9e89bf3ad46cbf1bbcf9fcab7b3d82"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 290235,
-      "sha256": "e77b65ce3972d6ccabc3e851c356a93678c0ea7ea4caab3ff1521690e48219d3"
+      "size": 292842,
+      "sha256": "849f045bb046c63b1aef5a15b994e9dc5d7e714bf364f6c21070e9e784d7b53f"
     }
   ]
 }
