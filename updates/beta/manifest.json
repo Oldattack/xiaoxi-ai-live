@@ -1,10 +1,10 @@
 {
-  "version": "2.6.162",
-  "notes": "背景视频改成横屏/竖屏两个独立上传位：各自保存、切方向自动播对应视频，和人物分开；单段≤40MB、3~20秒、MP4/WebM",
-  "package": "xiaoxi-ai-live-2.6.162.zip",
-  "size": 29380159,
-  "sha256": "2bc57cb9fb4235da3ec83cf93e34c6ffe321fd28463f067bab1dd23fa790cba1",
-  "publishedAt": "2026-11-13T15:44:32.096Z",
+  "version": "2.6.163",
+  "notes": "修复退出后后台残留：抖音后台 Chrome 窗口彻底隐藏；关闭 DSH/父进程后 supervisor 自动退出并结束子进程；启动时清理遗留抖音 Chrome",
+  "package": "xiaoxi-ai-live-2.6.163.zip",
+  "size": 29381321,
+  "sha256": "29212a547e41c5cc44ce80a0e01a68564f3c0af5c502bdad002a35dd26b62a7d",
+  "publishedAt": "2026-11-13T19:10:39.004Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -270,8 +270,8 @@
     },
     {
       "path": "supervisor.mjs",
-      "size": 5275,
-      "sha256": "47090eddce385ad9ee7fd99a4d1e6d999cadfb6fab58eb7610f6b9e906370ede"
+      "size": 5346,
+      "sha256": "aa080353bd5778cc60214b0cf53788ed62e284db9d43caf02c05692976fefc80"
     },
     {
       "path": "update.ps1",
@@ -281,12 +281,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "d548bd10f47b012c69e51920b9ed529dd3cf465f58f6d56540babde9326e9932"
+      "sha256": "b78c673d1e249997e364f0e6533e52659b77bb9acdeb1803b447e9b7f24bf7bc"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 337002,
-      "sha256": "24b66a38883fabfd7ef52d4f39f1c45a77188358b48dcd630db9cbd98855d17a"
+      "size": 340590,
+      "sha256": "204e6f26d31f40a593428e3b09a6323b85141246a8ca4bd6fc9e24ff4008b378"
     }
   ]
 }

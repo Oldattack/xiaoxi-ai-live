@@ -4,6 +4,7 @@
  * - 更新后主程序 exit(0) → 立刻重启
  * - 崩溃 → 退避重启（2s → 30s）
  * - 父进程（窗口/DSH）没了 → 自己退出，避免"关了软件还在说话"
+ * - 想常驻（例如用脚本拉起的后台服务）加 --persist
  * - 想彻底停：关窗口 / 双击「停止.cmd」/ 放一个 stop.flag
  */
 
@@ -32,7 +33,7 @@ const PARENT_PID = Number(argOf('--parent-pid')) || process.ppid || 0;
 // 没有终端（插件 / vbs 拉起）就自动隐藏，避免弹黑框
 const HIDDEN = argv.includes('--hidden') || !!Number(process.env.XIAOXI_HIDDEN || 0) || !process.stdout.isTTY;
 const PASSTHROUGH = argv.filter((a, i) => {
-  if (a === '--parent-pid' || a === '--hidden') return false;
+  if (a === '--parent-pid' || a === '--hidden' || a === '--persist' || a === '--exit-with-parent') return false;
   if (i > 0 && (argv[i - 1] === '--parent-pid')) return false;
   return true;
 });
@@ -95,8 +96,8 @@ function start() {
   });
 }
 
-/* ── 父进程看门狗：默认关闭，服务常驻；只有显式 --exit-with-parent 才跟随父进程退出 ── */
-const EXIT_WITH_PARENT = argv.includes('--exit-with-parent');
+/* ── 父进程看门狗：默认跟随父进程；只有显式 --persist 才常驻 ── */
+const EXIT_WITH_PARENT = !argv.includes('--persist') && PARENT_PID;
 if (PARENT_PID && EXIT_WITH_PARENT) {
   const timer = setInterval(() => {
     let alive = true;
@@ -109,7 +110,7 @@ if (PARENT_PID && EXIT_WITH_PARENT) {
   timer.unref?.();
   log('已挂上父进程看门狗：PID ' + PARENT_PID);
 } else {
-  log('父进程看门狗已关闭（服务常驻，不会因为 DSH/窗口关闭而退出）');
+  log('服务常驻模式（--persist），不跟随父进程退出');
 }
 
 /* ── 停止信号 ── */
