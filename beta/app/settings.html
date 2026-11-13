@@ -714,8 +714,8 @@
     <!-- ══════ 形象 ══════ -->
     <div class="pane" id="p11">
         <div class="card">
-          <h3>人物形象<span class="live">整图 / 动作视频</span></h3>
-          <p class="sub">换个主播形象：静态图或会动的视频都行，换完点保存立刻生效。</p>
+          <h3>人物形象<span class="live">常态 · 图片 / 视频</span></h3>
+          <p class="sub">平时显示的样子（平静）。静态图或会动的视频都行，换完点保存立刻生效。</p>
           <div class="row"><label>类型</label><div style="display:flex;gap:8px">
             <button class="btn sm" data-avkind="default">默认立绘</button>
             <button class="btn sm" data-avkind="image">整张图片</button>
@@ -753,8 +753,9 @@
         <label class="sw"><input type="checkbox" id="avGlow"><span class="tr"></span><span class="t">底部光晕<i>关掉更干净</i></span></label>
       </div>
       <div class="card">
-        <h3>每个表情的图</h3>
-        <p class="sub">点「替换」换成自己的图，六个互不影响，换完立刻生效。</p>
+        <h3>四个状态：欢迎 / 生气 / 伤心 / 收到礼物</h3>
+        <p class="sub">这四个状态会临时盖在常态上，播完自动回到「人物形象」里的常态。每个都可以传图片或视频（视频静音循环）。</p>
+        <p class="hint">图片：PNG / JPG / WebP，≤8MB；视频：MP4 / WebM，≤40MB。</p>
         <div class="av-grid" id="avSlots"></div>
       </div>
     </div>
@@ -889,7 +890,7 @@
           <h3>弹幕刷抖音<span class="live">自动打开 OBS</span></h3>
           <p class="sub">开启后，弹幕说「刷抖音」，平台会自己打开 OBS 并切到抖音推荐流；说「停止刷抖音」就切回来。不用手动开 OBS。</p>
           <label class="sw"><input type="checkbox" id="dyEnabled"><span class="tr"></span><span class="t">允许弹幕启动刷抖音<i>关闭后弹幕说「刷抖音」不会触发</i></span></label>
-          <div class="hint" style="margin-top:8px">弹幕：刷抖音 / 停止刷抖音 / 下一条</div>
+          <div class="hint" style="margin-top:8px">弹幕：刷抖音 / 停止刷抖音 / 下一条（3 秒冷却）</div>
           <div class="hint">刷抖音时播放抖音原声（直播伴侣要开「系统声音」才收得进直播间）；说「停止刷抖音」会连同声音一起停。</div>
         </div>
         <div class="card">
@@ -1770,12 +1771,10 @@ $('ttsVoiceSel').onchange = async function () {
 
 /* ─────────── 形象 ─────────── */
 var AV_EMO = [
-  { key: 'idle', name: '平静', file: 'sprites_hd/idle.png' },
-  { key: 'happy', name: '开心', file: 'sprites_hd/happy.png' },
+  { key: 'welcome', name: '欢迎', file: 'sprites_hd/happy.png' },
   { key: 'angry', name: '生气', file: 'sprites_hd/angry.png' },
-  { key: 'sad', name: '难过', file: 'sprites_hd/sad.png' },
-  { key: 'cry', name: '大哭', file: 'sprites_hd/cry.png' },
-  { key: 'stomp', name: '跺脚', file: 'sprites_hd/stomp.png' }
+  { key: 'sad', name: '伤心', file: 'sprites_hd/sad.png' },
+  { key: 'gift', name: '收到礼物', file: 'sprites_hd/happy.png' }
 ];
 var AVATAR = { sources: {} };
 
@@ -1791,15 +1790,32 @@ function renderAvatar() {
   box.innerHTML = '';
   AV_EMO.forEach(function (e) {
     var custom = (AVATAR.sources || {})[e.key];
+    var src = avUrl(e.key);
+    var isVid = /\.(mp4|webm)(\?|$)/i.test(src);
+    var bust = src + (src.indexOf('?') >= 0 ? '&' : '?') + 't=' + Date.now();
+    var prev = isVid
+      ? '<video src="' + bust + '" muted loop autoplay playsinline style="max-height:110px;max-width:100%"></video>'
+      : '<img src="' + bust + '" alt="">';
     var card = document.createElement('div');
     card.className = 'av-card';
     card.innerHTML =
-      '<div class="ph"><img src="' + avUrl(e.key) + '?t=' + Date.now() + '" alt=""></div>' +
-      '<b>' + e.name + '</b><span>' + (custom ? '已自定义' : '默认') + '</span>' +
-      '<div class="av-ops"><label class="btn sm" style="display:inline-grid;place-items:center">替换<input type="file" accept="image/*" style="display:none"></label>' +
+      '<div class="ph">' + prev + '</div>' +
+      '<b>' + e.name + '</b><span>' + (custom ? (isVid ? '已自定义（视频）' : '已自定义') : '默认') + '</span>' +
+      '<div class="av-ops"><label class="btn sm" style="display:inline-grid;place-items:center">替换<input type="file" accept="image/png,image/jpeg,image/webp,video/mp4,video/webm" style="display:none"></label>' +
       (custom ? '<button class="btn sm" data-reset="' + e.key + '">还原</button>' : '') + '</div>';
     var input = card.querySelector('input[type=file]');
-    input.onchange = function () { uploadAvatar(e.key, input.files[0]); };
+    input.onchange = function () {
+      var f = input.files && input.files[0];
+      if (!f) return;
+      var vid = /^video\//.test(f.type) || /\.(mp4|webm)$/i.test(f.name);
+      var max = vid ? 40 * 1024 * 1024 : 8 * 1024 * 1024;
+      if (f.size > max) {
+        toast(vid ? '视频别超过 40MB' : '图片别超过 8MB');
+        input.value = '';
+        return;
+      }
+      uploadAvatar(e.key, f);
+    };
     var reset = card.querySelector('[data-reset]');
     if (reset) reset.onclick = async function () {
       try { var r = await api('/api/avatar', { action: 'reset', emotion: e.key }); AVATAR = r.avatar; renderAvatar(); toast('已还原'); }
@@ -1882,7 +1898,9 @@ async function loadAvatar() {
 
 function uploadAvatar(key, file) {
   if (!file) return;
-  if (file.size > 8 * 1024 * 1024) { toast('图片太大（上限 8MB）'); return; }
+  var vid = /^video\//.test(file.type) || /\.(mp4|webm)$/i.test(file.name);
+  var max = vid ? 40 * 1024 * 1024 : 8 * 1024 * 1024;
+  if (file.size > max) { toast(vid ? '视频太大（上限 40MB）' : '图片太大（上限 8MB）'); return; }
   var reader = new FileReader();
   reader.onload = async function () {
     try {

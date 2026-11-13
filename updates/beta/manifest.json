@@ -1,10 +1,10 @@
 {
-  "version": "2.6.153",
-  "notes": "修复：停止刷抖音后还有抖音声音（停止时把抖音页卸成空白）；修复：启动时误清直播间号；设置页说明同步更新",
-  "package": "xiaoxi-ai-live-2.6.153.zip",
-  "size": 6644078,
-  "sha256": "31a1a914b2285aaa863e013c67babe738648dd5d0e128c4facb44bb0cdbeb4de",
-  "publishedAt": "2026-11-12T19:44:53.977Z",
+  "version": "2.6.154",
+  "notes": "弹幕「下一条」加 3 秒冷却；形象常态和 4 个事件状态都支持图片或视频；修复常态视频盖住默认表情图",
+  "package": "xiaoxi-ai-live-2.6.154.zip",
+  "size": 6646298,
+  "sha256": "b80a27cbe8e5b09d8f9483fb125f1318ab71f389a6bea3c4d79775fc69d117bd",
+  "publishedAt": "2026-11-13T06:20:35.511Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -30,8 +30,8 @@
     },
     {
       "path": "使用说明.md",
-      "size": 4634,
-      "sha256": "6c8f9a23a577898ce8693bdad3973a72314d6d64bfdde57842a74636d3f039c7"
+      "size": 4886,
+      "sha256": "1b81232cc277f34d90e9938f2508051480bdb5f56676329cd56374e33672c203"
     },
     {
       "path": "停止.cmd",
@@ -160,13 +160,13 @@
     },
     {
       "path": "scene.html",
-      "size": 98391,
-      "sha256": "dbcc42666897ddb605dd6a2736ab324787b05e9a3b74444efc022264c7d7afef"
+      "size": 99949,
+      "sha256": "a57624cbf150ac4f3ac8b3eae195c08dee377daa66fb7ce47a9598c9160541c5"
     },
     {
       "path": "settings.html",
-      "size": 142015,
-      "sha256": "38c73119e7292571d36211d55417cc530c099c62b29d2eb30182ed3082a5d307"
+      "size": 143030,
+      "sha256": "284a10d037365cc5d5dcd157081ae8815a18137d387fd43b618a9dd8900d3a2d"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -221,12 +221,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "3e1381ce6e126450364ba7229e6421875c60fa32ab1967d2cf6760a315fa56c2"
+      "sha256": "b9cbc3f3dc5f6e44377b7b3cc706471a1aafdb4515ef8c6cc0498b25884a46c7"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 281033,
-      "sha256": "9ea32d5ed27887bfeb3f961187766645b4fd5103c25b8b99174a98bff6c52e28"
+      "size": 283699,
+      "sha256": "27bd53bc57511f6af7b9c0a0d3295ae940136e7921796cd01f461c2781c834c8"
     }
   ]
 }

@@ -166,6 +166,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   .actimg{display:none;height:calc(var(--fig-h,520px) * 1.25);width:auto;image-rendering:auto;border-radius:6px}
   .pet.action .fig,.pet.action .figvid{display:none !important}
   .figvid{display:none;height:var(--fig-h,520px);width:auto;object-fit:contain;image-rendering:auto;border-radius:6px}
+  .emovid{display:none}
   #stage.v .figvid{height:var(--fig-hp,700px)}
 .fig{position:relative;display:block;height:var(--fig-h,520px);width:auto;image-rendering:auto;
   filter:
@@ -493,6 +494,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     <div class="halo"></div>
     <img class="fig" id="fig" src="sprites_hd/idle.png" alt="小汐">
     <video id="petVid" class="figvid" muted loop playsinline preload="auto"></video>
+    <video id="emoVid" class="figvid emovid" muted loop playsinline preload="auto"></video>
       <img id="actImg" class="actimg" src="/sprites_hd/actions/music-loop.webp" alt="">
     <div class="emo" id="emo">开心</div>
   </div>
@@ -680,10 +682,53 @@ var capTimer = null, emoTimer = null, talkTimer = null, idleTimer = null;
 
 var AVATAR = { sources: {}, height: 520, heightPortrait: 700, glow: true };
 
+var DEFAULT_SPRITE = {
+  idle: 'sprites_hd/idle.png',
+  welcome: 'sprites_hd/happy.png',
+  angry: 'sprites_hd/angry.png',
+  sad: 'sprites_hd/sad.png',
+  gift: 'sprites_hd/happy.png'
+};
+
 function spriteUrl(name){
   var custom = AVATAR.sources && AVATAR.sources[name];
+  if (custom) return custom;   // 自定义优先：传了 idle 就用传的（图片/视频）
   if (name === 'idle' && AVATAR.kind === 'image' && AVATAR.model) return AVATAR.model;
-  return custom || ('sprites_hd/' + name + '.png');
+  return DEFAULT_SPRITE[name] || 'sprites_hd/idle.png';
+}
+
+function isVideoSrc(u){ return /\.(mp4|webm)(\?|$)/i.test(String(u || '')); }
+
+/** 按当前表情画人物：视频表情走 emoVid，主形象视频走 petVid，其余走 fig 图片 */
+function paintFigure(name){
+  var key = name || 'idle';
+  var isIdle = key === 'idle';
+  var custom = AVATAR.sources && AVATAR.sources[key];
+  var url = spriteUrl(key);
+  var figEl2 = document.getElementById('fig');
+  var petVid = document.getElementById('petVid');
+  var emoVid = document.getElementById('emoVid');
+  if (isVideoSrc(url)) {
+    if (emoVid) {
+      if (emoVid.getAttribute('src') !== url) { emoVid.src = url; try { emoVid.load(); } catch (e) {} }
+      emoVid.style.display = 'block';
+      try { emoVid.play(); } catch (e) {}
+    }
+    if (petVid) { try { petVid.pause(); } catch (e) {} petVid.style.display = 'none'; }
+    if (figEl2) figEl2.style.display = 'none';
+    return;
+  }
+  if (emoVid) { try { emoVid.pause(); } catch (e) {} emoVid.style.display = 'none'; }
+  // 只有「常态」才用主形象视频；四个事件状态即使没自定义，也要显示自己的默认图，不能被主视频盖住
+  if (isIdle && !custom && AVATAR.kind === 'video' && AVATAR.video && petVid) {
+    if (petVid.getAttribute('src') !== AVATAR.video) petVid.src = AVATAR.video;
+    petVid.style.display = 'block';
+    if (figEl2) figEl2.style.display = 'none';
+    try { petVid.play(); } catch (e) {}
+    return;
+  }
+  if (petVid) { try { petVid.pause(); } catch (e) {} petVid.style.display = 'none'; }
+  if (figEl2) { figEl2.style.display = ''; figEl2.src = url; }
 }
 
 function applyAvatar(a){
@@ -694,33 +739,25 @@ function applyAvatar(a){
   root.style.setProperty('--fig-hp', (AVATAR.heightPortrait || 700) + 'px');
   var halo = document.querySelector('.pet .halo');
   if (halo) halo.style.display = AVATAR.glow === false ? 'none' : '';
-  var figNow = document.getElementById('fig');
-  if (figNow) {
-    var emo = figNow.dataset.emo || 'idle';
-    figNow.src = spriteUrl(emo);
-  // 人物：整图 / 动作视频 / 位置
+  // 人物：位置
   var petEl = document.querySelector('.pet');
   if (petEl) {
     petEl.style.bottom = (AVATAR.mb === undefined ? 206 : AVATAR.mb) + 'px';
     petEl.style.marginLeft = (AVATAR.mx || 0) + 'px';
   }
-  var vidEl = document.getElementById('petVid');
-  var figEl2 = document.getElementById('fig');
-  if (AVATAR.kind === 'video' && AVATAR.video && vidEl) {
-    if (vidEl.getAttribute('src') !== AVATAR.video) vidEl.src = AVATAR.video;
-    vidEl.style.display = 'block';
-    if (figEl2) figEl2.style.display = 'none';
-    try { vidEl.play(); } catch (e) {}
-  } else {
-    if (vidEl) { try { vidEl.pause(); } catch (e) {} vidEl.style.display = 'none'; }
-    if (figEl2) { figEl2.style.display = ''; figEl2.src = spriteUrl(figEl2.dataset.emo || 'idle'); }
-  }
-  }
+  var figNow = document.getElementById('fig');
+  paintFigure((figNow && figNow.dataset.emo) || 'idle');
 }
 
-// 情绪 → 立绘。六套图已按底边对齐，切换时脚不会跳。
-var SPRITE = { '开心':'happy', '生气':'angry', '跺脚':'stomp', '难过':'sad', '大哭':'cry', '平静':'idle' };
-Object.keys(SPRITE).forEach(function(k){ var im = new Image(); im.src = spriteUrl(SPRITE[k]); });
+// 情绪 → 立绘。五个状态：平静 / 欢迎 / 生气 / 伤心 / 收到礼物。旧情绪自动归到最接近的状态。
+var SPRITE = {
+  '平静':'idle',
+  '欢迎':'welcome', '开心':'welcome',
+  '生气':'angry', '跺脚':'angry',
+  '伤心':'sad', '难过':'sad', '大哭':'sad',
+  '礼物':'gift'
+};
+Object.keys(SPRITE).forEach(function(k){ var u = spriteUrl(SPRITE[k]); if (!isVideoSrc(u)) { var im = new Image(); im.src = u; } });
 
 // 调试钩子：方便外部验证立绘映射（不影响正常逻辑）
 window.__avatarDebug = { spriteUrl: spriteUrl, applyAvatar: applyAvatar, get sources(){ return AVATAR.sources; } };
@@ -729,10 +766,14 @@ function setEmotion(emotion){
   var name = SPRITE[emotion] || 'idle';
   if (figEl.dataset.cur === name) { return; }
   figEl.dataset.cur = name;
-  figEl.dataset.emo = name; figEl.src = spriteUrl(name);
+  figEl.dataset.emo = name;
+  paintFigure(name);
   clearTimeout(idleTimer);
   if (name !== 'idle') {
-    idleTimer = setTimeout(function(){ figEl.dataset.cur = 'idle'; figEl.dataset.emo = 'idle'; figEl.src = spriteUrl('idle'); }, 4200);
+    idleTimer = setTimeout(function(){
+      figEl.dataset.cur = 'idle'; figEl.dataset.emo = 'idle';
+      paintFigure('idle');
+    }, 4200);
   }
 }
 
@@ -1763,11 +1804,13 @@ function speak(text, emotion){
     addLine('', d.user, d.text);
   } else if (d.kind === 'gift') {
     addLine('gift', d.user, '送出 ' + d.text);
+    setEmotion('礼物');
   } else if (d.kind === 'enter') {
     // 只显示通过服务端节流的进场，否则热门直播间会被进场消息刷屏
     if (d.welcome && !replay) {
       addLine('enter', d.user, '进入直播间');
       welcome(d.user);
+      setEmotion('欢迎');
     }
   } else if (d.kind === 'config') {
     var C0 = d.config || {};

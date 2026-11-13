@@ -134,7 +134,8 @@
   },
   "douyin": {
     "webRid": "",
-    "autoConnect": false
+    "autoConnect": false,
+    "scrollCooldownMs": 3000
   },
   "song": {
     "enabled": true,
