@@ -2712,7 +2712,9 @@ async function refreshDouyinLoginState() {
   if (!el) return;
   try {
     var r = await api('/api/douyin/login-status', {});
-    el.textContent = r && r.loggedIn ? '已登录（横竖屏共用）' : '未登录，扫码后自动同步';
+    el.textContent = r && r.loggedIn
+      ? (r.synced ? '已登录，已同步到竖屏' : '已登录（横竖屏共用）')
+      : '未登录，扫码后自动同步';
     el.style.color = r && r.loggedIn ? 'var(--brand)' : '';
   } catch (e) { el.textContent = '未检查'; }
 }
@@ -2720,6 +2722,7 @@ async function refreshDouyinLoginState() {
   if ($(id)) $(id).onclick = function () { openDouyinLogin(this); };
 });
 refreshDouyinLoginState();
+setInterval(refreshDouyinLoginState, 5000);
 if ($('dyLogoutBtn')) {
   $('dyLogoutBtn').onclick = async function () {
     if (!confirm('退出后这台电脑的抖音会回到未登录状态，需要用你自己的号重新扫码。继续？')) return;
