@@ -593,6 +593,7 @@ function applyLayout(){
   return v;
 }
   // ── 舞台背景 ──
+  var BG_VIDEOS = {};
   var BG_PRESETS = {
     aurora: 'radial-gradient(900px 700px at 22% 18%, #2a2350 0%, transparent 62%),radial-gradient(1100px 800px at 82% 78%, #14364a 0%, transparent 60%),radial-gradient(700px 600px at 62% 12%, #3a2a55 0%, transparent 65%),linear-gradient(160deg,#0d0b18 0%,#0a0d16 55%,#080a10 100%)',
     midnight: 'radial-gradient(900px 700px at 30% 20%, #18203a 0%, transparent 62%),radial-gradient(1000px 800px at 78% 80%, #0e1b2e 0%, transparent 60%),linear-gradient(160deg,#080a12 0%,#05070d 100%)',
@@ -603,6 +604,11 @@ function applyLayout(){
     mono: 'radial-gradient(900px 700px at 25% 20%, #2a2a30 0%, transparent 62%),radial-gradient(1000px 800px at 80% 80%, #1c1c22 0%, transparent 60%),linear-gradient(160deg,#101013 0%,#07070a 100%)'
   };
 
+  function applyBackgrounds(scene) {
+    BG_VIDEOS = (scene && scene.bgVideos) || {};
+    if (scene && scene.bg) applyBg(scene.bg);
+  }
+
   function applyBg(bg) {
     if (!bg) return;
     var stage = document.getElementById('stage');
@@ -611,8 +617,24 @@ function applyLayout(){
     if (!stage || !img || !dim) return;
     var vid = document.getElementById('bgVid');
     var kind = bg.kind || 'gradient';
-    if (stage) stage.classList.toggle('bg-hide-avatar', kind === 'video' && Boolean(bg.hideAvatar));
+    var vNow = applyLayout();
+    var layoutKey = vNow ? 'portrait' : 'landscape';
+    var bv = (BG_VIDEOS && BG_VIDEOS[layoutKey]) || null;
     dim.style.opacity = String(Math.max(0, Math.min(0.8, (Number(bg.dim) || 0) / 100)));
+    if (bv && bv.video) {
+      stage.classList.toggle('bg-hide-avatar', Boolean(bv.hideAvatar));
+      stage.style.background = '#05060a';
+      img.style.opacity = '0';
+      if (vid) {
+        if (vid.getAttribute('src') !== bv.video) vid.setAttribute('src', bv.video);
+        vid.style.filter = 'blur(' + (Number(bg.blur) || 0) + 'px)';
+        vid.style.opacity = '1';
+        var bvPlay = vid.play();
+        if (bvPlay && bvPlay.catch) bvPlay.catch(function () {});
+      }
+      return;
+    }
+    stage.classList.toggle('bg-hide-avatar', kind === 'video' && Boolean(bg.hideAvatar));
     if (kind === 'video' && bg.video) {
       stage.style.background = '#05060a';
       img.style.opacity = '0';
@@ -679,13 +701,13 @@ fit();
 
 // 开局同步一次服务端布局设置；之后靠 SSE 的 config 事件热更新
 fetch('/api/state').then(function(r){ return r.json(); }).then(function(j){
-    if (j && j.config && j.config.scene && j.config.scene.bg) applyBg(j.config.scene.bg);
-    if (j && j.config && j.config.scene && j.config.scene.viz) vizCfg.enabled = j.config.scene.viz.enabled !== false;
-  var l = j && j.config && j.config.scene && j.config.scene.layout;
-  if (l) { layoutMode = l; fit(); }
+  var S = j && j.config && j.config.scene;
+  if (S && S.layout) { layoutMode = S.layout; fit(); }
+  if (S) applyBackgrounds(S);
+  if (S && S.viz) vizCfg.enabled = S.viz.enabled !== false;
   if (j && j.config && j.config.avatar) applyAvatar(j.config.avatar);
-    if (j && j.config && j.config.scene && j.config.scene.dj) { djEnabled = j.config.scene.dj.enabled !== false; }
-    if (j && j.songs && j.songs.playing) { songPlaying = true; djShow(true); try { actionStart(); } catch (e) {} }
+  if (S && S.dj) { djEnabled = S.dj.enabled !== false; }
+  if (j && j.songs && j.songs.playing) { songPlaying = true; djShow(true); try { actionStart(); } catch (e) {} }
 }).catch(function(){});
 
 // ── 弹幕池 ──
@@ -1861,7 +1883,7 @@ function speak(text, emotion){
     if (C0.avatar) applyAvatar(C0.avatar);
     var S0 = C0.scene || {};
     if (S0.layout) { layoutMode = S0.layout; fit(); }
-    if (S0.bg) applyBg(S0.bg);
+    if (S0.bg || S0.bgVideos) applyBackgrounds(S0);
     if (S0.viz) { vizCfg.enabled = S0.viz.enabled !== false; if (!vizCfg.enabled) vizStop(); }
       if (S0.dj) { djEnabled = S0.dj.enabled !== false; djShow(songPlaying); }
   } else if (d.kind === 'song-note') {
