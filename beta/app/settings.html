@@ -1516,7 +1516,7 @@ var _oldMock = async function () {
     if ($('bgColor2')) $('bgColor2').value = bgState.color2 || '#1b3a5c';
     if ($('bgSolid')) $('bgSolid').value = bgState.color || '#0b1020';
     if ($('bgDim')) { $('bgDim').value = bgState.dim || 0; $('bgDimHint').textContent = (bgState.dim || 0) + '%'; }
-    if ($('bgBlur')) { $('bgBlur').value = bgState.blur || 0; $('bgBlurHint').textContent = (bgState.blur || 0) + 'px（仅图片）'; }
+    if ($('bgBlur')) { $('bgBlur').value = bgState.blur || 0; $('bgBlurHint').textContent = (bgState.blur || 0) + 'px（图片/视频）'; }
     var img = bgPicked || bgState.image || '';
     var pv = $('bgPreview');
     if (kind === 'image' && img) {
@@ -1578,7 +1578,7 @@ var _oldMock = async function () {
   if ($('bgColor2')) $('bgColor2').oninput = function () { bgState.color2 = this.value; applyBgNow(true); };
   if ($('bgSolid')) $('bgSolid').oninput = function () { bgState.color = this.value; applyBgNow(true); };
   if ($('bgDim')) $('bgDim').oninput = function () { bgState.dim = Number(this.value); $('bgDimHint').textContent = this.value + '%'; applyBgNow(true); };
-  if ($('bgBlur')) $('bgBlur').oninput = function () { bgState.blur = Number(this.value); $('bgBlurHint').textContent = this.value + 'px（仅图片）'; applyBgNow(true); };
+  if ($('bgBlur')) $('bgBlur').oninput = function () { bgState.blur = Number(this.value); $('bgBlurHint').textContent = this.value + 'px（图片/视频）'; applyBgNow(true); };
   if ($('bgPick')) $('bgPick').onclick = function () { $('bgFile').click(); };
   if ($('bgFile')) $('bgFile').onchange = function () {
     var f = this.files && this.files[0];
