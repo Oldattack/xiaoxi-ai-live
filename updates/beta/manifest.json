@@ -1,10 +1,10 @@
 {
-  "version": "2.6.160",
-  "notes": "两套 OBS 配置进安装包：新客户首次切横/竖屏自动安装 Profile+场景集合，OBS 开着会先安全关闭重启；直播/录制中拒绝切换",
-  "package": "xiaoxi-ai-live-2.6.160.zip",
-  "size": 29375076,
-  "sha256": "542372032c4918e2d1835637444a7f94371a6342f97abd29fca5adf1f118e8dc",
-  "publishedAt": "2026-11-13T13:47:45.499Z",
+  "version": "2.6.161",
+  "notes": "竖屏视频背景：1080×1920 以内、3~20 秒、MP4/WebM、≤40MB、无声循环；设置页上传后立即应用，OBS 不用动",
+  "package": "xiaoxi-ai-live-2.6.161.zip",
+  "size": 29377832,
+  "sha256": "b02adcb6c0888d6dbc2f77320fb3b54ab4b4a2f6e5bcf10b4471786ba3c72c6d",
+  "publishedAt": "2026-11-13T13:51:37.063Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -195,13 +195,13 @@
     },
     {
       "path": "scene.html",
-      "size": 101313,
-      "sha256": "9b94340f324ad77620c56a8d08e7d90ee182599f7db6b0c040da084d3fcba58f"
+      "size": 102162,
+      "sha256": "b4885733a63973aedf5187b31c10161e9f624c97788274d9d14f4ceb3a31dd41"
     },
     {
       "path": "settings.html",
-      "size": 144892,
-      "sha256": "f368977f136b756dd1cb296314b78a13edc73b5093a72a992f90aba6f687dc85"
+      "size": 149261,
+      "sha256": "08a59ca7b5687f3466d9afbb217c2dced70b0a0147e0b2144fe874efdce76431"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -281,12 +281,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "7b86182cf84709f5ff97604c46b29d19aa77a1089dab09f84813e51498fb7c3f"
+      "sha256": "70a32d43634443e8b7dda9eb10967cf72badfbcd6f57d4542cc61983f9d6aca6"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 330866,
-      "sha256": "f97fea9629d059a981cdda56f7482258448caceef303196ff5a694972b9cb15d"
+      "size": 333959,
+      "sha256": "5e8e9f62ee98e56dbdf88ac2ba49f6b0daea7153523d5adad699c3cbd056b577"
     }
   ]
 }

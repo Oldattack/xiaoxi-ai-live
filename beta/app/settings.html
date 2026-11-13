@@ -593,6 +593,7 @@
             <button class="btn sm" data-bgkind="gradient">渐变</button>
             <button class="btn sm" data-bgkind="color">纯色</button>
             <button class="btn sm" data-bgkind="image">图片</button>
+            <button class="btn sm" data-bgkind="video">视频</button>
           </div></div>
           <div id="bgGradBox">
             <div class="row"><label>预设</label><div id="bgPresets" style="display:flex;flex-wrap:wrap;gap:8px">
@@ -622,8 +623,18 @@
             </div></div>
             <div id="bgPreview" style="width:260px;height:146px;border-radius:10px;background:rgba(127,127,127,.12);background-size:cover;background-position:center;margin:4px 0 6px"></div>
           </div>
+          <div id="bgVideoBox" style="display:none">
+            <div class="row"><label>背景视频</label><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <button class="btn sm" id="bgVideoPick">选择视频</button>
+              <button class="btn sm" id="bgVideoClear">清除</button>
+              <span class="mini" id="bgVideoName">未选择</span>
+              <input type="file" id="bgVideoFile" accept="video/mp4,video/webm" style="display:none">
+            </div></div>
+            <div class="hint">竖屏 1080×1920 以内 · 3~20 秒 · MP4/WebM · ≤40MB · 无声音循环</div>
+            <video id="bgVideoPreview" muted loop playsinline style="width:260px;height:146px;border-radius:10px;background:#05060a;object-fit:cover;margin:4px 0 6px;display:none"></video>
+          </div>
           <div class="row"><label>暗化</label><div><input class="inp" id="bgDim" type="range" min="0" max="80" step="5"><div class="hint" id="bgDimHint">0%</div></div></div>
-          <div class="row"><label>模糊</label><div><input class="inp" id="bgBlur" type="range" min="0" max="40" step="2"><div class="hint" id="bgBlurHint">0px（仅图片）</div></div></div>
+          <div class="row"><label>模糊</label><div><input class="inp" id="bgBlur" type="range" min="0" max="40" step="2"><div class="hint" id="bgBlurHint">0px（图片/视频）</div></div></div>
           <div class="row"><label>音乐可视化</label><div>
             <label class="sw"><input type="checkbox" id="vizEnabled"><span class="tr"></span><span class="t">放歌时跟着节奏动<i>随机：底部频谱 / 人物圆环 / 漂浮粒子，只在放歌时出现</i></span></label>
           </div></div>
@@ -1443,7 +1454,7 @@ var _oldMock = async function () {
     };
   });
   /* ─────────── 舞台背景 ─────────── */
-  var bgState = { kind: 'gradient', preset: 'aurora', color: '#0b1020', color2: '#1b3a5c', image: '', dim: 0, blur: 0 };
+  var bgState = { kind: 'gradient', preset: 'aurora', color: '#0b1020', color2: '#1b3a5c', image: '', video: '', dim: 0, blur: 0 };
   var bgPicked = '';   // 新选的图片 dataURL
     var BG_PRESETS = {
       aurora: 'radial-gradient(900px 700px at 22% 18%, #2a2350 0%, transparent 62%),radial-gradient(1100px 800px at 82% 78%, #14364a 0%, transparent 60%),radial-gradient(700px 600px at 62% 12%, #3a2a55 0%, transparent 65%),linear-gradient(160deg,#0d0b18 0%,#0a0d16 55%,#080a10 100%)',
@@ -1483,6 +1494,19 @@ var _oldMock = async function () {
     $('bgCustomRow').style.display = (bgState.preset === 'custom') ? '' : 'none';
     $('bgColorBox').style.display = kind === 'color' ? '' : 'none';
     $('bgImageBox').style.display = kind === 'image' ? '' : 'none';
+    $('bgVideoBox').style.display = kind === 'video' ? '' : 'none';
+    var vp = $('bgVideoPreview');
+    if (vp) {
+      if (kind === 'video' && bgState.video) {
+        vp.style.display = 'block';
+        if (vp.getAttribute('src') !== bgState.video) vp.setAttribute('src', bgState.video);
+        var vplay = vp.play(); if (vplay && vplay.catch) vplay.catch(function () {});
+      } else {
+        vp.style.display = 'none';
+        try { vp.pause(); } catch (e) {}
+      }
+    }
+    if ($('bgVideoName')) $('bgVideoName').textContent = bgState.video ? '已保存' : '未选择';
     if ($('bgColor1')) $('bgColor1').value = bgState.color || '#0b1020';
     if ($('bgColor2')) $('bgColor2').value = bgState.color2 || '#1b3a5c';
     if ($('bgSolid')) $('bgSolid').value = bgState.color || '#0b1020';
@@ -1559,14 +1583,72 @@ var _oldMock = async function () {
     rd.onload = function () { bgPicked = rd.result; bgState.kind = 'image'; paintBgPanel(); applyBgNow(); };
     rd.readAsDataURL(f);
   };
+  if ($('bgVideoPick')) $('bgVideoPick').onclick = function () { $('bgVideoFile').click(); };
+  if ($('bgVideoFile')) $('bgVideoFile').onchange = async function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    if (f.size > 40 * 1024 * 1024) { toast('视频别超过 40MB'); this.value = ''; return; }
+    if (!/\.(mp4|webm)$/i.test(f.name) && !/^video\/(mp4|webm)$/i.test(f.type || '')) {
+      toast('只支持 MP4 / WebM'); this.value = ''; return;
+    }
+    var nameEl = $('bgVideoName');
+    if (nameEl) nameEl.textContent = '检查中…';
+    try {
+      var meta = await new Promise(function (resolve, reject) {
+        var u = URL.createObjectURL(f);
+        var v = document.createElement('video');
+        v.preload = 'metadata';
+        var done = false;
+        function finish(err, val) {
+          if (done) return; done = true;
+          try { URL.revokeObjectURL(u); } catch (e) {}
+          if (err) reject(err); else resolve(val);
+        }
+        v.onloadedmetadata = function () {
+          finish(null, { w: v.videoWidth, h: v.videoHeight, d: v.duration });
+        };
+        v.onerror = function () { finish(new Error('视频读不出来，换 MP4/WebM 试试')); };
+        setTimeout(function () { finish(new Error('视频读取超时')); }, 8000);
+        v.src = u;
+      });
+      if (!meta.w || !meta.h) throw new Error('拿不到视频分辨率');
+      if (meta.w > meta.h) throw new Error('要竖屏视频（高大于宽）');
+      if (meta.w > 1080 || meta.h > 1920) throw new Error('分辨率别超过 1080×1920');
+      if (!isFinite(meta.d) || meta.d < 3 || meta.d > 20) throw new Error('时长要在 3~20 秒');
+      if (nameEl) nameEl.textContent = '上传中…';
+      var res = await fetch('/api/scene/bg/video', {
+        method: 'POST',
+        headers: { 'content-type': f.type || (/\.webm$/i.test(f.name) ? 'video/webm' : 'video/mp4') },
+        body: f
+      });
+      var r = await res.json();
+      if (!r || !r.ok) throw new Error((r && r.error) || '上传失败');
+      bgState = Object.assign({}, bgState, r.bg || {});
+      bgState.kind = 'video';
+      bgPicked = '';
+      paintBgPanel();
+      toast('视频背景已保存：' + meta.w + '×' + meta.h + ' · ' + meta.d.toFixed(1) + ' 秒');
+    } catch (e) {
+      if (nameEl) nameEl.textContent = '未选择';
+      toast('视频背景失败：' + e.message);
+    }
+    this.value = '';
+  };
+  if ($('bgVideoClear')) $('bgVideoClear').onclick = function () {
+    bgState.video = '';
+    if (bgState.kind === 'video') bgState.kind = 'gradient';
+    paintBgPanel();
+    applyBgNow();
+  };
   if ($('bgClear')) $('bgClear').onclick = function () { bgPicked = ''; bgState.image = ''; paintBgPanel(); };
   if ($('bgSave')) $('bgSave').onclick = async function () {
     var btn = this;
     btn.disabled = true; btn.textContent = '保存中…';
     try {
       var payload = { kind: bgState.kind, preset: bgState.preset, color: bgState.color, color2: bgState.color2, dim: bgState.dim, blur: bgState.blur };
-      if (bgPicked) payload.imageData = bgPicked;
-      if (!bgPicked && !bgState.image) payload.clearImage = true;
+      if (bgState.kind === 'video' && !bgState.video) throw new Error('先上传竖屏背景视频');
+      if (bgState.kind !== 'video' && bgPicked) payload.imageData = bgPicked;
+      if (bgState.kind !== 'video' && !bgPicked && !bgState.image) payload.clearImage = true;
       var r = await api('/api/scene/bg', payload);
       if (!r.ok) throw new Error(r.error || '保存失败');
       bgState = Object.assign({}, bgState, r.bg);
