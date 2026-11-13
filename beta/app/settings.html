@@ -117,6 +117,8 @@
   .side-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px}
   .side-card h4{font-size:12.5px;color:var(--ink2);font-weight:600;margin-bottom:10px}
   .pv{border-radius:12px;overflow:hidden;background:#14101f;aspect-ratio:16/9}
+  .pv.live-pv.portrait{aspect-ratio:9/16;max-width:320px !important;margin:0 auto}
+  .pv-box.portrait{width:min(42vw,420px);aspect-ratio:9/16;max-height:88vh}
 .side-wrap{display:none}
 .wrap.side-mode{grid-template-columns:212px minmax(0,1fr)}
 .wrap.side-mode > div:nth-child(2){display:none}
@@ -583,7 +585,7 @@
       <div class="pane" id="p15">
         <div class="card">
           <h3>画面预览<span class="live">实时</span></h3>
-          <div class="pv" style="max-width:920px"><iframe id="stgPv" src="/?clean=1&mute=1" scrolling="no"></iframe></div>
+          <div class="pv live-pv" style="max-width:920px"><iframe id="stgPv" src="/?clean=1&mute=1" scrolling="no"></iframe></div>
         </div>
 
 <div class="card">
@@ -988,7 +990,7 @@
   <div class="side-wrap" id="sideWrap">
     <div class="side-card" id="pvCard">
       <div class="pv-head"><h4>画面预览</h4><button class="btn sm" id="pvZoom">放大</button></div>
-      <div class="pv"><iframe id="pv" src="/?clean=1&mute=1" scrolling="no"></iframe></div>
+      <div class="pv live-pv"><iframe id="pv" src="/?clean=1&mute=1" scrolling="no"></iframe></div>
     </div>
     <div class="side-card">
       <h4>实时</h4>
@@ -1315,11 +1317,20 @@ function renderHome(st) {
 }
 
 /* ─────────── 加载 ─────────── */
+function applyPreviewAspect(layout) {
+  var portrait = layout === 'portrait';
+  document.querySelectorAll('.pv.live-pv').forEach(function (box) {
+    box.classList.toggle('portrait', portrait);
+  });
+  var big = document.querySelector('.pv-box');
+  if (big) big.classList.toggle('portrait', portrait);
+}
 async function load() {
   var st;
   try { st = await api('/api/state'); }
   catch (e) { toast('连不上本地服务：' + e.message); return; }
   ST = st;
+  applyPreviewAspect(st && st.config && st.config.scene && st.config.scene.layout);
   try { fill(st); } catch (e) { toast('界面渲染出错：' + e.message); console.error(e); }
   try { loadBgVideos(); } catch (e) { console.error(e); }
     var djEl = document.getElementById('djOn');
@@ -1463,6 +1474,7 @@ var _oldMock = async function () {
         var err = (r && (r.error || (r.obs && r.obs.error))) || '';
         if (r && r.ok) {
           highlightLayout(b.dataset.layout);
+          applyPreviewAspect(r.layout || b.dataset.layout);
           toast('已切' + (portrait ? '竖屏' : '横屏') + '，OBS 配置已同步 ' + (portrait ? '1080×1920' : '1920×1080'));
         } else {
           if (r && r.layout) highlightLayout(r.layout);
@@ -1893,6 +1905,7 @@ if ($('pvZoom')) {
   $('pvZoom').onclick = function () {
     var m = $('pvModal');
     $('pvBig').src = '/?clean=1&mute=1';
+    applyPreviewAspect(ST && ST.config && ST.config.scene && ST.config.scene.layout);
     m.classList.add('on');
   };
 }

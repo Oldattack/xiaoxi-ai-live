@@ -2,9 +2,9 @@
   "version": "2.6.162",
   "notes": "背景视频改成横屏/竖屏两个独立上传位：各自保存、切方向自动播对应视频，和人物分开；单段≤40MB、3~20秒、MP4/WebM",
   "package": "xiaoxi-ai-live-2.6.162.zip",
-  "size": 29380275,
-  "sha256": "f4bc32ea95e2059930570c840f0605852ff5f5a8bef837f7d2125608085aaaba",
-  "publishedAt": "2026-11-13T14:00:20.503Z",
+  "size": 29379851,
+  "sha256": "988fd367ff00c5f02970fbc21c3010c5c6fda9409a105a5fb602413425287912",
+  "publishedAt": "2026-11-13T15:33:41.978Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -200,8 +200,8 @@
     },
     {
       "path": "settings.html",
-      "size": 155543,
-      "sha256": "fedce620d52f8b7bde4955c2bbebde1b63db3a33729c4a5977f9b1a26ea8347c"
+      "size": 156265,
+      "sha256": "1809ee40ad17a453b06fa38a1042cfdbef7995d4bf362f4ff485a5c1d0e03d0f"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -285,8 +285,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 336313,
-      "sha256": "8d957ad5753f7009393ee4bc64b3ce67bc039ec1d4b3ef53812d46d9cb652edf"
+      "size": 337102,
+      "sha256": "431be2398b577a81884eabf4460aa9712159d2dd1bf74f467d63e33acb3f1ccb"
     }
   ]
 }
