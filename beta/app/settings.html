@@ -892,6 +892,11 @@
           <label class="sw"><input type="checkbox" id="dyEnabled"><span class="tr"></span><span class="t">允许弹幕启动刷抖音<i>关闭后弹幕说「刷抖音」不会触发</i></span></label>
           <div class="hint" style="margin-top:8px">弹幕：刷抖音 / 停止刷抖音 / 下一条（3 秒冷却）</div>
           <div class="hint">刷抖音时播放抖音原声（直播伴侣要开「系统声音」才收得进直播间）；说「停止刷抖音」会连同声音一起停。</div>
+          <div class="row" style="margin-top:12px"><label>抖音登录</label><div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn sm" id="dyLoginBtn">打开扫码窗口</button>
+            <button class="btn sm" id="dyLogoutBtn">退出当前抖音</button>
+          </div></div>
+          <div class="hint">每个客户用自己的抖音扫码。登录态只存在这台电脑的 OBS 里，不随安装包走；换人/换号先点「退出当前抖音」。</div>
         </div>
         <div class="card">
           <h3>说明</h3>
@@ -2481,6 +2486,34 @@ if ($('dyEnabled')) {
   };
 }
 loadDouyinEnabled();
+
+/* 抖音扫码登录 / 退出当前登录 */
+if ($('dyLoginBtn')) {
+  $('dyLoginBtn').onclick = async function () {
+    var btn = this;
+    var old = btn.textContent;
+    btn.disabled = true; btn.textContent = '正在打开…';
+    try {
+      var r = await api('/api/douyin/login-window', {});
+      toast((r && r.message) || '已打开扫码窗口');
+    } catch (e) { toast('打开失败：' + e.message); }
+    btn.disabled = false; btn.textContent = old;
+  };
+}
+if ($('dyLogoutBtn')) {
+  $('dyLogoutBtn').onclick = async function () {
+    if (!confirm('退出后这台电脑的抖音会回到未登录状态，需要用你自己的号重新扫码。继续？')) return;
+    var btn = this;
+    var old = btn.textContent;
+    btn.disabled = true; btn.textContent = '正在退出…';
+    try {
+      var r = await api('/api/douyin/logout', {});
+      toast((r && r.message) || '已退出抖音登录');
+    } catch (e) { toast('退出失败：' + e.message); }
+    btn.disabled = false; btn.textContent = old;
+  };
+}
+
 
 /* 统一按钮类型：避免任何按钮触发默认行为 */
 document.querySelectorAll('button:not([type])').forEach(function (b) { b.type = 'button'; });

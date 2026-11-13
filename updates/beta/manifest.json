@@ -1,10 +1,10 @@
 {
-  "version": "2.6.154",
-  "notes": "弹幕「下一条」加 3 秒冷却；形象常态和 4 个事件状态都支持图片或视频；修复常态视频盖住默认表情图",
-  "package": "xiaoxi-ai-live-2.6.154.zip",
-  "size": 6646298,
-  "sha256": "b80a27cbe8e5b09d8f9483fb125f1318ab71f389a6bea3c4d79775fc69d117bd",
-  "publishedAt": "2026-11-13T06:20:35.511Z",
+  "version": "2.6.155",
+  "notes": "刷抖音新增「打开扫码窗口 / 退出当前抖音」，每个客户用自己的账号；登录态只在本机 OBS，不随安装包走",
+  "package": "xiaoxi-ai-live-2.6.155.zip",
+  "size": 6648107,
+  "sha256": "35e9e46975bb1e1c2bd3b7ee7201fed1d8ba0e630deef3196cb562adb24379e1",
+  "publishedAt": "2026-11-13T06:39:22.955Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -30,8 +30,8 @@
     },
     {
       "path": "使用说明.md",
-      "size": 4886,
-      "sha256": "1b81232cc277f34d90e9938f2508051480bdb5f56676329cd56374e33672c203"
+      "size": 5057,
+      "sha256": "16508611b1b30bc245d778b955868087c0a6696d3cfefd0e8daa61a0fc2cc21e"
     },
     {
       "path": "停止.cmd",
@@ -165,8 +165,8 @@
     },
     {
       "path": "settings.html",
-      "size": 143030,
-      "sha256": "284a10d037365cc5d5dcd157081ae8815a18137d387fd43b618a9dd8900d3a2d"
+      "size": 144583,
+      "sha256": "41a2081e20e14b73ad9e74d7f9104d54602086f8f601b4846e4a6ff2a1ec24af"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -221,12 +221,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "b9cbc3f3dc5f6e44377b7b3cc706471a1aafdb4515ef8c6cc0498b25884a46c7"
+      "sha256": "645f61fbfec59a6c54587f3e720ef5b01e069bb723954a03047aaf7dc1d3d1e8"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 283699,
-      "sha256": "27bd53bc57511f6af7b9c0a0d3295ae940136e7921796cd01f461c2781c834c8"
+      "size": 289942,
+      "sha256": "bea04f3b2b425574d015c1e21f4ddf3ce208f8248703001a62861ee375893331"
     }
   ]
 }
