@@ -2,9 +2,9 @@
   "version": "2.6.160",
   "notes": "两套 OBS 配置进安装包：新客户首次切横/竖屏自动安装 Profile+场景集合，OBS 开着会先安全关闭重启；直播/录制中拒绝切换",
   "package": "xiaoxi-ai-live-2.6.160.zip",
-  "size": 29376121,
-  "sha256": "93182ba9ecc056e85308381efdd3379b6bd07e0d9834d6f60e20a01a4be4e12b",
-  "publishedAt": "2026-11-13T13:41:41.140Z",
+  "size": 29375076,
+  "sha256": "542372032c4918e2d1835637444a7f94371a6342f97abd29fca5adf1f118e8dc",
+  "publishedAt": "2026-11-13T13:47:45.499Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -285,8 +285,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 330086,
-      "sha256": "111fe5567638d06750823aed5a115fafb1ea483f616fa7f8856b862f7fb71d4d"
+      "size": 330866,
+      "sha256": "f97fea9629d059a981cdda56f7482258448caceef303196ff5a694972b9cb15d"
     }
   ]
 }
