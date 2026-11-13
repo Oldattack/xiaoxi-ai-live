@@ -1087,16 +1087,9 @@ document.querySelectorAll('.nav a').forEach(function (a) {
   a.onclick = function () {
     document.querySelectorAll('.nav a').forEach(function (x) { x.classList.remove('on'); });
     a.classList.add('on');
-    var sideMode = a.dataset.p === 'p14';
     var wrapEl = document.querySelector('.wrap');
-    if (wrapEl) wrapEl.classList.toggle('side-mode', sideMode);
-    if (sideMode) {
-      document.querySelectorAll('.pane').forEach(function (p) { p.classList.remove('on'); });
-      var pvc0 = document.getElementById('pvCard');
-      if (pvc0) pvc0.style.display = '';
-    } else {
-      document.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.id === a.dataset.p); });
-    }
+    if (wrapEl) wrapEl.classList.remove('side-mode');
+    document.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.id === a.dataset.p); });
     if (a.dataset.p === 'p4') loadVersion();
     if (a.dataset.p === 'p11') loadAvatar();
     loadAvModel();
@@ -2814,6 +2807,21 @@ loadVersion();
 checkUpdateQuick();
 loadAvatar();
   syncTopLatency('p0');
+
+/* 更新后旧设置页自动重载，避免一直停在旧布局/旧缓存 */
+var SETTINGS_BOOT_VER = '';
+async function checkSettingsReload() {
+  try {
+    var r = await fetch('/api/update', { cache: 'no-store' });
+    var j = await r.json();
+    var v = j && j.version;
+    if (!v) return;
+    if (!SETTINGS_BOOT_VER) { SETTINGS_BOOT_VER = v; return; }
+    if (SETTINGS_BOOT_VER !== v) location.reload();
+  } catch (e) { /* ignore */ }
+}
+checkSettingsReload();
+setInterval(checkSettingsReload, 15000);
 
 /* ─────────── 版本 / 更新（顶栏 + 主页） ─────────── */
 var UPD_LATEST = null;
