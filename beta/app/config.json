@@ -144,16 +144,21 @@
     "maxQueue": 8
   },
   "avatar": {
-    "kind": "image",
+    "kind": "video",
     "model": "/sprites_hd/normal.png",
-    "video": "",
+    "video": "/sprites_hd/avatar/normal.webm",
     "mh": 560,
     "mb": 206,
     "mx": 0,
     "height": 520,
     "heightPortrait": 700,
     "glow": true,
-    "sources": {}
+    "sources": {
+      "welcome": "/sprites_hd/avatar/welcome.webm",
+      "angry": "/sprites_hd/avatar/angry.webm",
+      "sad": "/sprites_hd/avatar/sad.webm",
+      "gift": "/sprites_hd/avatar/gift.webm"
+    }
   },
   "update": {
     "enabled": true,

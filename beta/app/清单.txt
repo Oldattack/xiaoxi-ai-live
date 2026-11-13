@@ -33,6 +33,11 @@ scene.html
 settings.html
 sprites_hd/actions/music-loop.webp
 sprites_hd/angry.png
+sprites_hd/avatar/angry.webm
+sprites_hd/avatar/gift.webm
+sprites_hd/avatar/normal.webm
+sprites_hd/avatar/sad.webm
+sprites_hd/avatar/welcome.webm
 sprites_hd/cry.png
 sprites_hd/happy.png
 sprites_hd/idle.png

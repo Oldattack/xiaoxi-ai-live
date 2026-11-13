@@ -1,10 +1,10 @@
 {
   "version": "2.6.157",
-  "notes": "修复扫码窗口打不开；修复旧版形象/表情迁移；换形象同步 OBS；刷抖音右下角改成浏览器叠加层，支持人物视频；更新后自动刷新 OBS 画面",
+  "notes": "刷抖音右下角改成人物视频叠加层；修复叠加层被当重复源删除、位置重置；人物视频作为官方默认资源打包（新装/未自定义客户启用）；扫码窗口与启动自愈修复",
   "package": "xiaoxi-ai-live-2.6.157.zip",
-  "size": 6655346,
-  "sha256": "e6401b308c72a9be8d03673c3e12176f7108ca68be89dd8fa842029c72b01ad8",
-  "publishedAt": "2026-11-13T09:05:16.241Z",
+  "size": 29361208,
+  "sha256": "fa03efb2ff8b8abf899e0e5584b4d1a4463e691032081c7e6db53cc7be35f222",
+  "publishedAt": "2026-11-13T09:10:39.510Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -179,6 +179,31 @@
       "sha256": "37d1628e1bd6a95e8b49e1b11194e431e70fd70993217fef9a55adbd3d8ef3a0"
     },
     {
+      "path": "sprites_hd/avatar/angry.webm",
+      "size": 5090166,
+      "sha256": "b6ab99ef33bae3e0211dce3fa699c3dcfb7ba648c5cb683be8c5995bae98f1c0"
+    },
+    {
+      "path": "sprites_hd/avatar/gift.webm",
+      "size": 4673349,
+      "sha256": "aa1a51e07812a68fa4a2f0fb41237c47283f46797ee8bc04b46228cd753b57a2"
+    },
+    {
+      "path": "sprites_hd/avatar/normal.webm",
+      "size": 7685593,
+      "sha256": "2786538effa9e3ce29fbc34e05a08fecae9a76a5177ac67b4b4b4c8b8d3e9894"
+    },
+    {
+      "path": "sprites_hd/avatar/sad.webm",
+      "size": 2519242,
+      "sha256": "2776c6419c00e6a86a4f5f873e16eb63744992026c7579fda28f73c233ec24d4"
+    },
+    {
+      "path": "sprites_hd/avatar/welcome.webm",
+      "size": 2730190,
+      "sha256": "ad391343c2cef1bdc6a85e07930230fa0f3dad0870c06606f082c9684623986b"
+    },
+    {
       "path": "sprites_hd/cry.png",
       "size": 830115,
       "sha256": "5af527166ec150dbe62fec649a79e222d7b1a797356c1ff7ac2edf89d5ce39c3"
@@ -225,8 +250,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 312593,
-      "sha256": "f05dd4f63441f09d701a3d346df5ce86c9c64513abd08d9e4b00c6bd45cd2804"
+      "size": 314755,
+      "sha256": "11c20e0f92af3740c94c7f8c46d3aa94b0dbcf6f1c5d6402bbfd3a31a66ae134"
     }
   ]
 }

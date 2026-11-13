@@ -26,7 +26,7 @@
 
 **1. 装 Node.js**（只需一次）：<https://nodejs.org> 选 LTS，一路下一步
 
-**2. 下载并解压**：[整包下载 · 国内镜像](https://gh-proxy.com/https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/downloads/xiaoxi-ai-live-2.6.157-full.zip)（6.4 MB）→ 解压到 `D:\xiaoxi-ai-live`
+**2. 下载并解压**：[整包下载 · 国内镜像](https://gh-proxy.com/https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/downloads/xiaoxi-ai-live-2.6.157-full.zip)（28.0 MB）→ 解压到 `D:\xiaoxi-ai-live`
 备用：[jsDelivr](https://cdn.jsdelivr.net/gh/Oldattack/xiaoxi-ai-live@main/downloads/xiaoxi-ai-live-2.6.157-full.zip) ｜ [GitHub 原链](downloads/xiaoxi-ai-live-2.6.157-full.zip)
 
 **3. 双击 `启动.cmd`**
