@@ -59,10 +59,11 @@ function shutdown(reason) {
 }
 
 function start() {
-  // 上次「关闭服务」留下的标记：这次是用户主动启动，清掉继续跑
+  // stop.flag 是「用户主动停止」的粘性标记：由启动器/插件在用户点启动时清除。
+  // supervisor 自己绝不清除，否则插件巡检会把服务又拉起来。
   if (existsSync(STOP_FLAG)) {
-    try { unlinkSync(STOP_FLAG); } catch { /* ignore */ }
-    log('清理上次的停止标记，正常启动');
+    log('检测到停止标记，保持停止（用户主动启动时由启动器清除）');
+    process.exit(0);
   }
 
   // 分销版是 xiaoxi.mjs（混淆单文件），源码版是 server.mjs
@@ -122,8 +123,7 @@ process.on('exit', () => { try { killChild(); } catch { /* ignore */ } });
 /* ── stop.flag 轮询 ── */
 setInterval(() => {
   if (existsSync(STOP_FLAG)) {
-    const f = STOP_FLAG;
-    try { unlinkSync(f); } catch { /* ignore */ }
+    // 不删标记：删了会被插件巡检重新拉起
     shutdown('收到 stop.flag');
   }
 }, 1500).unref();

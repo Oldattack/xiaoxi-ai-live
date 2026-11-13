@@ -84,6 +84,8 @@ if "%QUIET%"=="0" (
   echo.
 )
 
+if exist "%~dp0stop.flag" del /f /q "%~dp0stop.flag"
+
 if "%QUIET%"=="1" ( node supervisor.mjs --hidden --port !PORT! ) else ( node supervisor.mjs --port !PORT! )
 
 if "%QUIET%"=="0" (

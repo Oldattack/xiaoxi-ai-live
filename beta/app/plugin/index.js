@@ -66,6 +66,8 @@ async function status() {
 }
 
 async function start() {
+  // 用户点「启动」= 明确要服务运行：先清掉上次的粘性停止标记
+  try { unlinkSync(path.join(agentDir(), 'stop.flag')); } catch { /* 没有就算了 */ }
   const already = await probe(800);
   if (already) return { ok: true, already: true, ...(await status()) };
 
@@ -107,6 +109,8 @@ async function start() {
 }
 
 async function stop() {
+  // 先落粘性停止标记：即使后面 PID 对不上，supervisor 轮询也会自己停
+  try { writeFileSync(path.join(agentDir(), 'stop.flag'), 'stop', 'utf8'); } catch { /* ignore */ }
   const pid = readPid();
   const state = await probe(800);
   if (!state && !pidAlive(pid)) {
