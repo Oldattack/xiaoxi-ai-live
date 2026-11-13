@@ -1,10 +1,10 @@
 {
-  "version": "2.6.155",
-  "notes": "刷抖音新增「打开扫码窗口 / 退出当前抖音」，每个客户用自己的账号；登录态只在本机 OBS，不随安装包走",
-  "package": "xiaoxi-ai-live-2.6.155.zip",
-  "size": 6648107,
-  "sha256": "35e9e46975bb1e1c2bd3b7ee7201fed1d8ba0e630deef3196cb562adb24379e1",
-  "publishedAt": "2026-11-13T06:39:22.955Z",
+  "version": "2.6.156",
+  "notes": "修复更新下载超时：优先 jsDelivr / gh-proxy 镜像，失败自动换源；README 增加国内镜像下载；修复整包升级目录条目导致的失败",
+  "package": "xiaoxi-ai-live-2.6.156.zip",
+  "size": 6648123,
+  "sha256": "9a54f23446039faab026ee8b91889f0568a8d0f1c57fef91f7949ccccc377a57",
+  "publishedAt": "2026-11-13T06:57:31.879Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -221,12 +221,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "645f61fbfec59a6c54587f3e720ef5b01e069bb723954a03047aaf7dc1d3d1e8"
+      "sha256": "551ba8d4ed78575ca9cd10b15a97af95d844f922bfee511245e5c1ca72ee68ce"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 289942,
-      "sha256": "bea04f3b2b425574d015c1e21f4ddf3ce208f8248703001a62861ee375893331"
+      "size": 290235,
+      "sha256": "e77b65ce3972d6ccabc3e851c356a93678c0ea7ea4caab3ff1521690e48219d3"
     }
   ]
 }
