@@ -1,4 +1,4 @@
-小汐AI直播平台 v2.6.159
+小汐AI直播平台 v2.6.160
 
 AGENT.md
 VERSION
@@ -19,6 +19,13 @@ games/lawn/package.json
 games/lawn/style.css
 games/lawn/test-commands.mjs
 install-plugin.ps1
+obs-template/README.txt
+obs-template/profiles/小汐-横屏/basic.ini
+obs-template/profiles/小汐-横屏/streamEncoder.json
+obs-template/profiles/小汐-竖屏/basic.ini
+obs-template/profiles/小汐-竖屏/streamEncoder.json
+obs-template/scenes/小汐-横屏.json
+obs-template/scenes/小汐-竖屏.json
 open-browser.vbs
 plugin/README.md
 plugin/agent-path.txt

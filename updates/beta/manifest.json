@@ -1,10 +1,10 @@
 {
-  "version": "2.6.159",
-  "notes": "两套 OBS 配置一键切换：横屏/竖屏各自 Profile + 场景集合，画布/音频/输出设置互不共用；刷抖音竖屏改为视频卡布局",
-  "package": "xiaoxi-ai-live-2.6.159.zip",
-  "size": 29364560,
-  "sha256": "76145c505aa877904761b0c33abe6ce72b0899178b7e4b68d920c41da37aed31",
-  "publishedAt": "2026-11-13T13:38:29.885Z",
+  "version": "2.6.160",
+  "notes": "两套 OBS 配置进安装包：新客户首次切横/竖屏自动安装 Profile+场景集合，OBS 开着会先安全关闭重启；直播/录制中拒绝切换",
+  "package": "xiaoxi-ai-live-2.6.160.zip",
+  "size": 29376121,
+  "sha256": "93182ba9ecc056e85308381efdd3379b6bd07e0d9834d6f60e20a01a4be4e12b",
+  "publishedAt": "2026-11-13T13:41:41.140Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -154,6 +154,41 @@
       "sha256": "6c6117f8e9b9a9e704c8428a8115ec511f4019ca0964404b296333d4b11967ae"
     },
     {
+      "path": "obs-template/profiles/小汐-横屏/basic.ini",
+      "size": 2006,
+      "sha256": "2a957f84cdaa5f8ff8180f3e576bf3526b2a3e920d518ed0149e3f9cf8e03cd4"
+    },
+    {
+      "path": "obs-template/profiles/小汐-横屏/streamEncoder.json",
+      "size": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "obs-template/profiles/小汐-竖屏/basic.ini",
+      "size": 2006,
+      "sha256": "36f498bede5f6db265f5cd419816ff6730777bc401ff2ce5de4dc1669e1e3a3e"
+    },
+    {
+      "path": "obs-template/profiles/小汐-竖屏/streamEncoder.json",
+      "size": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "obs-template/README.txt",
+      "size": 450,
+      "sha256": "eee03190d4c53e7afb3ef4ed47b7cc6bc0da16bbe016e3c28f8f3bea4a2730ca"
+    },
+    {
+      "path": "obs-template/scenes/小汐-横屏.json",
+      "size": 30868,
+      "sha256": "a23d2d4b74fa1cadc0a2679566991256bc0e545d281c079c412694e492de86f2"
+    },
+    {
+      "path": "obs-template/scenes/小汐-竖屏.json",
+      "size": 30733,
+      "sha256": "3ebe4a61c1ee10b420b6278b57865b3ccd751cf2e6ef80526b79bc0a457709d0"
+    },
+    {
       "path": "open-browser.vbs",
       "size": 1356,
       "sha256": "61c1d6fbe362fbb7c8d2271db46b127f1ddd52f97e3d3bfa63a1a22eede26be4"
@@ -246,12 +281,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "e52698bfe4f99db883357a5622ba9f65d70cd256685b178a18bf1288808cebb3"
+      "sha256": "7b86182cf84709f5ff97604c46b29d19aa77a1089dab09f84813e51498fb7c3f"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 324847,
-      "sha256": "8f6173ef83133fdeaa9439c787037040f12607e2778f0120a195c2a7463ff04d"
+      "size": 330086,
+      "sha256": "111fe5567638d06750823aed5a115fafb1ea483f616fa7f8856b862f7fb71d4d"
     }
   ]
 }
