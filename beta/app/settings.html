@@ -492,6 +492,7 @@
           <div class="row" style="margin-top:12px"><label></label>
           <div style="display:flex;gap:8px">
             <button class="btn pri" id="btnStart">连接</button>
+            <button class="btn" id="btnTestDy">测试连接</button>
             <button class="btn" id="btnStop">断开</button>
             <button class="btn" id="btnMock">演示弹幕</button>
           </div></div>
@@ -1459,6 +1460,37 @@ $('btnStart').onclick = async function () {
   } catch (e) { toast('连接失败：' + e.message); }
   btn.disabled = false; btn.textContent = '连接';
 };
+var dyTesting = false;
+$('btnTestDy').onclick = async function () {
+  var rid = $('webRid').value.trim();
+  if (!rid) { toast('先填直播间号'); $('webRid').focus(); return; }
+  var btn = this, old = btn.textContent;
+  var el = $('dyStatus');
+  dyTesting = true;
+  btn.disabled = true; btn.textContent = '测试中…';
+  el.textContent = '正在测试连接（最多 5 秒）…'; el.style.color = '#8a6a2f';
+  try {
+    await api('/api/config', { douyin: { webRid: rid, autoConnect: $('autoConnect').checked } });
+    var r = await api('/api/douyin/test', { webRid: rid });
+    if (r && r.connected) {
+      el.textContent = '✅ 连接成功 · ' + ((r.messages || 0)) + ' 条弹幕' + (r.note ? (' · ' + r.note) : '');
+      el.style.color = '#0f7a55';
+      toast(r.message || '连接成功');
+    } else if (r && r.error) {
+      el.textContent = '❌ 连接失败 · ' + r.error; el.style.color = '#c0392b';
+      toast('连接失败：' + r.error);
+    } else {
+      el.textContent = '⏳ 5 秒内还没连上，后台继续连接…'; el.style.color = '#a4603f';
+      toast((r && r.message) || '5 秒内还没连上，后台继续连接…');
+    }
+    setTimeout(load, 500);
+  } catch (e) {
+    el.textContent = '❌ 测试失败 · ' + e.message; el.style.color = '#c0392b';
+    toast('测试失败：' + e.message);
+  }
+  dyTesting = false;
+  btn.disabled = false; btn.textContent = old;
+};
 $('btnStop').onclick = async function () {
     try { await api('/api/source', { action: 'stop', type: 'douyin' }); toast('已断开'); load(); }
   catch (e) { toast('断开失败：' + e.message); }
@@ -2304,8 +2336,10 @@ document.querySelectorAll('#stageQuick [data-cmd]').forEach(function (b) {
 
 /* ─────────── 自动刷新 ─────────── */
 setInterval(function () {
-  if (document.querySelector('.pane.on') && document.querySelector('.pane.on').id === 'p0') load();
-}, 6000);
+  if (dyTesting) return;
+  var pane = document.querySelector('.pane.on');
+  if (pane && (pane.id === 'p0' || pane.id === 'p3')) load();
+}, 2000);
 
 
 /* 顶栏「耗时」只在运行状态页显示 */
