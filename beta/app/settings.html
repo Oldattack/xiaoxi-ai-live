@@ -398,9 +398,6 @@
         <div class="home-main">
           <div class="hi" id="homeHi">今天想聊点啥？</div>
           <div class="hint" id="homeHint">连上直播间后，小汐就会接弹幕、回话、放点歌。</div>
-          <div class="home-cta">
-            <button class="b2" id="homeStop">停止回复</button>
-          </div>
           <div class="home-chips">
             <span class="c" id="cDouyin"><i></i>抖音</span>
             <span class="c" id="cScene"><i></i>画面</span>
@@ -2242,10 +2239,7 @@ function uploadAvatar(key, file) {
 
 
 /* ─────────── 主页按钮 ─────────── */
-$('homeStop').onclick = async function () {
-  try { await api('/api/config', { gate: { enabled: false } }); toast('已停止回复'); load(); }
-  catch (e) { toast('停止失败：' + e.message); }
-};
+/* 开/关回复用「弹幕回复 → 让 AI 回话」的专用开关，主页不再放按钮 */
 $('actPreview').onclick = function () { window.open('/?clean=1&mute=1', '_blank'); };
 $('actAlign').onclick = async function () {
   var btn = this;
