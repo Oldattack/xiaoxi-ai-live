@@ -1,10 +1,10 @@
 {
-  "version": "2.6.180",
+  "version": "2.6.181",
   "notes": "修复竖屏刷抖音登录与推荐：\n- 设置 → 抖音接入新增「刷抖音登录」，横屏/竖屏共用同一个 OBS 扫码登录\n- 竖屏 Chrome 窗口自动同步 OBS 登录态，同步后自动点击「推荐」\n- 修复扫码窗口空白、登录状态一直“未检查”、每 5 秒重复点推荐、登录态误报\n- 退出登录同时清理 OBS 和竖屏 Chrome 登录\n- 竖屏刷抖音继续使用 Chrome 网页窗口 + OBS 窗口采集，红框裁剪 70/81/5/68",
-  "package": "xiaoxi-ai-live-2.6.180.zip",
-  "size": 29390337,
-  "sha256": "6e82011e4a59d22a0f2a3714777a8ae356ab46d33e14fee0552099472b4697b2",
-  "publishedAt": "2026-11-13T21:32:31.942Z",
+  "package": "xiaoxi-ai-live-2.6.181.zip",
+  "size": 29389543,
+  "sha256": "280c37124b3dd4263f6e05b39b31ad89bb789dbf2fda04e738e179ae9a5e21a1",
+  "publishedAt": "2026-11-15T19:13:48.026Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -200,8 +200,8 @@
     },
     {
       "path": "settings.html",
-      "size": 157703,
-      "sha256": "d6ce9bd901a9fdda1311031bcfdbe33cfc86783ff15bd671adb56d93f660f3e6"
+      "size": 156139,
+      "sha256": "0e1428dfd00011e188010d195fc58affccbbbdb3edba59caa305e0b9040f092b"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -281,12 +281,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "4f97159f1ff23ced6afdd8db73cf564088eb19f4c2c719c0c453a620175db58f"
+      "sha256": "91ea902c137745dece6ecc0436d1510b70c2a870f5bde4e8a00feea2d90c7934"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 366053,
-      "sha256": "ca91025e219cd2af0088d66f9330ab09b9137598fea78b0a922bec103aec1e64"
+      "size": 366465,
+      "sha256": "ecf96220bf8d758d62c305d51e9e8af2291c10f4d96b0d8d0b3e9dc151ca9824"
     }
   ]
 }

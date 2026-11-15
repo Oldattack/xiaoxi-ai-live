@@ -397,9 +397,8 @@
         <div class="home-fig"><span class="tag" id="homeState">待命中</span><img src="/sprites_hd/idle.png" alt="小汐"></div>
         <div class="home-main">
           <div class="hi" id="homeHi">今天想聊点啥？</div>
-          <div class="hint" id="homeHint">点「开始直播」，小汐就会接弹幕、回话、放点歌。</div>
+          <div class="hint" id="homeHint">连上直播间后，小汐就会接弹幕、回话、放点歌。</div>
           <div class="home-cta">
-            <button class="b1" id="homeStart">开始直播</button>
             <button class="b2" id="homeStop">停止回复</button>
           </div>
           <div class="home-chips">
@@ -1322,7 +1321,7 @@ function renderHome(st) {
   var on = !!(CFG.gate && CFG.gate.enabled);
   $('homeState').textContent = on ? '正在直播' : '待命中';
   $('homeHi').textContent = on ? '正在播，弹幕我都接' : '今天想聊点啥？';
-  $('homeHint').textContent = on ? '有人说话我就回；没人说话我念叨两句。' : '点「开始直播」，小汐就会接弹幕、回话、放点歌。';
+  $('homeHint').textContent = on ? '有人说话我就回；没人说话我念叨两句。' : '连上直播间后，小汐就会接弹幕、回话、放点歌。';
 }
 
 /* ─────────── 加载 ─────────── */
@@ -2243,33 +2242,6 @@ function uploadAvatar(key, file) {
 
 
 /* ─────────── 主页按钮 ─────────── */
-$('homeStart').onclick = async function () {
-  var b = this;
-  var rid = (ST && ST.config && ST.config.douyin && ST.config.douyin.webRid) || '';
-  if (!rid) {
-    toast('还没填直播间号，先去「抖音接入」填上');
-    var navP3 = document.querySelector('.nav a[data-p="p3"]');
-    if (navP3) navP3.click();
-    return;
-  }
-  b.disabled = true; b.textContent = '正在准备…';
-  // 开始直播前先关掉演示弹幕（假观众会点歌）
-  var mockWasOn = Boolean(ST && ST.sources && ST.sources.mock && ST.sources.mock.running);
-  if (mockWasOn) { try { await api('/api/mock', { enabled: false }); } catch (e) {} }
-  try {
-    var r = await api('/api/scene-window', { action: 'use-browser-source' });
-  // 还没连直播间就顺手连上（开始直播 = 一步到位）
-  if (!(ST && ST.sources && ST.sources.real && ST.sources.real.running)) {
-    try { await api('/api/source', { action: 'start', type: 'douyin' }); } catch (e) {}
-  }
-    await api('/api/config', { gate: { enabled: true } });
-    var d = (r && r.detail) || {};
-    if (r && r.ok) toast('准备好了（画面 ' + (d.actualSize || '') + '），去直播伴侣点开播' + (mockWasOn ? '（已关掉演示弹幕）' : '') + '');
-    else toast('服务已开，但 OBS 没对齐：' + (d.reason || (r && r.reason) || '检查 OBS 是否打开'));
-    load();
-  } catch (e) { toast('启动失败：' + e.message); }
-  b.disabled = false; b.textContent = '开始直播';
-};
 $('homeStop').onclick = async function () {
   try { await api('/api/config', { gate: { enabled: false } }); toast('已停止回复'); load(); }
   catch (e) { toast('停止失败：' + e.message); }
