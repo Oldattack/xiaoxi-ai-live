@@ -1,10 +1,10 @@
 {
   "version": "2.6.183",
-  "notes": "修复竖屏刷抖音登录与推荐：\n- 设置 → 抖音接入新增「刷抖音登录」，横屏/竖屏共用同一个 OBS 扫码登录\n- 竖屏 Chrome 窗口自动同步 OBS 登录态，同步后自动点击「推荐」\n- 修复扫码窗口空白、登录状态一直“未检查”、每 5 秒重复点推荐、登录态误报\n- 退出登录同时清理 OBS 和竖屏 Chrome 登录\n- 竖屏刷抖音继续使用 Chrome 网页窗口 + OBS 窗口采集，红框裁剪 70/81/5/68",
+  "notes": "2.6.183 更新内容：\n- 设置 → 抖音接入新增「测试连接」，最多 5 秒返回连接结果\n- 抖音接入状态改为每 2 秒自动刷新，显示成功/失败/超时\n- 设置主页去掉「开始直播」按钮（没有实际开播作用）\n- 设置主页去掉「停止回复」按钮，回复开关统一到「弹幕回复 → 让 AI 回话」\n- 抖音扫码登录：横屏/竖屏共用 OBS 扫码入口，竖屏窗口自动同步登录态\n- 登录后自动点击「推荐」\n- 竖屏刷抖音：Chrome 网页窗口 522×954 + OBS 窗口采集，裁 70/81/5/68 铺满 1080×1920",
   "package": "xiaoxi-ai-live-2.6.183.zip",
-  "size": 29390781,
-  "sha256": "a426a905a17de883a412add79e0abe35d1b71a54829ffc4de2f14b2c6df09617",
-  "publishedAt": "2026-11-15T20:21:01.955Z",
+  "size": 29390376,
+  "sha256": "dfeb9573c660e7f8e36ed7519a9ca2057aa614fa935ff213378cd9f4d22e71bd",
+  "publishedAt": "2026-11-15T20:22:42.908Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -285,8 +285,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 368471,
-      "sha256": "af629c9a10460d07a983e0cf108fee43646df3f9fc151d781c1dc1e26260ae71"
+      "size": 369208,
+      "sha256": "e5caa8d2cde639b5774e26992c450c952b8dac7c1b4eb874c4272c44d36de6bf"
     }
   ]
 }
