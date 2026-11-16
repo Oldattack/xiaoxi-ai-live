@@ -1355,7 +1355,7 @@ function renderHome(st) {
     }
   }
   if ($('btnWechatLogout')) {
-    var hasWechatAccount = Boolean((realInfo.type === 'wechat' && realInfo.account) || (CFG.wechat && CFG.wechat.account));
+    var hasWechatAccount = Boolean((realInfo.type === 'wechat' && (realInfo.account || realInfo.loggedIn)) || (CFG.wechat && CFG.wechat.account));
     $('btnWechatLogout').disabled = !hasWechatAccount;
     $('btnWechatLogout').title = hasWechatAccount ? '' : '当前没有可退出的视频号登录';
   }
