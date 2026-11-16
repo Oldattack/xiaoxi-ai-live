@@ -482,49 +482,62 @@
     <!-- ══════ 抖音接入 ══════ -->
     <div class="pane" id="p3">
       <div class="card">
-        <h3>连接直播间<span class="live">免登录</span></h3>
-        <p class="sub">支持抖音 / B站 / 视频号。抖音填直播间号；B站填 B 站直播间号；视频号打开后台扫码登录。</p>
-        <div class="row"><label>平台</label>
-          <div>
-            <select class="inp" id="dyPlatform">
-              <option value="douyin">抖音</option>
-              <option value="bilibili">B 站</option>
-              <option value="wechat">视频号</option>
-            </select>
-            <div class="hint" id="dyPlatformHint">抖音：填直播间号，匿名旁听弹幕</div>
-          </div></div>
-        <div id="dyRidBox"><div class="row"><label>直播间号</label>
+        <h3>抖音直播<span class="live">匿名弹幕</span></h3>
+        <p class="sub">抖音直播间号，匿名旁听弹幕。刷抖音登录是另一个登录态，不影响这里。</p>
+        <div class="row"><label>直播间号</label>
           <div><input class="inp" id="webRid" placeholder="例如 123456789012">
-            <div class="hint">房间权限必须是「所有人可进」，而且正在直播中</div></div></div></div>
-        <div id="biliRidBox" style="display:none"><div class="row"><label>B站直播间号</label>
-          <div><input class="inp" id="biliRid" placeholder="例如 31934797">
-            <div class="hint">直播间地址后面的数字，例如 live.bilibili.com/31934797</div></div></div></div>
-        <div id="wechatBox" style="display:none"><div class="hint">视频号没有公开弹幕 API：连接后会打开视频号管理后台，请用微信扫码登录并进入直播中控台。</div></div>
-        <label class="sw"><input type="checkbox" id="autoConnect"><span class="tr"></span><span class="t">开软件时自动连上次的直播间</span></label>
-        <div class="row"><label>状态</label><div id="dyStatus" class="mini">未连接</div></div>
-          <div class="row" style="margin-top:12px"><label></label>
-          <div style="display:flex;gap:8px">
-            <button class="btn pri" id="btnStart">连接</button>
-            <button class="btn" id="btnTestDy">测试连接</button>
-            <button class="btn" id="btnStop">断开</button>
-            <button class="btn" id="btnMock">演示弹幕</button>
-          </div></div>
-      </div>
-
-      <div class="card">
-        <h3>刷抖音登录<span class="live">横屏/竖屏共用</span></h3>
-        <p class="sub">刷抖音用的抖音登录，横屏和竖屏共用同一个扫码入口。登录一次后，竖屏窗口会自动同步这份登录态。</p>
+            <div class="hint">房间权限必须是「所有人可进」，而且正在直播中</div></div></div>
         <div class="row"><label>扫码登录</label><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          <button class="btn pri" id="dyLoginBtn2">打开扫码窗口</button>
+          <button class="btn" id="dyLoginBtn2">打开扫码窗口</button>
           <span class="hint" id="dyLoginState">未检查</span>
         </div></div>
-        <div class="hint">打开后 OBS 里会弹出抖音窗口，用手机扫码；扫完点一次「刷抖音」即可自动点推荐。</div>
+        <div class="row"><label>状态</label><div id="dyStatusDouyin" class="mini">未连接</div></div>
+        <div class="row" style="margin-top:12px"><label></label><div style="display:flex;gap:8px">
+          <button class="btn pri" id="btnStartDouyin">连接抖音</button>
+          <button class="btn" id="btnTestDouyin">测试连接</button>
+          <button class="btn" id="btnStopDouyin">断开</button>
+        </div></div>
+        <label class="sw"><input type="checkbox" id="autoConnectDouyin"><span class="tr"></span><span class="t">开软件时自动连抖音</span></label>
       </div>
 
       <div class="card">
-        <h3>为什么不用登录</h3>
-        <p class="sub">这里的匿名旁听只读弹幕，不发言、不碰账号。上面的“刷抖音登录”是另一个登录态，不会影响弹幕旁听。</p>
-        <div class="hint" style="color:#a4603f">⚠ 弹幕旁听不要登录抖音；要登录请在「刷抖音登录」里扫码。</div>
+        <h3>B站直播<span class="live">免登录</span></h3>
+        <p class="sub">B 站公开弹幕 WebSocket，匿名只读，不需要登录。支持直播间号或完整链接。</p>
+        <div class="row"><label>B站直播间号</label>
+          <div><input class="inp" id="biliRid" placeholder="例如 31934797">
+            <div class="hint">也可以直接粘贴 https://live.bilibili.com/31934797</div></div></div>
+        <div class="row"><label>状态</label><div id="biliStatus" class="mini">未连接</div></div>
+        <div class="row" style="margin-top:12px"><label></label><div style="display:flex;gap:8px">
+          <button class="btn pri" id="btnStartBili">连接 B站</button>
+          <button class="btn" id="btnTestBili">测试连接</button>
+          <button class="btn" id="btnStopBili">断开</button>
+        </div></div>
+        <label class="sw"><input type="checkbox" id="autoConnectBili"><span class="tr"></span><span class="t">开软件时自动连 B站</span></label>
+      </div>
+
+      <div class="card">
+        <h3>视频号直播<span class="live">需微信扫码</span></h3>
+        <p class="sub">视频号没有公开弹幕 API：连接后打开视频号管理后台，微信扫码登录并进入直播中控台。</p>
+        <div class="hint">实验性接口：登录态存在本机 .wechat-channels-profile；微信后台改版可能失效，建议先用小号测试。</div>
+        <div class="row"><label>状态</label><div id="wechatStatus" class="mini">未连接</div></div>
+        <div class="row" style="margin-top:12px"><label></label><div style="display:flex;gap:8px">
+          <button class="btn pri" id="btnStartWechat">打开后台并连接</button>
+          <button class="btn" id="btnTestWechat">测试连接</button>
+          <button class="btn" id="btnStopWechat">断开</button>
+        </div></div>
+        <label class="sw"><input type="checkbox" id="autoConnectWechat"><span class="tr"></span><span class="t">开软件时自动打开视频号后台</span></label>
+      </div>
+
+      <div class="card">
+        <h3>调试</h3>
+        <p class="sub">三个平台独立房间/登录，同一时间只接一个真实弹幕源。</p>
+        <button class="btn" id="btnMock">演示弹幕</button>
+      </div>
+
+      <div class="card">
+        <h3>登录说明</h3>
+        <p class="sub">抖音旁听不碰账号；刷抖音扫码是独立登录态。B站匿名只读。视频号必须扫码登录管理后台。</p>
+        <div class="hint" style="color:#a4603f">⚠ 视频号是管理后台协议，不是官方开放 API；不要用主账号直接测试。</div>
       </div>
     </div>
 
@@ -1176,10 +1189,10 @@ function fill(st) {
   $('songMaxQueue').value = song.maxQueue || 8;
 
   $('webRid').value = dy.webRid || '';
-  $('biliRid').value = dy.biliRid || '';
-  $('dyPlatform').value = dy.platform || 'douyin';
-  $('autoConnect').checked = !!dy.autoConnect;
-  paintDyPlatform();
+  $('biliRid').value = (CFG.bilibili && CFG.bilibili.roomId) || dy.biliRid || '';
+  $('autoConnectDouyin').checked = dy.autoConnect !== false;
+  $('autoConnectBili').checked = !CFG.bilibili || CFG.bilibili.autoConnect !== false;
+  $('autoConnectWechat').checked = !CFG.wechat || CFG.wechat.autoConnect !== false;
 
   $('avH').value = av.height || 520;
   $('avHP').value = av.heightPortrait || 700;
@@ -1307,21 +1320,22 @@ function renderHome(st) {
   var real = !!(st.sources && st.sources.real && st.sources.real.running);
   var platformName = ({ bilibili: 'B站', wechat: '视频号' })[st.sources?.real?.type] || '抖音';
   setChip('cDouyin', real ? (platformName + '已连') : (platformName + '未连'), real ? '' : 'off');
-  var dySt = $('dyStatus');
-    if (dySt) {
-      var realInfo = (st && st.sources && st.sources.real) || {};
-      var msgCount = (st && st.source && st.source.messages) || 0;
-      if (realInfo.running) {
-        dySt.textContent = realInfo.connected
-          ? ('✅ 连接成功 · 收到 ' + msgCount + ' 条' + (realInfo.note ? (' · ' + realInfo.note) : ''))
-          : ('❌ 连接失败 · ' + (realInfo.error || realInfo.note || '正在连接…'));
-        dySt.style.color = realInfo.connected ? '#0f7a55' : '#c0392b';
-      } else {
-        dySt.textContent = '未连接';
-        dySt.style.color = '';
-      }
+  var realInfo = (st && st.sources && st.sources.real) || {};
+  var msgCount = (st && st.source && st.source.messages) || 0;
+  [['douyin', 'dyStatusDouyin'], ['bilibili', 'biliStatus'], ['wechat', 'wechatStatus']].forEach(function (pair) {
+    var el = $(pair[1]);
+    if (!el) return;
+    if (realInfo.running && realInfo.type === pair[0]) {
+      el.textContent = realInfo.connected
+        ? ('✅ 已连接 · 收到 ' + msgCount + ' 条' + (realInfo.note ? (' · ' + realInfo.note) : ''))
+        : ('⏳ ' + (realInfo.error || realInfo.note || '正在连接…'));
+      el.style.color = realInfo.connected ? '#0f7a55' : (realInfo.error ? '#c0392b' : '#a4603f');
+    } else {
+      el.textContent = realInfo.running ? ('未连接 · 当前使用 ' + platformName) : '未连接';
+      el.style.color = '';
     }
-    var rd = $('rDouyin'); rd.textContent = real ? '已连接' : '未连接'; rd.className = real ? 'g' : 'm';
+  });
+  var rd = $('rDouyin'); rd.textContent = real ? '已连接' : '未连接'; rd.className = real ? 'g' : 'm';
 
   var sceneOk = (CFG.scene && CFG.scene.obsMode === 'browser');
   setChip('cScene', sceneOk ? '画面就绪' : '画面未就绪', sceneOk ? '' : 'off');
@@ -1444,7 +1458,9 @@ $('save').onclick = async function () {
       globalMs: Math.round((Number($('songGlobal').value) || 0) * 1000),
       maxQueue: Math.max(1, Number($('songMaxQueue').value) || 8)
     },
-    douyin: { platform: dyPlatform(), webRid: $('webRid').value.trim(), biliRid: $('biliRid').value.trim(), autoConnect: $('autoConnect').checked },
+    douyin: { webRid: $('webRid').value.trim(), autoConnect: $('autoConnectDouyin').checked },
+    bilibili: { roomId: $('biliRid').value.trim(), autoConnect: $('autoConnectBili').checked },
+    wechat: { autoConnect: $('autoConnectWechat').checked },
     avatar: {
       height: Math.max(120, Number($('avH').value) || 520),
       heightPortrait: Math.max(120, Number($('avHP').value) || 700),
@@ -1462,73 +1478,90 @@ $('save').onclick = async function () {
 
 $('reload').onclick = function () { load(); };
 
-/* ─────────── 弹幕平台 ─────────── */
-function dyPlatform() { return ($('dyPlatform') && $('dyPlatform').value) || 'douyin'; }
-function paintDyPlatform() {
-  var p = dyPlatform();
-  if ($('dyRidBox')) $('dyRidBox').style.display = p === 'douyin' ? '' : 'none';
-  if ($('biliRidBox')) $('biliRidBox').style.display = p === 'bilibili' ? '' : 'none';
-  if ($('wechatBox')) $('wechatBox').style.display = p === 'wechat' ? '' : 'none';
-  var hint = $('dyPlatformHint');
-  if (hint) hint.textContent = p === 'bilibili'
-    ? 'B站：填直播间号，公开弹幕 WebSocket 匿名接入'
-    : p === 'wechat'
-      ? '视频号：打开管理后台，用微信扫码登录后监听弹幕'
-      : '抖音：填直播间号，匿名旁听弹幕';
+/* ─────────── 三个平台：各自房间 / 各自登录 / 各自连接 ─────────── */
+var dyTesting = false;
+function livePlatformFields(p) {
+  return {
+    douyin: { webRid: $('webRid').value.trim(), autoConnect: $('autoConnectDouyin').checked },
+    bilibili: { roomId: $('biliRid').value.trim(), autoConnect: $('autoConnectBili').checked },
+    wechat: { autoConnect: $('autoConnectWechat').checked }
+  };
 }
-if ($('dyPlatform')) $('dyPlatform').onchange = paintDyPlatform;
-
-$('btnStart').onclick = async function () {
-  var btn = this;
-  var platform = dyPlatform();
-  var rid = platform === 'bilibili' ? $('biliRid').value.trim() : $('webRid').value.trim();
-  if (platform !== 'wechat' && !rid) { toast(platform === 'bilibili' ? '先填 B 站直播间号' : '先填直播间号'); $('webRid').focus(); return; }
+function liveStatusEl(p) {
+  return p === 'bilibili' ? $('biliStatus') : p === 'wechat' ? $('wechatStatus') : $('dyStatusDouyin');
+}
+function liveStatusText(p, r) {
+  var el = liveStatusEl(p);
+  if (!el) return;
+  if (r && r.connected) {
+    el.textContent = '✅ 连接成功 · ' + (r.messages || 0) + ' 条弹幕' + (r.note ? (' · ' + r.note) : '');
+    el.style.color = '#0f7a55';
+  } else if (r && r.error) {
+    el.textContent = '❌ 连接失败 · ' + r.error;
+    el.style.color = '#c0392b';
+  } else if (r && r.pending) {
+    el.textContent = '⏳ 等待连接/扫码 · ' + (r.note || '5 秒内还没连上，后台继续…');
+    el.style.color = '#a4603f';
+  }
+}
+function platformRidMissing(p) {
+  if (p === 'wechat') return false;
+  if (p === 'bilibili' && !$('biliRid').value.trim()) { toast('先填 B 站直播间号'); $('biliRid').focus(); return true; }
+  if (p === 'douyin' && !$('webRid').value.trim()) { toast('先填抖音直播间号'); $('webRid').focus(); return true; }
+  return false;
+}
+async function startLivePlatform(p, btn) {
+  if (platformRidMissing(p)) return;
+  var old = btn.textContent;
   btn.disabled = true; btn.textContent = '连接中…';
   try {
-    await api('/api/config', { douyin: { platform: platform, webRid: $('webRid').value.trim(), biliRid: $('biliRid').value.trim(), autoConnect: $('autoConnect').checked } });
-    var r = await api('/api/source', { action: 'start', type: platform, webRid: $('webRid').value.trim(), biliRid: $('biliRid').value.trim() });
+    await api('/api/config', livePlatformFields(p));
+    var body = { action: 'start', type: p };
+    if (p === 'douyin') body.webRid = $('webRid').value.trim();
+    if (p === 'bilibili') body.biliRid = $('biliRid').value.trim();
+    var r = await api('/api/source', body);
     if (r && r.ok === false) toast('连接失败：' + (r.error || '未知原因'));
-    else toast(platform === 'wechat' ? '已打开视频号后台，请扫码登录' : '正在连接直播间…');
+    else toast(p === 'wechat' ? '已打开视频号后台，请扫码登录' : (p === 'bilibili' ? '正在连接 B站弹幕…' : '正在连接抖音…'));
     setTimeout(load, 2500);
   } catch (e) { toast('连接失败：' + e.message); }
-  btn.disabled = false; btn.textContent = '连接';
-};
-var dyTesting = false;
-$('btnTestDy').onclick = async function () {
-  var platform = dyPlatform();
-  var rid = platform === 'bilibili' ? $('biliRid').value.trim() : $('webRid').value.trim();
-  if (platform !== 'wechat' && !rid) { toast(platform === 'bilibili' ? '先填 B 站直播间号' : '先填直播间号'); return; }
-  var btn = this, old = btn.textContent;
-  var el = $('dyStatus');
+  btn.disabled = false; btn.textContent = old;
+}
+async function testLivePlatform(p, btn) {
+  if (platformRidMissing(p)) return;
+  var old = btn.textContent;
+  var el = liveStatusEl(p);
+  if (el) { el.textContent = '正在测试连接（最多 5 秒）…'; el.style.color = '#8a6a2f'; }
   dyTesting = true;
   btn.disabled = true; btn.textContent = '测试中…';
-  el.textContent = '正在测试连接（最多 5 秒）…'; el.style.color = '#8a6a2f';
   try {
-    await api('/api/config', { douyin: { platform: platform, webRid: $('webRid').value.trim(), biliRid: $('biliRid').value.trim(), autoConnect: $('autoConnect').checked } });
-    var r = await api('/api/douyin/test', { platform: platform, webRid: $('webRid').value.trim(), biliRid: $('biliRid').value.trim() });
-    if (r && r.connected) {
-      el.textContent = '✅ 连接成功 · ' + ((r.messages || 0)) + ' 条弹幕' + (r.note ? (' · ' + r.note) : '');
-      el.style.color = '#0f7a55';
-      toast(r.message || '连接成功');
-    } else if (r && r.error) {
-      el.textContent = '❌ 连接失败 · ' + r.error; el.style.color = '#c0392b';
-      toast('连接失败：' + r.error);
-    } else {
-      el.textContent = '⏳ 5 秒内还没连上，后台继续连接…'; el.style.color = '#a4603f';
-      toast((r && r.message) || '5 秒内还没连上，后台继续连接…');
-    }
-    setTimeout(load, 500);
+    await api('/api/config', livePlatformFields(p));
+    var r = await api('/api/douyin/test', {
+      platform: p,
+      webRid: $('webRid').value.trim(),
+      biliRid: $('biliRid').value.trim()
+    });
+    liveStatusText(p, r || { pending: true });
+    toast((r && r.message) || (r && r.error) || '测试完成');
   } catch (e) {
-    el.textContent = '❌ 测试失败 · ' + e.message; el.style.color = '#c0392b';
+    if (el) { el.textContent = '❌ 测试失败 · ' + e.message; el.style.color = '#c0392b'; }
     toast('测试失败：' + e.message);
   }
   dyTesting = false;
   btn.disabled = false; btn.textContent = old;
-};
-$('btnStop').onclick = async function () {
-    try { await api('/api/source', { action: 'stop', type: dyPlatform() }); toast('已断开'); load(); }
+}
+async function stopLivePlatform(p) {
+  try { await api('/api/source', { action: 'stop', type: p }); toast('已断开'); load(); }
   catch (e) { toast('断开失败：' + e.message); }
-};
+}
+$('btnStartDouyin').onclick = function () { startLivePlatform('douyin', this); };
+$('btnStartBili').onclick = function () { startLivePlatform('bilibili', this); };
+$('btnStartWechat').onclick = function () { startLivePlatform('wechat', this); };
+$('btnTestDouyin').onclick = function () { testLivePlatform('douyin', this); };
+$('btnTestBili').onclick = function () { testLivePlatform('bilibili', this); };
+$('btnTestWechat').onclick = function () { testLivePlatform('wechat', this); };
+$('btnStopDouyin').onclick = function () { stopLivePlatform('douyin'); };
+$('btnStopBili').onclick = function () { stopLivePlatform('bilibili'); };
+$('btnStopWechat').onclick = function () { stopLivePlatform('wechat'); };
 var _oldMock = async function () {
   try { await api('/api/source', { action: 'start', type: 'mock' }); toast('模拟弹幕已开'); load(); }
   catch (e) { toast('启动失败：' + e.message); }
