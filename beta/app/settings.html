@@ -621,26 +621,29 @@
 
       <div class="pane" id="p15">
 <div class="card">
-          <h3>快捷控制<span class="live">打字就能控</span></h3>
-          <p class="sub">输入指令直接改舞台：换背景、放歌、说话、切横竖屏、开关可视化。</p>
-          <div class="row"><label>指令</label><div style="display:flex;gap:8px">
-            <input class="inp" id="stageCmd" placeholder="例如：换背景 樱花 / 放歌 晴天 / 说 大家好">
-            <button class="btn pri" id="stageSend">发送</button>
+          <h3>快捷控制<span class="live">功能开关</span></h3>
+          <div class="row"><label>自动回复弹幕</label><div>
+            <label class="sw"><input type="checkbox" id="quickGate"><span class="tr"></span><span class="t">开启</span></label>
+            <div class="hint" id="quickGateState">—</div>
           </div></div>
-          <div class="chat-quick" id="stageQuick">
-            <button data-cmd="换背景 樱花">樱花背景</button>
-            <button data-cmd="换背景 海洋">海洋背景</button>
-            <button data-cmd="放歌 晴天" data-only="douyin">放歌晴天</button>
-            <button data-cmd="说 大家好呀，我是小汐">说句话</button>
-            <button data-cmd="横屏">横屏</button>
-            <button data-cmd="竖屏">竖屏</button>
-            <button data-cmd="可视化关">关可视化</button>
-            <button data-cmd="帮助">帮助</button>
-          </div>
-          <div id="stageLog" class="mini" style="margin-top:10px;display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto">还没有指令</div>
+          <div class="row" data-only="douyin"><label>听音乐</label><div>
+            <div id="quickSongNow" class="mini" style="margin-bottom:8px">没在放歌</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <input class="inp" id="quickSongName" placeholder="歌名" style="max-width:220px">
+              <button class="btn pri" id="quickSongPlay">播放</button>
+              <button class="btn" id="quickSongStop">停止</button>
+              <button class="btn" id="quickSongNext">下一首</button>
+            </div>
+          </div></div>
+          <div class="row" data-only="douyin"><label>刷抖音</label><div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <button class="btn pri" id="quickDouyinStart">开始</button>
+              <button class="btn" id="quickDouyinStop">停止</button>
+              <span class="hint" id="quickDouyinState">未启动</span>
+            </div>
+          </div></div>
         </div>
-      
-    </div>
+      </div>
 
     <div class="pane" id="p8">
       <div class="card">
@@ -1443,6 +1446,7 @@ async function load() {
   applyPreviewAspect(st && st.config && st.config.scene && st.config.scene.layout);
   try { fill(st); } catch (e) { toast('界面渲染出错：' + e.message); console.error(e); }
   try { loadBgVideos(); } catch (e) { console.error(e); }
+  try { refreshQuickControls(); } catch (e) { console.error(e); }
     var djEl = document.getElementById('djOn');
     if (djEl && st && st.config && st.config.scene && st.config.scene.dj) djEl.checked = st.config.scene.dj.enabled !== false;
   if (!window.APPEARANCE_APPLIED && st && st.config && st.config.appearance) {
@@ -2529,45 +2533,88 @@ $('actSay').onclick = async function () {
   catch (e) { toast('失败：' + e.message); }
 };
 
-/* ─────────── 舞台后台 ─────────── */
-function stageLogLine(text, cls) {
-  var box = document.getElementById('stageLog');
-  if (!box) return;
-  if (box.textContent === '还没有指令') box.innerHTML = '';
-  var d = document.createElement('div');
-  d.textContent = text;
-  d.style.cssText = 'padding:6px 8px;border-radius:8px;line-height:1.5;background:' + (cls === 'bad' ? 'rgba(192,57,43,.10)' : (cls === 'ok' ? 'rgba(15,122,85,.10)' : 'rgba(127,127,127,.08)'));
-  box.appendChild(d);
-  box.scrollTop = box.scrollHeight;
+/* ─────────── 快捷控制 ─────────── */
+var douyinQuickActive = false;
+function refreshQuickControls() {
+  var gate = $('quickGate');
+  if (gate) {
+    gate.checked = !(CFG && CFG.gate && CFG.gate.enabled === false);
+    if ($('quickGateState')) $('quickGateState').textContent = gate.checked
+      ? '已开启 · 观众发弹幕会自动回'
+      : '已关闭 · 只显示弹幕，不回复';
+  }
+  var now = $('quickSongNow');
+  if (now) {
+    var s = (ST && ST.songs) || {};
+    if (s.playing) {
+      now.textContent = '正在放：' + (s.playing.name || s.playing.title || '未知') + (s.playing.user ? ' · ' + s.playing.user : '');
+    } else if (s.queue && s.queue.length) {
+      now.textContent = '队列里还有 ' + s.queue.length + ' 首';
+    } else {
+      now.textContent = '没在放歌';
+    }
+  }
+  var ds = $('quickDouyinState');
+  if (ds) {
+    ds.textContent = douyinQuickActive ? '正在刷' : '未启动';
+    ds.style.color = douyinQuickActive ? '#0f7a55' : '';
+  }
+  var dStart = $('quickDouyinStart'), dStop = $('quickDouyinStop');
+  if (dStart) dStart.disabled = douyinQuickActive;
+  if (dStop) dStop.disabled = !douyinQuickActive;
 }
-async function stageSend() {
-  var inp = document.getElementById('stageCmd');
-  if (!inp) return;
-  var text = inp.value.trim();
-  if (!text) { toast('先输入指令'); return; }
-  stageLogLine('你：' + text, 'me');
+async function refreshDouyinQuick() {
   try {
-    var r = await api('/api/stage/command', { text: text });
-    stageLogLine((r && r.ok ? '✅ ' : '❌ ') + ((r && (r.detail || r.error)) || '执行失败'), r && r.ok ? 'ok' : 'bad');
-    if (r && r.ok) toast(r.detail || '已执行');
-    else toast((r && r.error) || '指令失败');
-  } catch (e) { stageLogLine('❌ ' + e.message, 'bad'); toast('执行失败'); }
-  inp.value = '';
-  try { await load(); } catch (e) {}
+    var r = await api('/api/douyin/state');
+    douyinQuickActive = Boolean(r && r.active);
+  } catch (e) { douyinQuickActive = false; }
+  refreshQuickControls();
 }
-if (document.getElementById('stageSend')) {
-  document.getElementById('stageSend').onclick = stageSend;
-  document.getElementById('stageCmd').onkeydown = function (e) { if (e.key === 'Enter') stageSend(); };
-}
-document.querySelectorAll('#stageQuick [data-cmd]').forEach(function (b) {
-  b.onclick = function () { document.getElementById('stageCmd').value = b.dataset.cmd; stageSend(); };
-});
+if ($('quickGate')) $('quickGate').onchange = async function () {
+  var enabled = this.checked;
+  try {
+    await api('/api/config', { gate: Object.assign({}, (CFG.gate || {}), { enabled: enabled }) });
+    toast(enabled ? '自动回复已开' : '自动回复已关');
+    await load();
+  } catch (e) { toast('切换失败：' + e.message); this.checked = !enabled; }
+};
+if ($('quickSongPlay')) $('quickSongPlay').onclick = async function () {
+  var name = ($('quickSongName') && $('quickSongName').value || '').trim();
+  if (!name) { toast('先写歌名'); return; }
+  try {
+    var r = await api('/api/stage/command', { text: '放歌 ' + name });
+    if (r && r.ok) { $('quickSongName').value = ''; toast('已开始播放'); }
+    else toast((r && r.error) || '播放失败');
+    await load();
+  } catch (e) { toast('播放失败：' + e.message); }
+};
+if ($('quickSongStop')) $('quickSongStop').onclick = async function () {
+  try { await api('/api/stage/command', { text: '停止放歌' }); toast('已停止放歌'); await load(); }
+  catch (e) { toast('停止失败：' + e.message); }
+};
+if ($('quickSongNext')) $('quickSongNext').onclick = async function () {
+  try { await api('/api/song/next', {}); toast('已切下一首'); await load(); }
+  catch (e) { toast('切歌失败：' + e.message); }
+};
+if ($('quickDouyinStart')) $('quickDouyinStart').onclick = async function () {
+  try {
+    var r = await api('/api/douyin/start', {});
+    if (r && r.ok) toast('已开始刷抖音');
+    else toast((r && r.error) || '启动失败');
+    await refreshDouyinQuick();
+  } catch (e) { toast('启动失败：' + e.message); }
+};
+if ($('quickDouyinStop')) $('quickDouyinStop').onclick = async function () {
+  try { await api('/api/douyin/stop', {}); toast('已停止刷抖音'); await refreshDouyinQuick(); }
+  catch (e) { toast('停止失败：' + e.message); }
+};
+refreshDouyinQuick();
 
 /* ─────────── 自动刷新 ─────────── */
 setInterval(function () {
   if (dyTesting) return;
   var pane = document.querySelector('.pane.on');
-  if (pane && (pane.id === 'p0' || pane.id === 'p3')) load();
+  if (pane && (pane.id === 'p0' || pane.id === 'p3' || pane.id === 'p15')) load();
 }, 2000);
 
 
