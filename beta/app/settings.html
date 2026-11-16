@@ -380,9 +380,9 @@
       <a data-p="p12">界面外观</a>
       <a data-p="p15">快捷控制</a>
       <div class="grp">内容</div>
-      <a data-p="p8">点歌台</a>
-      <a data-p="p13">视频点播</a>
-      <a data-p="p16">刷抖音</a>
+      <a data-p="p8" data-only="douyin">点歌台</a>
+      <a data-p="p13" data-only="douyin">视频点播</a>
+      <a data-p="p16" data-only="douyin">刷抖音</a>
       <div class="grp">系统</div>
       <a data-p="p4">状态与更新</a>
 
@@ -520,6 +520,7 @@
         <h3>视频号直播<span class="live">需微信扫码</span></h3>
         <p class="sub">视频号没有公开弹幕 API：连接后打开视频号管理后台，微信扫码登录并进入直播中控台。</p>
         <div class="hint">实验性接口：登录态存在本机 .wechat-channels-profile；微信后台改版可能失效，建议先用小号测试。</div>
+        <div class="hint" style="color:#a4603f">视频号当前只启用聊天：不走刷抖音、点歌、视频点播；这些入口会隐藏。</div>
         <div class="row"><label>当前账号</label><div id="wechatAccount" class="mini">未登录</div></div>
         <div class="row"><label>OBS 方案</label><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <select class="inp" id="wechatObsProfile" style="max-width:280px">
@@ -1404,6 +1405,7 @@ function renderHome(st) {
     }
   });
   paintLiveButtons();
+  paintPlatformFeatureNav();
   var wa = $('wechatAccount');
   if (wa) {
     var acct = (realInfo.type === 'wechat' && realInfo.account) || (CFG.wechat && CFG.wechat.account) || null;
@@ -1584,6 +1586,15 @@ function paintLiveButtons() {
     if (s) { s.disabled = busy; s.title = busy ? ('先断开' + names[ACTIVE_LIVE]) : ''; }
     if (t) { t.disabled = busy; t.title = busy ? ('先断开' + names[ACTIVE_LIVE]) : ''; }
     if (x) { x.disabled = !active; x.title = active ? '' : '当前没有连接这个平台'; }
+  });
+}
+function paintPlatformFeatureNav() {
+  var type = (ST && ST.sources && ST.sources.real && ST.sources.real.type) || '';
+  var last = (CFG && CFG.livePlatform) || '';
+  // 刷抖音/点歌/视频点播只属于抖音模式；视频号、B站先只聊天
+  var nonDouyin = (type && type !== 'douyin') || (!type && last && last !== 'douyin');
+  document.querySelectorAll('[data-only="douyin"]').forEach(function (a) {
+    a.style.display = nonDouyin ? 'none' : '';
   });
 }
 function livePlatformFields(p) {
