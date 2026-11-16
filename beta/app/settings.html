@@ -1511,14 +1511,15 @@ function platformRidMissing(p) {
   return false;
 }
 async function startLivePlatform(p, btn) {
-  if (platformRidMissing(p)) return;
+  var room = p === 'bilibili' ? $('biliRid').value.trim() : $('webRid').value.trim();
+  if (p !== 'wechat' && !room) { toast(p === 'bilibili' ? '先填 B 站直播间号' : '先填抖音直播间号'); (p === 'bilibili' ? $('biliRid') : $('webRid')).focus(); return; }
   var old = btn.textContent;
   btn.disabled = true; btn.textContent = '连接中…';
   try {
     await api('/api/config', livePlatformFields(p));
     var body = { action: 'start', type: p };
-    if (p === 'douyin') body.webRid = $('webRid').value.trim();
-    if (p === 'bilibili') body.biliRid = $('biliRid').value.trim();
+    if (p === 'douyin') body.webRid = room;
+    if (p === 'bilibili') body.biliRid = room;
     var r = await api('/api/source', body);
     if (r && r.ok === false) toast('连接失败：' + (r.error || '未知原因'));
     else toast(p === 'wechat' ? '已打开视频号后台，请扫码登录' : (p === 'bilibili' ? '正在连接 B站弹幕…' : '正在连接抖音…'));
@@ -1527,7 +1528,8 @@ async function startLivePlatform(p, btn) {
   btn.disabled = false; btn.textContent = old;
 }
 async function testLivePlatform(p, btn) {
-  if (platformRidMissing(p)) return;
+  var room = p === 'bilibili' ? $('biliRid').value.trim() : $('webRid').value.trim();
+  if (p !== 'wechat' && !room) { toast(p === 'bilibili' ? '先填 B 站直播间号' : '先填抖音直播间号'); (p === 'bilibili' ? $('biliRid') : $('webRid')).focus(); return; }
   var old = btn.textContent;
   var el = liveStatusEl(p);
   if (el) { el.textContent = '正在测试连接（最多 5 秒）…'; el.style.color = '#8a6a2f'; }
@@ -1537,8 +1539,8 @@ async function testLivePlatform(p, btn) {
     await api('/api/config', livePlatformFields(p));
     var r = await api('/api/douyin/test', {
       platform: p,
-      webRid: $('webRid').value.trim(),
-      biliRid: $('biliRid').value.trim()
+      webRid: p === 'douyin' ? room : $('webRid').value.trim(),
+      biliRid: p === 'bilibili' ? room : $('biliRid').value.trim()
     });
     liveStatusText(p, r || { pending: true });
     toast((r && r.message) || (r && r.error) || '测试完成');
