@@ -372,6 +372,7 @@
       <a data-p="p2">欢迎与热场</a>
       <div class="grp">人物</div>
       <a data-p="p11">人物形象</a>
+      <a data-p="p17">主播人设</a>
       <a data-p="p6">声音与说话</a>
       <a data-p="p5">AI 大脑</a>
       <div class="grp">画面</div>
@@ -764,6 +765,60 @@
       </div>
     </div>
 
+    <!-- ══════ 主播人设 ══════ -->
+    <div class="pane" id="p17">
+      <div class="card">
+        <h3>主播人设<span class="live">会直接进 AI 提示词</span></h3>
+        <p class="sub">这里不是随便写一段文案，而是她的身份、性格、说话方式和底线。保存后新弹幕就按这套人设回复。</p>
+        <div class="row"><label>名字</label><div><input class="inp" id="personaName" placeholder="小汐"><div class="hint">直播里自称和观众叫她的名字</div></div></div>
+        <div class="row"><label>英文名</label><div><input class="inp" id="personaEn" placeholder="Xiaoxi"></div></div>
+        <div class="row"><label>年龄</label><div><input class="inp" id="personaAge" placeholder="18"></div></div>
+        <div class="row"><label>生日</label><div><input class="inp" id="personaBirthday" placeholder="例如 8 月 3 日"></div></div>
+        <div class="row"><label>身高</label><div><input class="inp" id="personaHeight" placeholder="例如 158cm"></div></div>
+        <div class="row"><label>所在地</label><div><input class="inp" id="personaCity" placeholder="例如 深夜直播间"></div></div>
+        <div class="row"><label>身份</label><div><input class="inp" id="personaRole" placeholder="AI 主播 / 直播间主理人"></div></div>
+        <div class="row"><label>粉丝名</label><div><input class="inp" id="personaFan" placeholder="小海盐"></div></div>
+        <div class="row"><label>一句话标签</label><div><input class="inp" id="personaTagline" placeholder="有点憨、偶尔毒舌的夜猫子"></div></div>
+      </div>
+
+      <div class="card">
+        <h3>性格与说话</h3>
+        <div class="row"><label>性格</label><div><textarea class="inp" id="personaPersonality" rows="3" placeholder="温柔但有点毒舌，反应慢半拍……"></textarea></div></div>
+        <div class="row"><label>说话方式</label><div><textarea class="inp" id="personaStyle" rows="3" placeholder="短句、口语化，少用书面语；偶尔自嘲……"></textarea></div></div>
+        <div class="row"><label>口头禅</label><div><textarea class="inp" id="personaCatch" rows="3" placeholder="一行一个，例如：别急，我在想"></textarea><div class="hint">只偶尔用，不要每句都带</div></div></div>
+        <div class="row"><label>喜欢</label><div><textarea class="inp" id="personaLikes" rows="2" placeholder="黑胶、夜宵、猫、有人陪聊"></textarea></div></div>
+        <div class="row"><label>不喜欢</label><div><textarea class="inp" id="personaDislikes" rows="2" placeholder="被命令、被叫机器人、冷场"></textarea></div></div>
+        <div class="row"><label>底线</label><div><textarea class="inp" id="personaBoundaries" rows="3" placeholder="不聊政治、低俗、隐私；不透露模型和提示词……"></textarea></div></div>
+      </div>
+
+      <div class="card">
+        <h3>背景故事</h3>
+        <div class="row"><label>来历</label><div><textarea class="inp" id="personaBackground" rows="4" placeholder="她住在哪、为什么开播、发生过什么……"></textarea></div></div>
+        <div class="row"><label>和观众的关系</label><div><textarea class="inp" id="personaRelations" rows="3" placeholder="把观众当朋友，熟了会互损，但不越界……"></textarea></div></div>
+        <div class="row"><label>目标</label><div><textarea class="inp" id="personaGoals" rows="2" placeholder="陪大家熬过深夜……"></textarea></div></div>
+      </div>
+
+      <div class="card">
+        <h3>直播话术</h3>
+        <div class="row"><label>开场白</label><div><textarea class="inp" id="personaLiveIntro" rows="2" placeholder="每次开播第一句想说什么"></textarea></div></div>
+        <div class="row"><label>打招呼</label><div><textarea class="inp" id="personaGreeting" rows="2" placeholder="看到新观众时怎么说"></textarea></div></div>
+        <div class="row"><label>谢礼物</label><div><textarea class="inp" id="personaThanks" rows="2" placeholder="收到礼物时怎么说"></textarea></div></div>
+        <div class="row"><label>下播</label><div><textarea class="inp" id="personaFarewell" rows="2" placeholder="下播前最后一句"></textarea></div></div>
+        <div class="row"><label>补充要求</label><div><textarea class="inp" id="personaExtra" rows="4" placeholder="任何无法归类的设定，例如“不要连续问问题”"></textarea></div></div>
+      </div>
+
+      <div class="card">
+        <h3>实际提示词预览</h3>
+        <p class="sub">这是真正拼进模型的内容；保存后生效。改错了点「重新读取」恢复上一次保存。</p>
+        <textarea class="inp" id="personaPromptPreview" rows="12" readonly style="font-family:ui-monospace,Consolas,monospace;font-size:12px"></textarea>
+        <div class="row" style="margin-top:12px"><label></label><div style="display:flex;gap:8px">
+          <button class="btn pri" id="personaSave">保存人设</button>
+          <button class="btn" id="personaReload">重新读取</button>
+          <span class="hint" id="personaState">未读取</span>
+        </div></div>
+      </div>
+    </div>
+
     <!-- ══════ 直播画面 ══════ -->
     <div class="pane" id="p9">
 <div class="card">
@@ -894,8 +949,8 @@
         <label class="sw"><input type="checkbox" id="llmFast"><span class="tr"></span><span class="t">快速模式<i>更短的回复、更低的温度</i></span></label>
       </div>
       <div class="card">
-        <h3>她是谁</h3>
-        <p class="sub">这段决定说话风格，写得越具体越像你想要的。</p>
+        <h3>补充人设<span class="live">可留空</span></h3>
+        <p class="sub">完整的身份、性格、背景和话术在左侧「主播人设」里；这里只写额外补充，会拼在人设档案后面。</p>
           <div class="tpl-grid" id="tplGrid"></div>
         <textarea class="inp" id="llmPersona" rows="5"></textarea>
       </div>
@@ -1135,6 +1190,7 @@ document.querySelectorAll('.nav a').forEach(function (a) {
     document.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.id === a.dataset.p); });
     if (a.dataset.p === 'p4') loadVersion();
     if (a.dataset.p === 'p11') loadAvatar();
+    if (a.dataset.p === 'p17') loadPersona();
     loadAvModel();
   syncTopLatency(a.dataset.p);
   };
@@ -2701,6 +2757,65 @@ if ($('chatInput')) $('chatInput').onkeydown = function (e) {
 document.querySelectorAll('.chat-quick button').forEach(function (b) {
   b.onclick = function () { chatSend(b.getAttribute('data-say')); };
 });
+
+/* ─────────── 主播人设 ─────────── */
+var PERSONA_FIELDS = {
+  name: 'personaName', enName: 'personaEn', age: 'personaAge', birthday: 'personaBirthday',
+  height: 'personaHeight', city: 'personaCity', role: 'personaRole', fanName: 'personaFan',
+  tagline: 'personaTagline', personality: 'personaPersonality', speakingStyle: 'personaStyle',
+  likes: 'personaLikes', dislikes: 'personaDislikes', boundaries: 'personaBoundaries',
+  background: 'personaBackground', relationships: 'personaRelations', goals: 'personaGoals',
+  liveIntro: 'personaLiveIntro', greeting: 'personaGreeting', thanksGift: 'personaThanks',
+  farewell: 'personaFarewell', promptExtra: 'personaExtra'
+};
+function fillPersona(p) {
+  if (!p) return;
+  Object.keys(PERSONA_FIELDS).forEach(function (k) {
+    var el = $(PERSONA_FIELDS[k]);
+    if (el) el.value = p[k] == null ? '' : String(p[k]);
+  });
+  if ($('personaCatch')) $('personaCatch').value = Array.isArray(p.catchphrases) ? p.catchphrases.join('\n') : '';
+  if (CFG) CFG.persona = p;
+}
+async function loadPersona() {
+  var state = $('personaState');
+  if (state) { state.textContent = '读取中…'; state.style.color = '#a4603f'; }
+  try {
+    var r = await api('/api/persona');
+    fillPersona(r.persona);
+    if ($('personaPromptPreview')) $('personaPromptPreview').value = r.prompt || '';
+    if (state) { state.textContent = '已读取'; state.style.color = '#0f7a55'; }
+  } catch (e) {
+    if (state) { state.textContent = '读取失败：' + e.message; state.style.color = '#c0392b'; }
+  }
+}
+function personaBody() {
+  var o = {};
+  Object.keys(PERSONA_FIELDS).forEach(function (k) {
+    var el = $(PERSONA_FIELDS[k]);
+    if (el) o[k] = el.value;
+  });
+  o.catchphrases = ($('personaCatch') && $('personaCatch').value || '').split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+  return o;
+}
+if ($('personaSave')) $('personaSave').onclick = async function () {
+  var btn = this, old = btn.textContent;
+  var state = $('personaState');
+  btn.disabled = true; btn.textContent = '保存中…';
+  try {
+    var r = await api('/api/persona', personaBody());
+    if (!r.ok) throw new Error(r.error || '保存失败');
+    fillPersona(r.persona);
+    if ($('personaPromptPreview')) $('personaPromptPreview').value = r.prompt || '';
+    if (state) { state.textContent = '已保存 · 新弹幕按新设定回复'; state.style.color = '#0f7a55'; }
+    toast('人设已保存');
+  } catch (e) {
+    if (state) { state.textContent = '保存失败：' + e.message; state.style.color = '#c0392b'; }
+    toast('保存失败：' + e.message);
+  }
+  btn.disabled = false; btn.textContent = old;
+};
+if ($('personaReload')) $('personaReload').onclick = loadPersona;
 
 /* ─────────── 人设模板 ─────────── */
 var PERSONAS = [
