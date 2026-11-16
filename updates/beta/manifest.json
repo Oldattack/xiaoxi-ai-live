@@ -1,10 +1,10 @@
 {
-  "version": "2.6.211",
+  "version": "2.6.212",
   "notes": "2.6.210 更新内容：\n- 视频号只保留聊天：刷抖音、点歌、视频点播在视频号模式下不执行，入口隐藏\n- 视频号扫码登录后自动最小化后台网页，直播时不用一直开着\n- 视频号 OCR 收到弹幕即标记已连接，中控台不回报状态也不会显示未连接\n- 修复安装包未包含 OCR 脚本，新装/重启后 OCR 不启动\n- 修复切换平台后抖音看门狗污染视频号状态\n- 抖音 / 视频号 OBS 配置、场景集合、虚拟摄像头完全分开\n- 设置页清理技术提示、调试卡片和重复状态说明",
-  "package": "xiaoxi-ai-live-2.6.211.zip",
-  "size": 29416745,
-  "sha256": "4e35d639e74bed61eacb1e60c26ceb1099815d6febc5003ab008a244d233c4d9",
-  "publishedAt": "2026-11-16T11:29:11.269Z",
+  "package": "xiaoxi-ai-live-2.6.212.zip",
+  "size": 29417011,
+  "sha256": "b14b3002ba22792e29fea6b01fc8739e46dbfc05604186afbf732dcbbcb30c91",
+  "publishedAt": "2026-11-16T11:30:36.554Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -281,7 +281,7 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "da9e34e5281767a3f8d9b477c509893c4d5eb332b2381c8368414a850ccb9598"
+      "sha256": "cc67ed26e5156aa78139819370f07d1dea34377fc00794e257e7a307cbdcf31a"
     },
     {
       "path": "wechat-ocr.ps1",
@@ -290,8 +290,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 436694,
-      "sha256": "5a7dddb4370b5a1da46876e134881cfebd5e66fe591b843a3394f5d5026a9e41"
+      "size": 436566,
+      "sha256": "413299e926155f287f359377af82394e820c18cbbac3c4bafaa8d0629b896b07"
     }
   ]
 }
