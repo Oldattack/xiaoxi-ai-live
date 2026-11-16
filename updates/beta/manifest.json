@@ -1,10 +1,10 @@
 {
-  "version": "2.6.217",
+  "version": "2.6.218",
   "notes": "2.6.213 更新内容：\n- 安装包补齐视频号 OBS 模板：小汐-视频号 / 小汐-视频号-横屏\n- 启动时自动安装缺失的视频号 OBS 配置\n- 视频号配置缺失时兜底用普通 OBS 配置启动虚拟摄像头，避免黑屏\n- 修复旧版「补充人设」覆盖新人设名字/身份的问题\n- 英文名、生日、身高、粉丝称呼补进人设提示词\n- 视频号只保留聊天：刷抖音、点歌、视频点播不执行，入口隐藏\n- 视频号扫码后自动最小化网页；OCR 收到弹幕即标记已连接\n- 修复 OCR 脚本未打包、抖音看门狗污染视频号状态",
-  "package": "xiaoxi-ai-live-2.6.217.zip",
-  "size": 29422749,
-  "sha256": "cc25b21d30ad37c02abecb7e2ad640fde9ba0793c7b2eb3a55cda68daaa0895e",
-  "publishedAt": "2026-11-16T12:17:54.312Z",
+  "package": "xiaoxi-ai-live-2.6.218.zip",
+  "size": 29422946,
+  "sha256": "ff469d93445c1c5ffec8cc4e3c7f1c299de22087e7e549a7a87a9442540e8ade",
+  "publishedAt": "2026-11-16T12:20:03.374Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -301,7 +301,7 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "275b42820a289d777ec120e5222a62f4b953df22fb53be9635d8c333a6542c8f"
+      "sha256": "dfb9a2e284b74a4a735fb8a2d8d9286b3e9980a2d6d48790dceae3a0b970bdcb"
     },
     {
       "path": "wechat-ocr.ps1",
@@ -310,8 +310,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 439935,
-      "sha256": "58643b2f6300bb6ea22988ef1778bc3de83e5b24ae5de7759a7ec37547904ecd"
+      "size": 440307,
+      "sha256": "eefd4910c36d1a90f4e1989553f7d24f0c547992dbfd77c3844f7b8e1c33fe5e"
     }
   ]
 }
