@@ -1319,6 +1319,7 @@ function renderHome(st) {
 
   var real = !!(st.sources && st.sources.real && st.sources.real.running);
   var platformName = ({ bilibili: 'B站', wechat: '视频号' })[st.sources?.real?.type] || '抖音';
+  ACTIVE_LIVE = realInfo.running ? String(realInfo.type || '') : '';
   setChip('cDouyin', real ? (platformName + '已连') : (platformName + '未连'), real ? '' : 'off');
   var realInfo = (st && st.sources && st.sources.real) || {};
   var msgCount = (st && st.source && st.source.messages) || 0;
@@ -1335,6 +1336,7 @@ function renderHome(st) {
       el.style.color = '';
     }
   });
+  paintLiveButtons();
   var rd = $('rDouyin'); rd.textContent = real ? '已连接' : '未连接'; rd.className = real ? 'g' : 'm';
 
   var sceneOk = (CFG.scene && CFG.scene.obsMode === 'browser');
@@ -1480,6 +1482,23 @@ $('reload').onclick = function () { load(); };
 
 /* ─────────── 三个平台：各自房间 / 各自登录 / 各自连接 ─────────── */
 var dyTesting = false;
+var ACTIVE_LIVE = '';
+function paintLiveButtons() {
+  var map = {
+    douyin: ['btnStartDouyin', 'btnTestDouyin', 'btnStopDouyin'],
+    bilibili: ['btnStartBili', 'btnTestBili', 'btnStopBili'],
+    wechat: ['btnStartWechat', 'btnTestWechat', 'btnStopWechat']
+  };
+  var names = { douyin: '抖音', bilibili: 'B站', wechat: '视频号' };
+  Object.keys(map).forEach(function (p) {
+    var busy = Boolean(ACTIVE_LIVE) && ACTIVE_LIVE !== p;
+    var active = Boolean(ACTIVE_LIVE) && ACTIVE_LIVE === p;
+    var s = $(map[p][0]), t = $(map[p][1]), x = $(map[p][2]);
+    if (s) { s.disabled = busy; s.title = busy ? ('先断开' + names[ACTIVE_LIVE]) : ''; }
+    if (t) { t.disabled = busy; t.title = busy ? ('先断开' + names[ACTIVE_LIVE]) : ''; }
+    if (x) { x.disabled = !active; x.title = active ? '' : '当前没有连接这个平台'; }
+  });
+}
 function livePlatformFields(p) {
   return {
     douyin: { webRid: $('webRid').value.trim(), autoConnect: $('autoConnectDouyin').checked },
@@ -1511,6 +1530,7 @@ function platformRidMissing(p) {
   return false;
 }
 async function startLivePlatform(p, btn) {
+  if (ACTIVE_LIVE && ACTIVE_LIVE !== p) { toast('先断开' + ({ douyin: '抖音', bilibili: 'B站', wechat: '视频号' }[ACTIVE_LIVE] || '当前平台')); return; }
   var room = p === 'bilibili' ? $('biliRid').value.trim() : $('webRid').value.trim();
   if (p !== 'wechat' && !room) { toast(p === 'bilibili' ? '先填 B 站直播间号' : '先填抖音直播间号'); (p === 'bilibili' ? $('biliRid') : $('webRid')).focus(); return; }
   var old = btn.textContent;
@@ -1528,6 +1548,7 @@ async function startLivePlatform(p, btn) {
   btn.disabled = false; btn.textContent = old;
 }
 async function testLivePlatform(p, btn) {
+  if (ACTIVE_LIVE && ACTIVE_LIVE !== p) { toast('先断开' + ({ douyin: '抖音', bilibili: 'B站', wechat: '视频号' }[ACTIVE_LIVE] || '当前平台')); return; }
   var room = p === 'bilibili' ? $('biliRid').value.trim() : $('webRid').value.trim();
   if (p !== 'wechat' && !room) { toast(p === 'bilibili' ? '先填 B 站直播间号' : '先填抖音直播间号'); (p === 'bilibili' ? $('biliRid') : $('webRid')).focus(); return; }
   var old = btn.textContent;
@@ -1552,6 +1573,7 @@ async function testLivePlatform(p, btn) {
   btn.disabled = false; btn.textContent = old;
 }
 async function stopLivePlatform(p) {
+  if (ACTIVE_LIVE && ACTIVE_LIVE !== p) { toast('当前连接的是' + ({ douyin: '抖音', bilibili: 'B站', wechat: '视频号' }[ACTIVE_LIVE] || '其他平台')); return; }
   try { await api('/api/source', { action: 'stop', type: p }); toast('已断开'); load(); }
   catch (e) { toast('断开失败：' + e.message); }
 }
