@@ -1,10 +1,10 @@
 {
-  "version": "2.6.195",
+  "version": "2.6.196",
   "notes": "2.6.184 更新内容：\n- 修复换人物形象视频后，人物形象页里的动作视频预览不更新\n- 保存/上传/还原人物形象后，设置里的所有预览 iframe 自动带版本重载\n- 人物形象变化后，OBS 场景/人物浏览器源自动强制刷新，正常画面同步换\n- /avatar-file/ 改为 no-store，避免浏览器缓存旧人物形象\n- 保留：抖音测试连接 5 秒结果、状态每 2 秒刷新、横竖屏共用扫码登录",
-  "package": "xiaoxi-ai-live-2.6.195.zip",
-  "size": 29403735,
-  "sha256": "43335221a76eb49af122af89d17abe13fd932571041aa746e9fe43b334dcc787",
-  "publishedAt": "2026-11-16T08:06:08.253Z",
+  "package": "xiaoxi-ai-live-2.6.196.zip",
+  "size": 29405112,
+  "sha256": "7ef1080c13771f2d518e47e0e8b23743c3526d5ad9f3a7ea3da808937227f58d",
+  "publishedAt": "2026-11-16T08:51:57.558Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -200,8 +200,8 @@
     },
     {
       "path": "settings.html",
-      "size": 166278,
-      "sha256": "452d1eece970048b317af95c50448ee4c11d1446a9aba3dea77b70ae734a1e23"
+      "size": 168048,
+      "sha256": "7b5335d4f49eea5299caed7de6fc9e3c9c9ea858f2ba3ff4550a46f4be266b9c"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -281,12 +281,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "390578b4b876d942e014c7e6330464fde2ecbac15cad7269d7b7b83d7499a408"
+      "sha256": "62b678635d9fc6472e6c04fe7dfd38df31fa1bbd5cb97f9a324ccea851750a89"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 407746,
-      "sha256": "06eb4a3ee29a4980234eb1089d01152d7d96c82e24a9152201f38f18606cab20"
+      "size": 414168,
+      "sha256": "7e880d15e7be041bd04b4efa8be301326928485db202e8940754405fcc9e98c8"
     }
   ]
 }

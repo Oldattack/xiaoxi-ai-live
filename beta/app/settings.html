@@ -520,6 +520,14 @@
         <p class="sub">视频号没有公开弹幕 API：连接后打开视频号管理后台，微信扫码登录并进入直播中控台。</p>
         <div class="hint">实验性接口：登录态存在本机 .wechat-channels-profile；微信后台改版可能失效，建议先用小号测试。</div>
         <div class="row"><label>当前账号</label><div id="wechatAccount" class="mini">未登录</div></div>
+        <div class="row"><label>OBS 方案</label><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <select class="inp" id="wechatObsProfile" style="max-width:280px">
+            <option value="小汐-视频号-横屏">小汐-视频号-横屏（1920×1080）</option>
+            <option value="小汐-视频号">小汐-视频号（1080×1920）</option>
+          </select>
+          <button class="btn" id="btnWechatBindObs">应用绑定</button>
+          <span class="hint" id="wechatObsState">连接视频号时自动切换</span>
+        </div></div>
         <div class="row"><label>状态</label><div id="wechatStatus" class="mini">未连接</div></div>
         <div class="row" style="margin-top:12px"><label></label><div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn pri" id="btnStartWechat">打开后台并连接</button>
@@ -1195,6 +1203,7 @@ function fill(st) {
   $('autoConnectDouyin').checked = dy.autoConnect !== false;
   $('autoConnectBili').checked = !CFG.bilibili || CFG.bilibili.autoConnect !== false;
   $('autoConnectWechat').checked = !CFG.wechat || CFG.wechat.autoConnect !== false;
+  if ($('wechatObsProfile')) $('wechatObsProfile').value = (CFG.wechat && CFG.wechat.obsProfile) || '小汐-视频号-横屏';
 
   $('avH').value = av.height || 520;
   $('avHP').value = av.heightPortrait || 700;
@@ -1484,7 +1493,7 @@ $('save').onclick = async function () {
     },
     douyin: { webRid: $('webRid').value.trim(), autoConnect: $('autoConnectDouyin').checked },
     bilibili: { roomId: $('biliRid').value.trim(), autoConnect: $('autoConnectBili').checked },
-    wechat: { autoConnect: $('autoConnectWechat').checked },
+    wechat: { autoConnect: $('autoConnectWechat').checked, obsProfile: $('wechatObsProfile') ? $('wechatObsProfile').value : '小汐-视频号-横屏' },
     avatar: {
       height: Math.max(120, Number($('avH').value) || 520),
       heightPortrait: Math.max(120, Number($('avHP').value) || 700),
@@ -1616,6 +1625,27 @@ if ($('btnWechatLogout')) $('btnWechatLogout').onclick = async function () {
     if (r && r.ok) { toast('已退出视频号登录，请重新扫码'); setTimeout(load, 600); }
     else toast('退出失败：' + ((r && r.error) || '未知原因'));
   } catch (e) { toast('退出失败：' + e.message); }
+  btn.disabled = false;
+};
+if ($('btnWechatBindObs')) $('btnWechatBindObs').onclick = async function () {
+  var btn = this;
+  var state = $('wechatObsState');
+  var profile = $('wechatObsProfile').value;
+  btn.disabled = true;
+  if (state) { state.textContent = '正在切换 OBS…'; state.style.color = '#a4603f'; }
+  try {
+    var r = await api('/api/wechat/obs', { profile: profile });
+    if (r && r.ok) {
+      if (state) { state.textContent = '已绑定：' + profile; state.style.color = '#0f7a55'; }
+      toast('视频号 OBS 方案已绑定');
+    } else {
+      if (state) { state.textContent = '绑定失败：' + ((r && r.error) || '未知原因'); state.style.color = '#c0392b'; }
+      toast('绑定失败：' + ((r && r.error) || '未知原因'));
+    }
+  } catch (e) {
+    if (state) { state.textContent = '绑定失败：' + e.message; state.style.color = '#c0392b'; }
+    toast('绑定失败：' + e.message);
+  }
   btn.disabled = false;
 };
 var _oldMock = async function () {
