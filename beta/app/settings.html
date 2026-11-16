@@ -2060,7 +2060,7 @@ function renderAvatar() {
     };
     var reset = card.querySelector('[data-reset]');
     if (reset) reset.onclick = async function () {
-      try { var r = await api('/api/avatar', { action: 'reset', emotion: e.key }); AVATAR = r.avatar; renderAvatar(); toast('已还原'); }
+      try { var r = await api('/api/avatar', { action: 'reset', emotion: e.key }); AVATAR = r.avatar; renderAvatar(); reloadAvatarPreviews(); toast('已还原'); }
       catch (err) { toast('还原失败：' + err.message); }
     };
     box.appendChild(card);
@@ -2082,7 +2082,31 @@ function renderAvatar() {
     var img = avPickedImg || avModel.model || '';
     $('avImgPrev').style.backgroundImage = img ? ('url("' + img + '")') : '';
     $('avImgName').textContent = avPickedImg ? '已选新图' : (avModel.model ? '已保存' : '未选择');
+    var vv = $('avVidPrev');
+    var vsrc = avPickedVid || avModel.video || '';
+    if (vv) {
+      if (vsrc) {
+        var bust = vsrc + (vsrc.indexOf('?') >= 0 ? '&' : '?') + 't=' + Date.now();
+        vv.src = bust;
+        vv.style.display = 'block';
+        try { vv.load(); vv.play().catch(function () {}); } catch (e) {}
+      } else {
+        try { vv.pause(); } catch (e) {}
+        vv.removeAttribute('src');
+        vv.style.display = 'none';
+      }
+    }
     $('avVidName').textContent = avPickedVid ? '已选新视频' : (avModel.video ? '已保存' : '未选择');
+  }
+  function reloadAvatarPreviews() {
+    var bust = Date.now();
+    ['stgPv', 'pv'].forEach(function (id) {
+      var f = $(id);
+      if (f) f.src = '/?clean=1&mute=1&v=' + bust;
+    });
+    if ($('pvBig') && $('pvBig').getAttribute('src') && $('pvBig').getAttribute('src') !== 'about:blank') {
+      $('pvBig').src = '/?clean=1&mute=1&v=' + bust;
+    }
   }
   function loadAvModel() {
     var a = (ST && ST.config && ST.config.avatar) || {};
@@ -2127,6 +2151,7 @@ function renderAvatar() {
       avModel = Object.assign({}, avModel, r.avatar);
       avPickedImg = ''; avPickedVid = '';
       paintAvModel();
+      reloadAvatarPreviews();
       toast('人物形象已更新');
       load();
     } catch (e) { toast('保存失败：' + e.message); }
@@ -2147,7 +2172,7 @@ function uploadAvatar(key, file) {
   reader.onload = async function () {
     try {
       var r = await api('/api/avatar', { emotion: key, dataUrl: reader.result });
-      AVATAR = r.avatar; renderAvatar(); toast('已替换');
+      AVATAR = r.avatar; renderAvatar(); reloadAvatarPreviews(); toast('已替换');
     } catch (e) { toast('替换失败：' + e.message); }
   };
   reader.readAsDataURL(file);

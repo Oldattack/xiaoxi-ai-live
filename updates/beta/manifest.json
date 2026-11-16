@@ -1,10 +1,10 @@
 {
-  "version": "2.6.183",
+  "version": "2.6.184",
   "notes": "2.6.183 更新内容：\n- 设置 → 抖音接入新增「测试连接」，最多 5 秒返回连接结果\n- 抖音接入状态改为每 2 秒自动刷新，显示成功/失败/超时\n- 设置主页去掉「开始直播」按钮（没有实际开播作用）\n- 设置主页去掉「停止回复」按钮，回复开关统一到「弹幕回复 → 让 AI 回话」\n- 抖音扫码登录：横屏/竖屏共用 OBS 扫码入口，竖屏窗口自动同步登录态\n- 登录后自动点击「推荐」\n- 竖屏刷抖音：Chrome 网页窗口 522×954 + OBS 窗口采集，裁 70/81/5/68 铺满 1080×1920",
-  "package": "xiaoxi-ai-live-2.6.183.zip",
-  "size": 29390376,
-  "sha256": "dfeb9573c660e7f8e36ed7519a9ca2057aa614fa935ff213378cd9f4d22e71bd",
-  "publishedAt": "2026-11-15T20:22:42.908Z",
+  "package": "xiaoxi-ai-live-2.6.184.zip",
+  "size": 29391339,
+  "sha256": "bfe6e7906290183479bff8a7ba7bc56f9cdc541882c3d2632e294aab7a3f8acd",
+  "publishedAt": "2026-11-16T06:37:15.123Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -200,8 +200,8 @@
     },
     {
       "path": "settings.html",
-      "size": 157462,
-      "sha256": "35c89fee1cd07abfab184bafbb1e1bad3702dd4d6b6d62019f7bac06e1a5d306"
+      "size": 158391,
+      "sha256": "c24830766583b39401d37e2f39d17f5bfa1d430ff7dd0b5c9a84d0fd1e179e1a"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -281,12 +281,12 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "6123fefa001eba554b009108606a73c65c7e376911ab427cdde8828e589cfbe1"
+      "sha256": "d010b9812dbd7a2fb915ff493f7e6c223d8e5ddf0608f98e334777bdeb1c587f"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 369208,
-      "sha256": "e5caa8d2cde639b5774e26992c450c952b8dac7c1b4eb874c4272c44d36de6bf"
+      "size": 367700,
+      "sha256": "d62565b2a63006ea3a2d76b16499fa02a3ccd924d6892ebf4c654ccd9c640f6b"
     }
   ]
 }
