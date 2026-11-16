@@ -1319,9 +1319,9 @@ function renderHome(st) {
 
   var real = !!(st.sources && st.sources.real && st.sources.real.running);
   var platformName = ({ bilibili: 'B站', wechat: '视频号' })[st.sources?.real?.type] || '抖音';
-  ACTIVE_LIVE = realInfo.running ? String(realInfo.type || '') : '';
   setChip('cDouyin', real ? (platformName + '已连') : (platformName + '未连'), real ? '' : 'off');
   var realInfo = (st && st.sources && st.sources.real) || {};
+  ACTIVE_LIVE = realInfo.running ? String(realInfo.type || '') : '';
   var msgCount = (st && st.source && st.source.messages) || 0;
   [['douyin', 'dyStatusDouyin'], ['bilibili', 'biliStatus'], ['wechat', 'wechatStatus']].forEach(function (pair) {
     var el = $(pair[1]);
