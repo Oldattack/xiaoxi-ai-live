@@ -1,10 +1,10 @@
 {
-  "version": "2.6.212",
+  "version": "2.6.213",
   "notes": "2.6.210 更新内容：\n- 视频号只保留聊天：刷抖音、点歌、视频点播在视频号模式下不执行，入口隐藏\n- 视频号扫码登录后自动最小化后台网页，直播时不用一直开着\n- 视频号 OCR 收到弹幕即标记已连接，中控台不回报状态也不会显示未连接\n- 修复安装包未包含 OCR 脚本，新装/重启后 OCR 不启动\n- 修复切换平台后抖音看门狗污染视频号状态\n- 抖音 / 视频号 OBS 配置、场景集合、虚拟摄像头完全分开\n- 设置页清理技术提示、调试卡片和重复状态说明",
-  "package": "xiaoxi-ai-live-2.6.212.zip",
-  "size": 29417011,
-  "sha256": "b14b3002ba22792e29fea6b01fc8739e46dbfc05604186afbf732dcbbcb30c91",
-  "publishedAt": "2026-11-16T11:30:36.554Z",
+  "package": "xiaoxi-ai-live-2.6.213.zip",
+  "size": 29422779,
+  "sha256": "7f20f8a43ae8c0808a2751dc56b8036165c9afbabc41c3e4e576b02dfc48fcf2",
+  "publishedAt": "2026-11-16T11:37:51.103Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -174,6 +174,16 @@
       "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     {
+      "path": "obs-template/profiles/小汐视频号/basic.ini",
+      "size": 1950,
+      "sha256": "699929f3b4f9cbbadd064936c9b65d0ade93399d74e95be36f95521e635435d8"
+    },
+    {
+      "path": "obs-template/profiles/小汐视频号横屏/basic.ini",
+      "size": 1957,
+      "sha256": "a44a8b55cd83e78af1e23dbc837a1aeda3ef69309cf86c15b10be36ecb0de0c0"
+    },
+    {
       "path": "obs-template/README.txt",
       "size": 450,
       "sha256": "eee03190d4c53e7afb3ef4ed47b7cc6bc0da16bbe016e3c28f8f3bea4a2730ca"
@@ -187,6 +197,16 @@
       "path": "obs-template/scenes/小汐-竖屏.json",
       "size": 30733,
       "sha256": "3ebe4a61c1ee10b420b6278b57865b3ccd751cf2e6ef80526b79bc0a457709d0"
+    },
+    {
+      "path": "obs-template/scenes/小汐视频号.json",
+      "size": 14281,
+      "sha256": "b825f6bbadf207d2ea7fad50f27be7c7b61fb4990d0e94c6064c107f2c466bab"
+    },
+    {
+      "path": "obs-template/scenes/小汐视频号横屏.json",
+      "size": 14392,
+      "sha256": "2966798a17b9b213105433463a5de9ef7246398b687c1ee90f9b588df161f158"
     },
     {
       "path": "open-browser.vbs",
@@ -281,7 +301,7 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "cc67ed26e5156aa78139819370f07d1dea34377fc00794e257e7a307cbdcf31a"
+      "sha256": "54dfb1bb5debeec40e2f401cbd907c3a77fdcda8fd812124d79b9f292f4a251d"
     },
     {
       "path": "wechat-ocr.ps1",
@@ -290,8 +310,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 436566,
-      "sha256": "413299e926155f287f359377af82394e820c18cbbac3c4bafaa8d0629b896b07"
+      "size": 436563,
+      "sha256": "1d1c8e2f55deb04774ad3110bf3699f986fe1254137f7ed1e8750b689c86ada1"
     }
   ]
 }

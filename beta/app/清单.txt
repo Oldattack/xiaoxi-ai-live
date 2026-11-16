@@ -1,4 +1,4 @@
-小汐AI直播平台 v2.6.212
+小汐AI直播平台 v2.6.213
 
 AGENT.md
 VERSION
@@ -24,8 +24,12 @@ obs-template/profiles/小汐-横屏/basic.ini
 obs-template/profiles/小汐-横屏/streamEncoder.json
 obs-template/profiles/小汐-竖屏/basic.ini
 obs-template/profiles/小汐-竖屏/streamEncoder.json
+obs-template/profiles/小汐视频号/basic.ini
+obs-template/profiles/小汐视频号横屏/basic.ini
 obs-template/scenes/小汐-横屏.json
 obs-template/scenes/小汐-竖屏.json
+obs-template/scenes/小汐视频号.json
+obs-template/scenes/小汐视频号横屏.json
 open-browser.vbs
 plugin/README.md
 plugin/agent-path.txt
