@@ -1378,11 +1378,11 @@ function renderHome(st) {
     if (!el) return;
     if (realInfo.running && realInfo.type === pair[0]) {
       el.textContent = realInfo.connected
-        ? ('✅ 已连接 · 收到 ' + msgCount + ' 条' + (realInfo.note ? (' · ' + realInfo.note) : ''))
+        ? ('✅ 已连接 · 收到 ' + msgCount + ' 条')
         : ('⏳ ' + (realInfo.error || realInfo.note || '正在连接…'));
       el.style.color = realInfo.connected ? '#0f7a55' : (realInfo.error ? '#c0392b' : '#a4603f');
     } else {
-      el.textContent = realInfo.running ? ('未连接 · 当前使用 ' + platformName) : '未连接';
+      el.textContent = '未连接';
       el.style.color = '';
     }
   });
@@ -3000,9 +3000,7 @@ async function refreshDouyinLoginState() {
   if (!el) return;
   try {
     var r = await api('/api/douyin/login-status');
-    el.textContent = r && r.loggedIn
-      ? (r.synced ? '已登录，已同步到竖屏' : '已登录（横竖屏共用）')
-      : '未登录，扫码后自动同步';
+    el.textContent = r && r.loggedIn ? '已登录' : '未登录';
     el.style.color = r && r.loggedIn ? 'var(--brand)' : '';
   } catch (e) { el.textContent = '未检查'; }
 }
