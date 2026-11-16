@@ -366,7 +366,7 @@
       <div class="grp">日常</div>
       <a class="on" data-p="p0">主页</a>
       <div class="grp">连接</div>
-      <a data-p="p3">抖音接入</a>
+      <a data-p="p3">直播接入</a>
       <div class="grp">互动</div>
       <a data-p="p1">弹幕回复</a>
       <a data-p="p2">欢迎与热场</a>
@@ -1305,7 +1305,8 @@ function renderHome(st) {
   $('hSong').textContent = ((st.songs && st.songs.queue) || []).length;
 
   var real = !!(st.sources && st.sources.real && st.sources.real.running);
-  setChip('cDouyin', real ? '抖音已连' : '抖音未连', real ? '' : 'off');
+  var platformName = ({ bilibili: 'B站', wechat: '视频号' })[st.sources?.real?.type] || '抖音';
+  setChip('cDouyin', real ? (platformName + '已连') : (platformName + '未连'), real ? '' : 'off');
   var dySt = $('dyStatus');
     if (dySt) {
       var realInfo = (st && st.sources && st.sources.real) || {};
