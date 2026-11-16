@@ -1,4 +1,4 @@
-小汐AI直播平台 v2.6.204
+小汐AI直播平台 v2.6.205
 
 AGENT.md
 VERSION
@@ -53,6 +53,7 @@ sprites_hd/sad.png
 sprites_hd/stomp.png
 supervisor.mjs
 update.ps1
+wechat-ocr.ps1
 xiaoxi.mjs
 一句话部署.txt
 一键更新.cmd

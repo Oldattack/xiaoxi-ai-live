@@ -1,10 +1,10 @@
 {
-  "version": "2.6.204",
+  "version": "2.6.205",
   "notes": "2.6.184 更新内容：\n- 修复换人物形象视频后，人物形象页里的动作视频预览不更新\n- 保存/上传/还原人物形象后，设置里的所有预览 iframe 自动带版本重载\n- 人物形象变化后，OBS 场景/人物浏览器源自动强制刷新，正常画面同步换\n- /avatar-file/ 改为 no-store，避免浏览器缓存旧人物形象\n- 保留：抖音测试连接 5 秒结果、状态每 2 秒刷新、横竖屏共用扫码登录",
-  "package": "xiaoxi-ai-live-2.6.204.zip",
-  "size": 29413256,
-  "sha256": "1c7c5d74a4b7ac4501ed26f0bf3b3421e72051bfc05f69806477349472122425",
-  "publishedAt": "2026-11-16T09:49:54.952Z",
+  "package": "xiaoxi-ai-live-2.6.205.zip",
+  "size": 29415467,
+  "sha256": "47a007225e13c259f037309ab7b21cb7a00de55fa56ed540706bb098a3ad6ef4",
+  "publishedAt": "2026-11-16T09:51:23.568Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -281,12 +281,17 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "c53fa00708e4d3056e117a3a7a7fe912805b1a183d5ee3a225bbf425fabdf469"
+      "sha256": "c85df897d31ef24e59046e91948b7fe7a82ae15e93531d899d3e5cf69d5044fd"
+    },
+    {
+      "path": "wechat-ocr.ps1",
+      "size": 4830,
+      "sha256": "3de5d6eb69cdacf311a3f022493950f1a1e507dc0d37390e35342d8388cda06f"
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 429728,
-      "sha256": "4ecee3feb3c2860e14c0fa0b7307c8eb56bd3367573f2359c1569e1d9cd45339"
+      "size": 430772,
+      "sha256": "305ed0d6f2977916094f89e59aef4209eac2bfc982b51e8589c1966227c4258a"
     }
   ]
 }
