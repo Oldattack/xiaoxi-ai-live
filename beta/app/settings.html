@@ -521,6 +521,7 @@
         <p class="sub">视频号没有公开弹幕 API：连接后打开视频号管理后台，微信扫码登录并进入直播中控台。</p>
         <div class="hint">实验性接口：登录态存在本机 .wechat-channels-profile；微信后台改版可能失效，建议先用小号测试。</div>
         <div class="hint" style="color:#a4603f">视频号当前只启用聊天：不走刷抖音、点歌、视频点播；这些入口会隐藏。</div>
+        <div class="hint">扫码登录成功后，后台网页会自动最小化；直播时不用一直盯着它。</div>
         <div class="row"><label>当前账号</label><div id="wechatAccount" class="mini">未登录</div></div>
         <div class="row"><label>OBS 方案</label><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <select class="inp" id="wechatObsProfile" style="max-width:280px">
@@ -535,6 +536,7 @@
           <button class="btn pri" id="btnStartWechat">打开后台并连接</button>
           <button class="btn" id="btnTestWechat">测试连接</button>
           <button class="btn" id="btnStopWechat">断开</button>
+          <button class="btn" id="btnWechatWindow">显示后台</button>
           <button class="btn" id="btnWechatLogout">退出视频号登录</button>
         </div></div>
         <label class="sw"><input type="checkbox" id="autoConnectWechat"><span class="tr"></span><span class="t">上次用这个平台时自动打开</span></label>
@@ -1587,6 +1589,9 @@ function paintLiveButtons() {
     if (t) { t.disabled = busy; t.title = busy ? ('先断开' + names[ACTIVE_LIVE]) : ''; }
     if (x) { x.disabled = !active; x.title = active ? '' : '当前没有连接这个平台'; }
   });
+  if ($('btnWechatWindow')) {
+    $('btnWechatWindow').disabled = !(Boolean(ACTIVE_LIVE) && ACTIVE_LIVE === 'wechat');
+  }
 }
 function paintPlatformFeatureNav() {
   var type = (ST && ST.sources && ST.sources.real && ST.sources.real.type) || '';
@@ -1684,6 +1689,13 @@ $('btnTestWechat').onclick = function () { testLivePlatform('wechat', this); };
 $('btnStopDouyin').onclick = function () { stopLivePlatform('douyin'); };
 $('btnStopBili').onclick = function () { stopLivePlatform('bilibili'); };
 $('btnStopWechat').onclick = function () { stopLivePlatform('wechat'); };
+if ($('btnWechatWindow')) $('btnWechatWindow').onclick = async function () {
+  try {
+    var r = await api('/api/wechat/window', { action: 'show' });
+    if (r && r.ok) toast('视频号后台已显示');
+    else toast('显示失败：' + ((r && r.error) || '还没连接视频号'));
+  } catch (e) { toast('显示失败：' + e.message); }
+};
 if ($('btnWechatLogout')) $('btnWechatLogout').onclick = async function () {
   var btn = this;
   btn.disabled = true;
