@@ -36,14 +36,23 @@ if "%QUIET%"=="1" (
   echo.
 )
 
-rem 已经在跑？直接开页面
-powershell -NoProfile -Command "try { $r = Invoke-RestMethod 'http://127.0.0.1:8792/health' -TimeoutSec 2; if ($r.ok) { exit 0 } } catch {}; exit 1" >nul 2>nul
+rem 本安装目录自己的端口：**上一次实际用的端口（runtime.json）且还健康 > config.json 的 port > 8792**
+rem 同机可能装两套（完整版 + 商家版），绝不能写死 8792 去探别人的实例；
+rem 也不能只看 config：上一次可能因为端口被占而扫描到了别的端口，这里再启动会起出第二个实例。
+set OWNPORT=
+for /f "delims=" %%p in ('powershell -NoProfile -Command "$p=0; try { $raw=Get-Content '%~dp0runtime.json' -Raw -Encoding UTF8 -ErrorAction Stop; if ($raw -and $raw.Length -gt 0 -and $raw[0] -eq [char]0xFEFF) { $raw=$raw.Substring(1) }; $rt=$raw | ConvertFrom-Json; if ($rt.port) { $rp=[int]$rt.port; try { $r=Invoke-RestMethod ('http://127.0.0.1:' + $rp + '/health') -TimeoutSec 2; if ($r.ok) { $p=$rp } } catch {} } } catch {}; if ($p -eq 0) { try { $raw2=Get-Content '%~dp0config.json' -Raw -Encoding UTF8 -ErrorAction Stop; if ($raw2 -and $raw2.Length -gt 0 -and $raw2[0] -eq [char]0xFEFF) { $raw2=$raw2.Substring(1) }; $c=$raw2 | ConvertFrom-Json; if ($c.port) { $p=[int]$c.port } } catch {} }; if ($p -eq 0) { $p=8792 }; [string]$p"') do set OWNPORT=%%p
+set OWNPORT=!OWNPORT: =!
+if not defined OWNPORT set OWNPORT=8792
+if "%QUIET%"=="0" echo  [..] 本实例端口 !OWNPORT!
+
+rem 已经在自己的端口跑？直接开自己的页面
+powershell -NoProfile -Command "try { $r = Invoke-RestMethod 'http://127.0.0.1:!OWNPORT!/health' -TimeoutSec 2; if ($r.ok) { exit 0 } } catch {}; exit 1" >nul 2>nul
 if not errorlevel 1 (
   if "%QUIET%"=="1" (
-    start "" /b wscript //nologo "%~dp0open-browser.vbs" "http://127.0.0.1:8792"
+    start "" /b wscript //nologo "%~dp0open-browser.vbs" "http://127.0.0.1:!OWNPORT!"
   ) else (
-    echo  [OK] 服务已在运行
-    start "" "http://127.0.0.1:8792/settings"
+    echo  [OK] 服务已在运行（端口 !OWNPORT!）
+    start "" "http://127.0.0.1:!OWNPORT!/settings"
     echo.
     echo  要停止：双击「停止.vbs」，或设置页右上角「关闭服务」
     timeout /t 5 /nobreak >nul
@@ -51,12 +60,16 @@ if not errorlevel 1 (
   exit /b 0
 )
 
-rem 找空闲端口
+rem 先试自己的端口；被别的程序占了再从 8792~8800 找空闲
 set PORT=
-for %%p in (8792 8793 8794 8795 8796) do (
-  if not defined PORT (
-    powershell -NoProfile -Command "try { $c = New-Object Net.Sockets.TcpClient; $c.Connect('127.0.0.1', %%p); $c.Close(); exit 1 } catch { exit 0 }" >nul 2>nul
-    if not errorlevel 1 set PORT=%%p
+powershell -NoProfile -Command "try { $c = New-Object Net.Sockets.TcpClient; $c.Connect('127.0.0.1', !OWNPORT!); $c.Close(); exit 1 } catch { exit 0 }" >nul 2>nul
+if not errorlevel 1 set PORT=!OWNPORT!
+if not defined PORT (
+  for %%p in (8792 8793 8794 8795 8796 8797 8798 8799 8800) do (
+    if not defined PORT (
+      powershell -NoProfile -Command "try { $c = New-Object Net.Sockets.TcpClient; $c.Connect('127.0.0.1', %%p); $c.Close(); exit 1 } catch { exit 0 }" >nul 2>nul
+      if not errorlevel 1 set PORT=%%p
+    )
   )
 )
 if not defined PORT (

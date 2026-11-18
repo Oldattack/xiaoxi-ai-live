@@ -9,7 +9,18 @@ Add-Type -AssemblyName System.Windows.Forms | Out-Null
 
 $dshHome = if ($DshHome) { $DshHome } elseif ($env:DSH_HOME) { $env:DSH_HOME } else { Join-Path $env:USERPROFILE '.dsh' }
 $autoYes = ($env:XIAOXI_AUTOYES -eq '1')
+
+# 摘哪个插件跟本安装目录走（商家版装的是 @local/dsh-live-basic，别只认识完整版的名字）
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $PLUGIN = '@local/dsh-live-agent'
+$pluginPkgPath = Join-Path $here 'plugin\package.json'
+if (Test-Path $pluginPkgPath) {
+  try {
+    $n = (Get-Content $pluginPkgPath -Raw -Encoding UTF8 | ConvertFrom-Json).name
+    if ($n) { $PLUGIN = [string]$n }
+  } catch { }
+}
+$SHORT = ($PLUGIN -split '/')[-1]
 
 function Info($m) { Write-Host "  $m" }
 function Say($m) {
@@ -85,12 +96,17 @@ foreach ($prof in (Get-ChildItem $profilesDir -Directory)) {
   }
 
   # 4) 删掉插件目录
-  $dest = Join-Path $prof.FullName 'node_modules\@local\dsh-live-agent'
+  $dest = Join-Path $prof.FullName ('node_modules\@local\' + $SHORT)
   if (Test-Path $dest) {
     $item = Get-Item $dest -Force
     if ($item.LinkType) { cmd /c "rmdir `"$dest`"" 2>$null | Out-Null }
     else { Remove-Item $dest -Recurse -Force -ErrorAction SilentlyContinue }
     Info '  已删除插件文件'
+  }
+  $pluginHome = Join-Path $dshHome ('plugins\' + $SHORT)
+  if (Test-Path $pluginHome) {
+    Remove-Item $pluginHome -Recurse -Force -ErrorAction SilentlyContinue
+    Info '  已删除插件安装目录'
   }
 }
 

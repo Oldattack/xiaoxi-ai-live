@@ -417,7 +417,7 @@
         <div class="n"><b id="hRecv">0</b><span>收到弹幕</span></div>
         <div class="n"><b id="hRep">0</b><span>回了她</span></div>
         <div class="n"><b id="hDrop">0</b><span>跳过</span></div>
-        <div class="n"><b id="hSong">0</b><span>排队中</span></div>
+        <div class="n" data-basic-hide><b id="hSong">0</b><span>排队中</span></div>
       </div>
 
       <div class="home-two">
@@ -433,10 +433,10 @@
           <div class="ct">常用操作</div>
           <div class="li"><b>打开直播画面</b><button class="btn sm" id="actPreview">打开</button></div>
           <div class="li"><b>对齐 OBS</b><button class="btn sm" id="actAlign">一键对齐</button></div>
-          <div class="li"><b>清空点歌台</b><button class="btn sm" id="actClearSong">清空</button></div>
+          <div class="li" data-basic-hide><b>清空点歌台</b><button class="btn sm" id="actClearSong">清空</button></div>
           <div class="li"><b>说出这句话</b><button class="btn sm" id="actSay">试一句</button></div>
             <div class="li"><b>演示弹幕</b><button class="btn sm" id="mockSwitch">开启</button></div>
-            <div class="li"><b>检查更新</b><button class="btn sm" id="actUpdate">检查</button></div>
+            <div class="li" data-basic-hide><b>检查更新</b><button class="btn sm" id="actUpdate">检查</button></div>
         </div>
       </div>
     </div>
@@ -445,7 +445,7 @@
     <div class="pane" id="p1">
       <div class="card">
         <h3>让 AI 回话<span class="live">立即生效</span></h3>
-        <p class="sub">关掉之后只显示弹幕，不回应任何人。</p>
+        <p class="sub">关掉之后模型不再接话；欢迎、礼物、常问常答这类固定话术仍会回（固定话术可在「欢迎与热场」里单独关）。</p>
         <label class="sw"><input type="checkbox" id="enabled"><span class="tr"></span><span class="t">自动回复弹幕<i>观众说话时，小汐会自动接话</i></span></label>
         <label class="sw"><input type="checkbox" id="dryRun"><span class="tr"></span><span class="t">只演练，不真的说<i>生成回复但不上屏，用来试话术</i></span></label>
       </div>
@@ -488,7 +488,7 @@
         <div class="row"><label>直播间号</label>
           <div><input class="inp" id="webRid" placeholder="例如 123456789012">
             <div class="hint">直播间需公开且正在直播</div></div></div>
-        <div class="row"><label>扫码登录</label><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <div class="row" data-basic-hide><label>扫码登录</label><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <button class="btn" id="dyLoginBtn2">打开扫码窗口</button>
           <span class="hint" id="dyLoginState">未检查</span>
         </div></div>
@@ -745,6 +745,12 @@
         <div class="row"><label>横屏高度</label><div><input class="inp" id="avH" type="number" min="120" step="10"><div class="hint">px</div></div></div>
         <div class="row"><label>竖屏高度</label><div><input class="inp" id="avHP" type="number" min="120" step="10"><div class="hint">px</div></div></div>
         <label class="sw"><input type="checkbox" id="avGlow"><span class="tr"></span><span class="t">底部光晕<i>关掉更干净</i></span></label>
+        <div class="row"><label>位置</label><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="btn sm" id="avPosDrag">拖动调整位置</button>
+          <button class="btn sm" id="avPosReset">复位</button>
+          <span class="mini" id="avPosNow">左右 0px · 离底 206px</span>
+        </div></div>
+        <div class="hint">点「拖动调整位置」会新开一个画面窗口：拖动主播改位置、滚轮改大小，松手/停手自动保存；双击主播位置复位，Esc 撤销拖动。位置横竖屏共用，大小按横屏/竖屏各自记录。</div>
       </div>
       <div class="card">
         <h3>四个状态：欢迎 / 生气 / 伤心 / 收到礼物</h3>
@@ -886,7 +892,7 @@
           </div>
           <div class="row"><label>暗化</label><div><input class="inp" id="bgDim" type="range" min="0" max="80" step="5"><div class="hint" id="bgDimHint">0%</div></div></div>
           <div class="row"><label>模糊</label><div><input class="inp" id="bgBlur" type="range" min="0" max="40" step="2"><div class="hint" id="bgBlurHint">0px（图片/视频）</div></div></div>
-          <div class="row"><label>音乐可视化</label><div>
+          <div class="row" data-basic-hide><label>音乐可视化</label><div>
             <label class="sw"><input type="checkbox" id="vizEnabled"><span class="tr"></span><span class="t">放歌时跟着节奏动<i>随机：底部频谱 / 人物圆环 / 漂浮粒子，只在放歌时出现</i></span></label>
           </div></div>
           <div class="row"><label></label><div><button class="btn pri" id="bgSave">保存背景</button></div></div>
@@ -984,7 +990,7 @@
           </div>
         </div>
 
-          <div class="row">
+          <div class="row" data-basic-hide>
             <label>DJ 台</label>
             <div>
               <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
@@ -1053,7 +1059,7 @@
         </div>
 
         
-      <div class="card">
+      <div class="card" id="cardUpdate">
         <h3>版本与更新<span class="live">自动同步</span></h3>
         <p class="sub">有新版本会在这里提示，点一下就能升级；升级不会覆盖你的配置。</p>
           <div class="row"><label>当前版本</label><div><b id="appVer">—</b></div></div>
@@ -1095,7 +1101,7 @@
           <div class="chat-log" id="chatLog"><div class="empty">试一句「今天播到几点呀」，看她怎么回。</div></div>
           <div class="chat-quick">
             <button data-say="今天播到几点呀">播到几点</button>
-            <button data-say="点歌 晴天">点歌</button>
+            <button data-say="点歌 晴天" data-basic-hide>点歌</button>
             <button data-say="夸夸我">夸夸我</button>
             <button data-say="讲个笑话">讲个笑话</button>
           </div>
@@ -1111,7 +1117,7 @@
           <button class="on" data-k="all">全部</button>
           <button data-k="reply">回复</button>
           <button data-k="skip">跳过</button>
-          <button data-k="song">点歌</button>
+          <button data-k="song" data-basic-hide>点歌</button>
         </div>
         <div class="ev-list" id="evList"><div class="mini">还没有事件</div></div>
       </div>
@@ -1140,6 +1146,7 @@
 /* ─────────── 基础工具 ─────────── */
 var $ = function (id) { return document.getElementById(id); };
 var CFG = {}, ST = {}, formDirty = false;
+var EDITION = 'full';   /* 页面级版本：'basic' | 'full'，在 applyEdition() 里按 cfg.edition 设 */
 
 function toast(msg) {
   var t = $('toast');
@@ -1251,6 +1258,7 @@ function fill(st) {
   $('avHP').value = av.heightPortrait || 700;
   $('avGlow').checked = av.glow !== false;
   AVATAR = av;
+  paintAvPos(av);
 
   renderStats(st);
   renderSong(st);
@@ -1438,6 +1446,53 @@ function applyPreviewAspect(layout) {
   var big = document.querySelector('.pv-box');
   if (big) big.classList.toggle('portrait', portrait);
 }
+/* ─────────── 版本能力：聊天版隐藏「听音乐 / 视频点播 / 刷抖音」 ─────────── */
+function applyEdition(cfg) {
+  var f = (cfg && cfg.features) || {};
+  function hidePane(id) {
+    var nav = document.querySelector('a[data-p="' + id + '"]');
+    if (nav) nav.style.display = 'none';
+    var pane = document.getElementById(id);
+    if (!pane) return;
+    if (pane.classList.contains('on')) {
+      var home = document.querySelector('a[data-p="p0"]');
+      if (home) home.click();
+    }
+    pane.style.display = 'none';
+  }
+  if (f.music === false) hidePane('p8');
+  if (f.video === false) hidePane('p13');
+  if (f.douyin === false) hidePane('p16');
+  var isBasic = !!(cfg && cfg.edition === 'basic');
+  EDITION = isBasic ? 'basic' : 'full';
+  // 商家版是独立产品线（1.0.x）：品牌和标题都标出来，跟完整版区分
+  if (isBasic) {
+    var brand = document.querySelector('.brand');
+    if (brand && brand.textContent.indexOf('商家版') < 0) {
+      brand.textContent = brand.textContent.replace('小汐AI直播平台', '小汐AI直播平台 · 商家版');
+    }
+    document.title = '小汐AI直播平台 · 商家版 · 设置';
+  }
+  // 商家版没有的功能，界面上的所有入口一并收掉，只留真能用的：
+  // 主页「排队中」「清空点歌台」「检查更新」、试聊和事件流里的「点歌」、画面的「音乐可视化」
+  // （点歌台/视频点播/刷抖音三个面板和快捷控制里的两行在下面单独处理）
+  var basicHides = document.querySelectorAll('[data-basic-hide]');
+  for (var b = 0; b < basicHides.length; b++) basicHides[b].style.display = isBasic ? 'none' : '';
+  // 商家版没有在线更新，「状态与更新」里只剩状态和 OBS 诊断
+  var navP4 = document.querySelector('.nav a[data-p="p4"]');
+  if (navP4) navP4.textContent = isBasic ? '运行状态' : '状态与更新';
+  // 商家版没有自己的更新源：藏掉「版本与更新」卡片，服务端也拒绝在线更新（只能整包升级）
+  var cardUpd = document.getElementById('cardUpdate');
+  if (cardUpd) cardUpd.style.display = isBasic ? 'none' : '';
+  var rows = document.querySelectorAll('#p15 .row');
+  for (var i = 0; i < rows.length; i++) {
+    var lab = rows[i].querySelector('label');
+    var t = lab ? String(lab.textContent || '').trim() : '';
+    if (f.music === false && t.indexOf('听音乐') >= 0) rows[i].style.display = 'none';
+    if (f.douyin === false && t.indexOf('刷抖音') >= 0) rows[i].style.display = 'none';
+  }
+}
+
 async function load() {
   var st;
   try { st = await api('/api/state'); }
@@ -1445,6 +1500,7 @@ async function load() {
   ST = st;
   applyPreviewAspect(st && st.config && st.config.scene && st.config.scene.layout);
   try { fill(st); } catch (e) { toast('界面渲染出错：' + e.message); console.error(e); }
+  try { applyEdition(ST && ST.config); } catch (e) { console.error(e); }
   try { loadBgVideos(); } catch (e) { console.error(e); }
   try { refreshQuickControls(); } catch (e) { console.error(e); }
     var djEl = document.getElementById('djOn');
@@ -2064,6 +2120,52 @@ if ($('audioViaObs')) {
   };
 }
 $('btnPreview').onclick = function () { window.open('/?clean=1&mute=1', '_blank'); };
+
+/* ─────────── 主播位置：拖拽调整 ─────────── */
+function paintAvPos(a) {
+  var mx = Number(a && a.mx) || 0;
+  var mb = (a && a.mb === undefined) ? 206 : Number(a.mb);
+  var el = document.getElementById('avPosNow');
+  if (el) el.textContent = '左右 ' + mx + 'px · 离底 ' + mb + 'px';
+  // 和「人物形象」里的数字框保持一致，避免再点「保存人物形象」时把位置改回旧值
+  var imx = document.getElementById('avMx'), imb = document.getElementById('avMb');
+  if (imx) imx.value = mx;
+  if (imb) imb.value = mb;
+  if (typeof avModel === 'object' && avModel) { avModel.mx = mx; avModel.mb = mb; }
+}
+function paintAvSize(a) {
+  var h = a && Number(a.height), hp = a && Number(a.heightPortrait);
+  var ih = document.getElementById('avH'), ihp = document.getElementById('avHP');
+  if (ih && h) ih.value = h;
+  if (ihp && hp) ihp.value = hp;
+}
+if (document.getElementById('avPosDrag')) {
+  document.getElementById('avPosDrag').onclick = function () {
+    var availW = (window.screen && window.screen.availWidth) || 1440;
+    var availH = (window.screen && window.screen.availHeight) || 900;
+    var w = Math.min(1280, availW - 80);
+    var h = Math.min(Math.round(w * 9 / 16) + 96, availH - 80);
+    window.open('/?drag=1&t=' + Date.now(), 'xiaoxi-avatar-pos',
+      'width=' + w + ',height=' + h + ',menubar=no,toolbar=no,location=no,status=no');
+  };
+}
+if (document.getElementById('avPosReset')) {
+  document.getElementById('avPosReset').onclick = async function () {
+    try {
+      var r = await api('/api/config', { avatar: { mx: 0, mb: 206 } });
+      CFG = r.config;
+      paintAvPos(CFG.avatar);
+      toast('主播位置已复位');
+    } catch (e) { toast('复位失败：' + e.message); }
+  };
+}
+window.addEventListener('storage', function (e) {
+  if (!e || e.key !== 'xiaoxi.avatarPos') return;
+  fetch('/api/state').then(function (r) { return r.json(); }).then(function (j) {
+    var a = j && j.config && j.config.avatar;
+    if (a) { AVATAR = a; paintAvPos(a); paintAvSize(a); }
+  }).catch(function () {});
+});
 
 /* ─────────── 点歌 ─────────── */
   if ($('songSearchBtn')) {
@@ -3031,8 +3133,9 @@ if ($('dyEnabled')) {
 }
 loadDouyinEnabled();
 
-/* 抖音扫码登录 / 退出当前登录 */
+/* 抖音扫码登录 / 退出当前登录 —— 只给「刷抖音」用，商家版没有这个功能，不请求也不显示 */
 async function openDouyinLogin(btn) {
+  if (EDITION === 'basic') { toast('商家版不含刷抖音，收弹幕不需要登录抖音'); return; }
   var old = btn.textContent;
   btn.disabled = true; btn.textContent = '正在打开…';
   try {
@@ -3045,6 +3148,7 @@ async function openDouyinLogin(btn) {
 async function refreshDouyinLoginState() {
   var el = $('dyLoginState');
   if (!el) return;
+  if (EDITION === 'basic') return;   // 商家版没有刷抖音，不需要检查抖音登录态
   try {
     var r = await api('/api/douyin/login-status');
     el.textContent = r && r.loggedIn ? '已登录' : '未登录';
@@ -3188,6 +3292,9 @@ function paintVer(version, info) {
   if (el) el.textContent = "v" + (version || "—");
   var bar = document.getElementById("updNotice");
   if (!bar) return;
+  // 商家版只能整包升级，不提在线更新（EDITION 由 applyEdition 设；这里再看一眼 ST，避免首屏竞态）
+  var isBasic = EDITION === "basic" || !!(ST && ST.config && ST.config.edition === "basic");
+  if (isBasic) { bar.style.display = "none"; return; }
   if (info && info.ok && info.hasUpdate) {
     bar.style.display = "flex";
     bar.className = "upd-bar";
@@ -3206,6 +3313,7 @@ async function checkUpdateQuick() {
   try {
     var r = await api("/api/update");
     paintVer(r.version, null);
+    if (EDITION === "basic") return;   /* 商家版不查更新源，省一次请求也不会闪提示 */
     if (r.update && r.update.manifestUrl) {
       var c = await api("/api/update/check", {});
       paintVer(r.version, c);

@@ -16,9 +16,11 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const STOP_FLAG = path.join(HERE, 'stop.flag');
 const LOG = path.join(HERE, 'supervisor.log');
+const RUNTIME = path.join(HERE, 'runtime.json');   // 给「停止」用的运行时记录：{pid, port}
 
 let child = null;
 let stopped = false;
+let wroteRuntime = false;
 let backoff = 2000;
 
 /* ── 参数 ── */
@@ -50,10 +52,36 @@ function killChild() {
   try { if (process.platform === 'win32' && child.pid) spawn('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' }); } catch { /* ignore */ }
 }
 
+/* ── 单实例锁 ──
+ * 同一安装目录只允许一个守护。插件每分钟巡检、用户重复双击启动时，
+ * 只要主程序正好在崩溃退避里（端口空着），就会再拉一个守护出来，
+ * 两个守护各起一个主程序 → EADDRINUSE 反复崩 → 每 30 秒重启一次，
+ * 表现为「刷抖音时虚拟摄像头老掉、场景被切回小汐直播」。
+ */
+const LOCK = path.join(HERE, 'supervisor.lock');
+function lockOwnerAlive() {
+  let pid = 0;
+  try { pid = Number(String(fs.readFileSync(LOCK, 'utf8')).trim()) || 0; } catch { return false; }
+  if (!pid || pid === process.pid) return false;
+  try { process.kill(pid, 0); return true; } catch { return false; }
+}
+function releaseLock() {
+  try {
+    if (Number(String(fs.readFileSync(LOCK, 'utf8')).trim()) === process.pid) unlinkSync(LOCK);
+  } catch { /* 没锁或读不到就算了 */ }
+}
+if (lockOwnerAlive()) {
+  log('已有守护在跑（supervisor.lock），本守护退出');
+  process.exit(0);
+}
+try { writeFileSync(LOCK, String(process.pid), 'utf8'); } catch { /* 写不了锁就退化回老行为 */ }
+
 function shutdown(reason) {
   if (stopped) return;
   stopped = true;
   log('停止：' + reason);
+  removeRuntime();
+  releaseLock();
   killChild();
   setTimeout(() => process.exit(0), 300);
 }
@@ -118,7 +146,11 @@ if (PARENT_PID && EXIT_WITH_PARENT) {
 process.on('SIGINT', () => shutdown('收到 Ctrl+C'));
 process.on('SIGTERM', () => shutdown('收到终止信号'));
 process.on('SIGHUP', () => shutdown('窗口被关闭'));
-process.on('exit', () => { try { killChild(); } catch { /* ignore */ } });
+process.on('exit', () => {
+  try { killChild(); } catch { /* ignore */ }
+  removeRuntime();
+  releaseLock();
+});
 
 /* ── stop.flag 轮询 ── */
 setInterval(() => {
@@ -129,9 +161,35 @@ setInterval(() => {
 }, 1500).unref();
 
 // 已经有服务在跑就别再拉一个（重复启动会抢端口）
+// 端口取值顺序必须和 server.mjs 一致：--port > 环境变量 PORT > 同目录 config.json 的 port > 8792。
+// 少了 config.json 这一层，客户在设置页改过端口时，守护会去探 8792，
+// 探到别的实例（或本机另一套安装）健康就误判「已有实例在跑」直接退出，服务根本没被拉起来。
+function supPort() {
+  const explicit = Number(argOf('--port')) || Number(process.env.PORT) || 0;
+  if (explicit > 0) return explicit;
+  try {
+    const raw = String(fs.readFileSync(path.join(HERE, 'config.json'), 'utf8')).replace(/^\uFEFF/, '');
+    const p = Number(JSON.parse(raw).port) || 0;
+    if (p > 0) return p;
+  } catch { /* 没有 config.json / 读不了 / JSON 坏了：回退 8792 */ }
+  return 8792;
+}
+/** 写/删运行时记录：停止脚本靠它精确找到「本安装目录」的守护，不去全局杀 node */
+function writeRuntime() {
+  try {
+    writeFileSync(RUNTIME, JSON.stringify({ pid: process.pid, port: supPort(), startedAt: Date.now() }), 'utf8');
+    wroteRuntime = true;
+  } catch { /* 写不了就算了，停止脚本还有端口兜底 */ }
+}
+function removeRuntime() {
+  if (!wroteRuntime) return;
+  wroteRuntime = false;
+  try { if (existsSync(RUNTIME)) unlinkSync(RUNTIME); } catch { /* ignore */ }
+}
+
 async function alreadyUp() {
   try {
-    const r = await fetch('http://127.0.0.1:' + (Number(argOf('--port')) || Number(process.env.PORT) || 8792) + '/health', { signal: AbortSignal.timeout(1200) });
+    const r = await fetch('http://127.0.0.1:' + supPort() + '/health', { signal: AbortSignal.timeout(1200) });
     return r.ok;
   } catch { return false; }
 }
@@ -140,6 +198,7 @@ if (await alreadyUp()) {
   process.exit(0);
 }
 
+writeRuntime();
 log('守护启动，正在拉起主程序…');
 start();
 

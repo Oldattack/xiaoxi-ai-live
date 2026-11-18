@@ -76,11 +76,13 @@
     "bg": {
       "kind": "gradient",
       "preset": "aurora",
-      "color": "#7a1f3d",
+      "color": "#ecbbd3",
       "color2": "#1b3a5c",
       "image": "",
       "dim": 0,
-      "blur": 0
+      "blur": 0,
+      "video": "",
+      "hideAvatar": false
     },
     "audioRoute": "system",
     "layout": "landscape",
@@ -88,7 +90,8 @@
     "obsMode": "browser",
     "autoReloadSource": true,
     "autoSyncObs": true,
-    "obsScale": 1
+    "obsScale": 1,
+    "bgVideos": {}
   },
   "quick": {
     "enabled": true,
@@ -170,5 +173,18 @@
   "appearance": {
     "theme": "light",
     "glass": true
+  },
+  "wechat": {
+    "account": {
+      "name": "",
+      "id": "",
+      "avatar": ""
+    }
+  },
+  "edition": "full",
+  "features": {
+    "music": true,
+    "video": true,
+    "douyin": true
   }
 }

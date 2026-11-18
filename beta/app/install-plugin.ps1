@@ -1,7 +1,7 @@
 ﻿# 小汐AI直播平台 · 装 DSH 插件
 # 关键点：写 package.json 必须用 UTF-8 无 BOM，否则 DSH 启动会崩（JSON.parse 不认识 BOM）
 param(
-  [string]$DshHome = "$env:USERPROFILE\.dsh",
+  [string]$DshHome = $(if ($env:DSH_HOME) { $env:DSH_HOME } else { "$env:USERPROFILE\.dsh" }),
   [string]$PluginDir = ''
 )
 

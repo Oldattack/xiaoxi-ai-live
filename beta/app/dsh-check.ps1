@@ -3,10 +3,23 @@ $ErrorActionPreference = 'Continue'
 try { [Console]::OutputEncoding = [Text.Encoding]::UTF8 } catch {}
 
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$dsh = Join-Path $env:USERPROFILE '.dsh'
+# DSH 配置目录：DSH_HOME 优先（和 install-plugin/修复DSH 一致），否则 ~/.dsh
+$dsh = if ($env:DSH_HOME) { $env:DSH_HOME } else { Join-Path $env:USERPROFILE '.dsh' }
 $profileDir = Join-Path $dsh 'profiles\desktop'
 $pkgFile = Join-Path $profileDir 'package.json'
+
+# 插件名跟着本安装目录的 plugin\package.json 走：
+# 完整版 = @local/dsh-live-agent，商家版 = @local/dsh-live-basic。
+# 不能写死一个名字，否则商家版启动会把完整版的 DSH 插件登记当成自己并覆盖。
 $pluginName = '@local/dsh-live-agent'
+$pluginPkgPath = Join-Path $here 'plugin\package.json'
+if (Test-Path $pluginPkgPath) {
+  try {
+    $n = (Get-Content $pluginPkgPath -Raw -Encoding UTF8 | ConvertFrom-Json).name
+    if ($n) { $pluginName = [string]$n }
+  } catch { }
+}
+$short = ($pluginName -split '/')[-1]
 
 if (-not (Test-Path $dsh)) {
   Write-Host '  [--] 没装 DSH：用网页版就行'
@@ -30,15 +43,14 @@ try {
 if ($registered) {
   # 已登记：比对插件版本，升级了就重装（否则客户一直用旧图标/旧逻辑）
   $wantVer = ''
-  $pluginPkg = Join-Path $here 'plugin\package.json'
-  if (Test-Path $pluginPkg) {
-    try { $wantVer = (Get-Content $pluginPkg -Raw -Encoding UTF8 | ConvertFrom-Json).version } catch { }
+  if (Test-Path $pluginPkgPath) {
+    try { $wantVer = (Get-Content $pluginPkgPath -Raw -Encoding UTF8 | ConvertFrom-Json).version } catch { }
   }
   $haveVer = ''
-  $verFile = Join-Path $dsh 'plugins\dsh-live-agent\.installed-version'
+  $verFile = Join-Path $dsh ('plugins\' + $short + '\.installed-version')
   if (Test-Path $verFile) { try { $haveVer = (Get-Content $verFile -Raw -Encoding UTF8).Trim() } catch { } }
   if (-not $wantVer -or $wantVer -eq $haveVer) {
-    Write-Host ('  [OK] DSH 插件已安装' + $(if ($haveVer) { '（v' + $haveVer + '）' } else { '' }))
+    Write-Host ('  [OK] DSH 插件已安装（' + $pluginName + $(if ($haveVer) { ' v' + $haveVer } else { '' }) + '）')
     exit 0
   }
   Write-Host ('  [..] 插件有新版本 v' + $wantVer + '，正在更新…')
