@@ -95,7 +95,8 @@ if ($cfg.dependencies.PSObject.Properties[$name]) {
 
 if (-not $cfg.PSObject.Properties['dsh']) { $cfg | Add-Member -NotePropertyName dsh -NotePropertyValue ([pscustomobject]@{}) }
 if (-not $cfg.dsh.PSObject.Properties['profile']) { $cfg.dsh | Add-Member -NotePropertyName profile -NotePropertyValue ([pscustomobject]@{}) }
-$bundles = @($cfg.dsh.profile.bundles)
+# 已有 bundles 可能是 $null 或含 null（旧版本装过的坏数据）：过滤掉，别把 null 写回去
+$bundles = @($cfg.dsh.profile.bundles | Where-Object { $null -ne $_ -and "$_" -ne '' })
 if ($bundles -notcontains $name) { $bundles += $name }
 $cfg.dsh.profile | Add-Member -NotePropertyName bundles -NotePropertyValue $bundles -Force
 

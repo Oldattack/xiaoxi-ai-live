@@ -75,7 +75,8 @@ foreach ($prof in (Get-ChildItem $profilesDir -Directory)) {
   $changed = $false
   if ($json.dsh -and $json.dsh.profile -and $json.dsh.profile.bundles) {
     $before = @($json.dsh.profile.bundles).Count
-    $json.dsh.profile.bundles = @($json.dsh.profile.bundles | Where-Object { $_ -ne $PLUGIN })
+    # 顺手清掉 null / 空串（旧安装脚本写过 null，DSH 加载会报错）
+$json.dsh.profile.bundles = @($json.dsh.profile.bundles | Where-Object { $null -ne $_ -and "$_" -ne "" -and $_ -ne $PLUGIN })
     if (@($json.dsh.profile.bundles).Count -ne $before) { $changed = $true }
   }
   if ($json.dependencies) {

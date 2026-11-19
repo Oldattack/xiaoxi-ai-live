@@ -1277,7 +1277,10 @@ function fill(st) {
     $('audioRouteHint').textContent = viaObs ? '当前：声音走 OBS 混音（OBS 里能听到；直播伴侣抓窗口听不到）' : '当前：声音放给系统（直播伴侣抓「系统声音」即可）';
   }
   highlightLayout(sc.layout || 'landscape');
-    $('sceneState').textContent = (sc && sc.obsMode === 'browser') ? '✅ 已连上 OBS，画面在播' : '⚠ 还没连上 OBS，点上面的按钮';
+    var obsUpNow = Boolean(ST && ST.obs && ST.obs.reachable);
+    $('sceneState').textContent = (sc && sc.obsMode === 'browser')
+      ? (obsUpNow ? '✅ 已连上 OBS，画面在播' : '⚠ 没检测到 OBS，先打开 OBS 再点「一键对齐」')
+      : '⚠ 还没连上 OBS，点上面的按钮';
 }
 
 function renderStats(st) {
@@ -1421,9 +1424,12 @@ function renderHome(st) {
   }
   var rd = $('rDouyin'); rd.textContent = real ? '已连接' : '未连接'; rd.className = real ? 'g' : 'm';
 
-  var sceneOk = (CFG.scene && CFG.scene.obsMode === 'browser');
-  setChip('cScene', sceneOk ? '画面就绪' : '画面未就绪', sceneOk ? '' : 'off');
-  var rs = $('rScene'); rs.textContent = sceneOk ? '已推到 OBS' : '还没对齐'; rs.className = sceneOk ? 'g' : 'm';
+  var obsUp = Boolean(ST && ST.obs && ST.obs.reachable);
+  var sceneOk = Boolean(CFG.scene && CFG.scene.obsMode === 'browser' && obsUp);
+  setChip('cScene', sceneOk ? '画面就绪' : (obsUp ? '画面未就绪' : 'OBS 未连接'), sceneOk ? '' : 'off');
+  var rs = $('rScene');
+  rs.textContent = sceneOk ? '已推到 OBS' : (obsUp ? '还没对齐' : '未检测到 OBS');
+  rs.className = sceneOk ? 'g' : 'm';
 
   var t = CFG.tts || {};
   var NAMES = { ark: '豆包 2.0（方舟语音 Key）', doubao: '豆包 2.0', openai: 'OpenAI 兼容', custom: '自建接口', edge: 'Edge-TTS', browser: '系统语音' };
@@ -1434,7 +1440,7 @@ function renderHome(st) {
   var on = !!(CFG.gate && CFG.gate.enabled);
   $('homeState').textContent = on ? '正在直播' : '待命中';
   $('homeHi').textContent = on ? '正在播，弹幕我都接' : '今天想聊点啥？';
-  $('homeHint').textContent = on ? '有人说话我就回；没人说话我念叨两句。' : '连上直播间后，小汐就会接弹幕、回话。';
+  $('homeHint').textContent = on ? '有人说话我就回；没人说话我念叨两句。' : '连上直播间、并打开「自动回复弹幕」后，小汐才会接话。';
 }
 
 /* ─────────── 加载 ─────────── */

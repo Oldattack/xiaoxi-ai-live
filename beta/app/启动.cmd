@@ -55,7 +55,7 @@ if not errorlevel 1 (
     start "" "http://127.0.0.1:!OWNPORT!/settings"
     echo.
     echo  要停止：双击「停止.vbs」，或设置页右上角「关闭服务」
-    timeout /t 5 /nobreak >nul
+    ping -n 6 127.0.0.1 >nul
   )
   exit /b 0
 )
@@ -104,5 +104,5 @@ if "%QUIET%"=="1" ( node supervisor.mjs --hidden --port !PORT! ) else ( node sup
 if "%QUIET%"=="0" (
   echo.
   echo  服务已停止。
-  timeout /t 3 /nobreak >nul
+  ping -n 4 127.0.0.1 >nul
 )

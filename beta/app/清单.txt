@@ -1,4 +1,4 @@
-小汐AI直播平台 v2.6.219
+小汐AI直播平台 v2.6.220
 
 AGENT.md
 VERSION
@@ -73,3 +73,4 @@ xiaoxi.mjs
 打开直播设置.cmd
 插件说明.md
 自检.cmd
+自检.ps1
