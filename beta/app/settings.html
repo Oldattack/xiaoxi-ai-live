@@ -1547,6 +1547,8 @@ function parseRules(text) {
 
   var djEl2 = document.getElementById('djOn');
   if (djEl2) djEl2.onchange = async function () {
+    // 商家版没有 DJ 台：服务端会忽略这个字段，别给出「已打开」的假成功
+    if (isBasic) { this.checked = false; toast('商家版没有 DJ 台'); return; }
     try {
       await api('/api/config', { scene: { dj: { enabled: this.checked } } });
       toast(this.checked ? 'DJ 台已打开' : 'DJ 台已关闭');
@@ -3106,6 +3108,8 @@ function renderVideoState(st) {
   });
 }
 async function loadVideoState() {
+  // 商家版没有视频点播：这个接口服务端会拒绝，别每 4s 空转一次
+  if (isBasic) return;
   try { renderVideoState(await api('/api/video/state')); } catch (e) {}
 }
 async function addVideo() {

@@ -168,7 +168,8 @@
     "manifestUrl": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/updates/manifest.json",
     "checkOnStart": true,
     "intervalMinutes": 60,
-    "autoApply": false
+    "autoApply": false,
+    "channel": "beta"
   },
   "appearance": {
     "theme": "light",
