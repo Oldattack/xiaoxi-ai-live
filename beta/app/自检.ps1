@@ -39,7 +39,7 @@ Line ''
 Line '  [1] Node.js'
 $node = Get-Command node -ErrorAction SilentlyContinue
 if ($node) {
-  Line ('       v ' + (& node -v 2>$null))
+  Line ('       ' + (& node -v 2>$null))
 } else {
   Line '       x 没装 Node.js  https://nodejs.org'
 }

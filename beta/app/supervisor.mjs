@@ -59,22 +59,57 @@ function killChild() {
  * 表现为「刷抖音时虚拟摄像头老掉、场景被切回小汐直播」。
  */
 const LOCK = path.join(HERE, 'supervisor.lock');
+const LOCK_HEARTBEAT_MS = 15000;
+const LOCK_STALE_MS = 60000;
+/* 锁里除了 pid 还要记「是哪个目录的锁」并定期刷新心跳。
+ * 只存 pid 的老做法有两个坑：
+ *  1) 守护被强杀（断电/任务管理器结束进程）后锁文件留着，pid 过段时间会被
+ *     无关进程复用 → 新守护以为「已有守护在跑」→ 双击启动没反应，服务起不来；
+ *  2) 客户把整个安装目录复制一份（换机器/换盘），锁跟着复制过去，里头 pid
+ *     在本机恰好还活着 → 副本同样静默不启动。
+ * 加上 here 比对 + 心跳过期判定，两种情况都能自愈，重复双击仍被正确挡住。 */
+function lockPathKey(p) {
+  try { return path.resolve(p).replace(/[\\/]+$/, '').toLowerCase(); } catch { return String(p || '').toLowerCase(); }
+}
+function readLock() {
+  let raw = '';
+  try { raw = fs.readFileSync(LOCK, 'utf8').trim(); } catch { return null; }
+  if (!raw) return null;
+  if (raw.startsWith('{')) {
+    try {
+      const j = JSON.parse(raw);
+      return { pid: Number(j.pid) || 0, here: String(j.here || ''), legacy: false };
+    } catch { return null; }
+  }
+  return { pid: Number(raw.replace(/\D+/g, '')) || 0, here: '', legacy: true };
+}
+function lockAgeMs() {
+  try { return Date.now() - fs.statSync(LOCK).mtimeMs; } catch { return Infinity; }
+}
 function lockOwnerAlive() {
-  let pid = 0;
-  try { pid = Number(String(fs.readFileSync(LOCK, 'utf8')).trim()) || 0; } catch { return false; }
-  if (!pid || pid === process.pid) return false;
-  try { process.kill(pid, 0); return true; } catch { return false; }
+  const lk = readLock();
+  if (!lk || !lk.pid || lk.pid === process.pid) return false;
+  // 明显是别的安装目录留下的锁：副本/搬迁场景，直接当过期
+  if (lk.here && lockPathKey(lk.here) !== lockPathKey(HERE)) return false;
+  // 新格式：心跳停了就说明守护已经不在了（或 pid 被复用），别信 pid
+  if (!lk.legacy && lockAgeMs() > LOCK_STALE_MS) return false;
+  try { process.kill(lk.pid, 0); return true; } catch { return false; }
+}
+let lockBeat = null;
+function writeLock() {
+  try { writeFileSync(LOCK, JSON.stringify({ pid: process.pid, here: HERE, at: Date.now() }), 'utf8'); } catch { /* 写不了锁就退化回老行为 */ }
 }
 function releaseLock() {
-  try {
-    if (Number(String(fs.readFileSync(LOCK, 'utf8')).trim()) === process.pid) unlinkSync(LOCK);
-  } catch { /* 没锁或读不到就算了 */ }
+  if (lockBeat) { clearInterval(lockBeat); lockBeat = null; }
+  const lk = readLock();
+  if (lk && lk.pid === process.pid) { try { unlinkSync(LOCK); } catch { /* ignore */ } }
 }
 if (lockOwnerAlive()) {
   log('已有守护在跑（supervisor.lock），本守护退出');
   process.exit(0);
 }
-try { writeFileSync(LOCK, String(process.pid), 'utf8'); } catch { /* 写不了锁就退化回老行为 */ }
+writeLock();
+try { lockBeat = setInterval(writeLock, LOCK_HEARTBEAT_MS); lockBeat.unref?.(); } catch { /* ignore */ }
 
 function shutdown(reason) {
   if (stopped) return;
@@ -107,7 +142,19 @@ function start() {
     windowsHide: HIDDEN
   });
 
+  let spawnFailed = false;
+  // spawn 失败是异步 'error'：不接住守护进程直接崩，客户双击 启动.cmd 一闪就退，
+  // 既没有日志也没有重试（杀软把 node.exe 隔离掉就是这个表现）。
+  child.on('error', (e) => {
+    if (stopped) return;
+    spawnFailed = true;
+    log('主程序拉不起来：' + (e && e.message ? e.message : e) + '，' + backoff / 1000 + ' 秒后重试');
+    setTimeout(start, backoff);
+    backoff = Math.min(30000, backoff * 2);
+  });
+
   child.on('exit', (code, signal) => {
+    if (spawnFailed) return; // 起不来时 'exit' 也可能跟着一起触发，别叠两次重启搞出两个实例
     if (stopped) return;
     if (existsSync(STOP_FLAG)) {
       log('检测到停止标记，退出守护');

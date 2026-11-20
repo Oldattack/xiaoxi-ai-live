@@ -1,10 +1,10 @@
 {
-  "version": "2.6.220",
+  "version": "2.6.221",
   "notes": "2.6.220 更新内容：\n- 刷抖音不再重启 OBS：OBS 已打开但没带调试端口时，改用浏览器源控制（\"下一条\"降级为刷新推荐流）\n- 虚拟摄像头不再自己掉：平台拉起 OBS、开始刷抖音时自动打开；切方案按原状态还原\n- 修复偶发 30 秒重启：新增守护单实例锁，避免两个守护抢 8792 端口\n- 停止服务只停本安装目录的进程；启动/更新/自检都按本实例端口（改过端口也能用）\n- 切场景不再闪 OBS logo：关闭浏览器源\"不可见时关闭页面\"，且只在 scene.html 变化时才重载\n- 新弹幕指令：停止看视频 / 停止视频 / 关视频 / 别看了；停止听歌 / 停止放歌 / 关音乐 / 别放了\n- 放歌时显示墨镜动作图，停歌立即切回常态形象（不再延迟 450ms 闪一下）\n- 放歌画面按可用高度自动缩放，身高调大也不会顶出画面\n- 人物形象支持拖动调位置、滚轮调大小（双击复位、Esc 取消，OBS 源里不会误触）\n- 抖音弹幕断线不再\"8 次就放弃\"，最长 60 秒一次一直重试\r\n- 新装没开 OBS 时，设置页不再误显示「已连上 OBS / 已推到 OBS」，改为「未检测到 OBS」\r\n- 自检脚本重写：修复 UTF-8 长行被 cmd 截断（报 Profile 不是内部或外部命令），新增 OBS 检测\r\n- 修复插件安装把 null 写进 DSH 的 bundles（会导致 DSH 加载插件异常），老数据也会被清理\r\n- 修复隐藏窗口启动/停止时 timeout 报「输入重定向不支持」",
-  "package": "xiaoxi-ai-live-2.6.220.zip",
-  "size": 29434816,
-  "sha256": "f7ae07cba9e153cca1e0d164dc453875a9d1c62da8c46ddf2b4eb2cf998fbd1f",
-  "publishedAt": "2026-11-19T08:48:39.710Z",
+  "package": "xiaoxi-ai-live-2.6.221.zip",
+  "size": 29438623,
+  "sha256": "9fd8121dcdde490021bf6b08f54949bfaa0eee962144c1aa9b22f5e0b4d40f2e",
+  "publishedAt": "2026-11-20T16:52:26.936Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -31,7 +31,7 @@
     {
       "path": "使用说明.md",
       "size": 5057,
-      "sha256": "01363d753108eae734d04de111d5e587d50c85b82128401733223bd7a8485481"
+      "sha256": "9c8002f9255a29635bccaa525ec94e54be2d74ca37f0bb4469bcd71887a3121f"
     },
     {
       "path": "停止.cmd",
@@ -75,8 +75,8 @@
     },
     {
       "path": "自检.ps1",
-      "size": 5125,
-      "sha256": "c00e02d1d7bccc08e0f59782cea89a1e3a64538ea382e6054d13b2da2bc9506c"
+      "size": 5123,
+      "sha256": "04e41203d384c28a2dd3c06fb1e3b900849b236d99e952454604e1a8eec35fbd"
     },
     {
       "path": "AGENT.md",
@@ -220,13 +220,13 @@
     },
     {
       "path": "scene.html",
-      "size": 112171,
-      "sha256": "b09167fe37423a80de44e760b9a750b954129bcc35c6ab5c8f253bae570c095b"
+      "size": 112576,
+      "sha256": "0d072b6731ae4b69ac242a18e638f2e49d270c0da9d334e40fce2afa7c29e314"
     },
     {
       "path": "settings.html",
-      "size": 183532,
-      "sha256": "02882ba099909371782174a2b838a13a17952816dd5e66d0844ebeee17447e9c"
+      "size": 184608,
+      "sha256": "2e3f1ec6a3f91bf74888477dafdf1bd4735b873d10fc282ad7a19d02a21fa6d1"
     },
     {
       "path": "sprites_hd/actions/music-loop.webp",
@@ -295,18 +295,18 @@
     },
     {
       "path": "supervisor.mjs",
-      "size": 8054,
-      "sha256": "a336ece5600c0f2450b3cc92dc96fdeb5f48e4090d89650943c9ba80684286e0"
+      "size": 10515,
+      "sha256": "0de930dfe6553eb1f7e37cf657de52832754a01d449d50b7b381d68524acb4b7"
     },
     {
       "path": "update.ps1",
-      "size": 1691,
-      "sha256": "8bf56c8277bed0b8ed81ed9ca90470a91a44b3c185fa8c24b631c2f3068e922d"
+      "size": 2025,
+      "sha256": "b0de99dcc55c3cca9663016d097c77b1d3ef524c043857b80b0a3c3ca913096b"
     },
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "d054a545557f34e4c94d25d358e78c20111a9b3666312c0bd7ac2d7ecb753705"
+      "sha256": "ccdc9804e026d0222950224e47fd3d4ea95e45a79404ce31007f20e91f218238"
     },
     {
       "path": "wechat-ocr.ps1",
@@ -315,8 +315,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 448245,
-      "sha256": "6606883962964190e469da6f4739ff100fa2ff98d1b9b1b23aef06794ac8ca00"
+      "size": 456440,
+      "sha256": "24ee7ba96034f01367275724a8921ed86a1d2264c6bed527e294853f4f6eaf3f"
     }
   ]
 }

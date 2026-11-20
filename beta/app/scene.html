@@ -1776,11 +1776,14 @@ function speak(text, emotion){
     } catch (e) { /* ignore */ }
   }, 1200);
 
-  function pauseSongForVideo() {
-    if (sg && !sg.paused && sg.currentSrc) {
-  // ── 音频卡顿自愈 ──
+  // ── 音频卡顿自愈：全局只装一个定时器 ──
+  // 以前这段 setInterval 写在 pauseSongForVideo 的 if 里面，每切一个视频就多出一个
+  // 永不停止的 5 秒定时器；几十个之后它们互相抢着 load()/play()，歌被反复重启，越播越卡。
   var audioWatch = { songT: -1, songTry: 0, vidT: -1, vidTry: 0 };
-  setInterval(function () {
+  var audioWatchTimer = null;
+  function ensureAudioWatch() {
+    if (audioWatchTimer) return;
+    audioWatchTimer = setInterval(function () {
     try {
       if (sg && !sg.paused && sg.currentSrc) {
         var t = sg.currentTime;
@@ -1806,8 +1809,12 @@ function speak(text, emotion){
         audioWatch.vidT = vt;
       }
     } catch (e) { /* ignore */ }
-  }, 5000);
+    }, 5000);
+  }
 
+  function pauseSongForVideo() {
+    ensureAudioWatch();
+    if (sg && !sg.paused && sg.currentSrc) {
       try { sg.pause(); songFrozenForVideo = true; } catch (e) {}
     }
   }

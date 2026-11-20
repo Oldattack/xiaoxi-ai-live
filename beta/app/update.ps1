@@ -18,10 +18,12 @@ if (Test-Path $f) { $url = (Get-Content $f -Raw).Trim() }
 if (-not $url) { Write-Host '没有配置更新地址（update-url.txt）'; exit 1 }
 try {
   $r = Invoke-RestMethod -Method Post -Uri ($base + '/api/update/check') -Body (@{manifestUrl=$url} | ConvertTo-Json) -ContentType 'application/json'
-  if ($r -and $r.ok -eq $false) { Write-Host ('更新失败：' + ($r.reason || $r.error || '检查失败')); exit 1 }
+  # 注意：这里绝对不能用双竖线（PowerShell 5.1 会在「解析阶段」直接报错，整个脚本一行都不执行，
+  # 客户看到的现象是双击一键更新毫无反应）。多级兜底一律写成顺序判断。
+  if ($r -and $r.ok -eq $false) { $msg = $r.reason; if (-not $msg) { $msg = $r.error }; if (-not $msg) { $msg = '检查失败' }; Write-Host ('更新失败：' + $msg); exit 1 }
   if (-not $r.hasUpdate) { Write-Host ('已经是最新版 ' + $r.current); exit 0 }
   Write-Host ('发现新版本 ' + $r.latest + '，正在下载…')
   $a = Invoke-RestMethod -Method Post -Uri ($base + '/api/update/apply') -Body '{}' -ContentType 'application/json'
-  if ($a -and $a.ok -eq $false) { Write-Host ('更新失败：' + ($a.error || '服务拒绝')); exit 1 }
+  if ($a -and $a.ok -eq $false) { $msg = $a.error; if (-not $msg) { $msg = '服务拒绝' }; Write-Host ('更新失败：' + $msg); exit 1 }
   Write-Host '更新完成，服务正在重启（十几秒后可用）'
 } catch { Write-Host ('更新失败：' + $_.Exception.Message); exit 1 }

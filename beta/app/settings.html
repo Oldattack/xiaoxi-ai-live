@@ -1300,9 +1300,13 @@ function renderStats(st) {
   var gateOn = !!(CFG.gate && CFG.gate.enabled);
   $('pGate').className = 'pill ' + (gateOn ? 'on' : 'off');
   $('pGate').innerHTML = '<i></i>' + (gateOn ? '回复中' : '已暂停');
-  var sceneOk = (CFG.scene && CFG.scene.obsMode === 'browser');
+  // 画面就绪 = 模板设成浏览器采集「而且」OBS 真的在跑。
+  // 以前只看配置项，OBS 关着也报「画面就绪」，客户以为正在推流，其实根本没开。
+  var _o = (st && st.obs) || (typeof ST !== 'undefined' && ST && ST.obs) || {};
+  var obsUp = !!_o.reachable;
+  var sceneOk = Boolean(CFG.scene && CFG.scene.obsMode === 'browser' && obsUp);
   $('pScene').className = 'pill ' + (sceneOk ? 'on' : '');
-  $('pScene').innerHTML = '<i></i>' + (sceneOk ? '画面就绪' : '画面');
+  $('pScene').innerHTML = '<i></i>' + (sceneOk ? '画面就绪' : (obsUp ? '画面未就绪' : 'OBS 未连接'));
   $('pLat').innerHTML = '<i></i>耗时 ' + (lat.last ? Math.round(lat.last) + 'ms' : '—');
 }
 
@@ -1391,10 +1395,18 @@ function renderHome(st) {
     var el = $(pair[1]);
     if (!el) return;
     if (realInfo.running && realInfo.type === pair[0]) {
-      el.textContent = realInfo.connected
-        ? ('✅ 已连接 · 收到 ' + msgCount + ' 条')
-        : ('⏳ ' + (realInfo.error || realInfo.note || '正在连接…'));
-      el.style.color = realInfo.connected ? '#0f7a55' : (realInfo.error ? '#c0392b' : '#a4603f');
+      // 「连上了」不等于「有弹幕」：房间没开播/已经结束时 CDP 明明连着，但收到 0 条。
+      // 以前这种状态照样打绿勾，客户看着 ✅ 却半天没人说话，以为是软件坏了。
+      if (realInfo.connected && msgCount > 0) {
+        el.textContent = '✅ 已连接 · 收到 ' + msgCount + ' 条' + (realInfo.note ? '（' + realInfo.note + '）' : '');
+        el.style.color = '#0f7a55';
+      } else if (realInfo.connected) {
+        el.textContent = '⚠️ ' + (realInfo.note || '连上了，但一条弹幕都没收到：直播间可能没开播 / 已结束');
+        el.style.color = '#a4603f';
+      } else {
+        el.textContent = '⏳ ' + (realInfo.error || realInfo.note || '正在连接…');
+        el.style.color = realInfo.error ? '#c0392b' : '#a4603f';
+      }
     } else {
       el.textContent = '未连接';
       el.style.color = '';
@@ -2178,8 +2190,8 @@ window.addEventListener('storage', function (e) {
     $('songSearchBtn').onclick = songSearchNow;
     $('songSearchInput').onkeydown = function (e) { if (e.key === 'Enter') songSearchNow(); };
   }
-  if ($('songNext')) $('songNext').onclick = async function () { try { await fetch('/api/song/next', { method: 'POST' }); toast('下一首'); load(); } catch (e) { toast('失败：' + e.message); } };
-  if ($('songRetry')) $('songRetry').onclick = async function () { try { await fetch('/api/song/retry', { method: 'POST' }); toast('已重新解析'); load(); } catch (e) { toast('失败：' + e.message); } };
+  if ($('songNext')) $('songNext').onclick = async function () { try { await api('/api/song/next', {}); toast('下一首'); load(); } catch (e) { toast('失败：' + e.message); } };
+  if ($('songRetry')) $('songRetry').onclick = async function () { try { await api('/api/song/retry', {}); toast('已重新解析'); load(); } catch (e) { toast('失败：' + e.message); } };
 
 $('songClear').onclick = async function () {
   try { await api('/api/song/clear', {}); toast('点歌台已清空'); load(); }
@@ -2637,8 +2649,12 @@ $('actClearSong').onclick = async function () {
   catch (e) { toast('清空失败：' + e.message); }
 };
 $('actSay').onclick = async function () {
-  try { await fetch('/say?text=' + encodeURIComponent('大家好呀，我是小汐') + '&emotion=' + encodeURIComponent('开心')); toast('已发出'); }
-  catch (e) { toast('失败：' + e.message); }
+  // 裸 fetch 不看状态码：服务没起来 / 路由报错也照样弹「已发出」，属于骗自己。
+  try {
+    var r = await fetch('/say?text=' + encodeURIComponent('大家好呀，我是小汐') + '&emotion=' + encodeURIComponent('开心'));
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    toast('已发出');
+  } catch (e) { toast('失败：' + e.message); }
 };
 
 /* ─────────── 快捷控制 ─────────── */
