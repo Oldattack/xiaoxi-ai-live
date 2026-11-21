@@ -366,7 +366,9 @@
       <div class="grp">日常</div>
       <a class="on" data-p="p0">主页</a>
       <div class="grp">连接</div>
-      <a data-p="p3">直播接入</a>
+      <a data-p="p3">抖音接入</a>
+      <a data-p="p18">视频号接入</a>
+      <a data-p="p19">B站接入</a>
       <div class="grp">互动</div>
       <a data-p="p1">弹幕回复</a>
       <a data-p="p2">欢迎与热场</a>
@@ -480,11 +482,11 @@
       </div>
     </div>
 
-    <!-- ══════ 抖音接入 ══════ -->
+    <!-- ══════ 抖音接入（独立页面） ══════ -->
     <div class="pane" id="p3">
       <div class="card">
         <h3>抖音直播<span class="live">匿名弹幕</span></h3>
-        <p class="sub">填抖音直播间号，匿名收弹幕。</p>
+        <p class="sub">填抖音直播间号，匿名收弹幕。这里的「刷抖音 / 点歌台 / 视频点播」只属于抖音。</p>
         <div class="row"><label>直播间号</label>
           <div><input class="inp" id="webRid" placeholder="例如 123456789012">
             <div class="hint">直播间需公开且正在直播</div></div></div>
@@ -500,24 +502,13 @@
         </div></div>
         <label class="sw"><input type="checkbox" id="autoConnectDouyin"><span class="tr"></span><span class="t">上次用这个平台时自动连</span></label>
       </div>
+    </div>
 
-      <div class="card">
-        <h3>B站直播<span class="live">免登录</span></h3>
-        <p class="sub">填 B站直播间号，免登录收弹幕。</p>
-        <div class="row"><label>B站直播间号</label>
-          <div><input class="inp" id="biliRid" placeholder="例如 31934797"></div></div>
-        <div class="row"><label>状态</label><div id="biliStatus" class="mini">未连接</div></div>
-        <div class="row" style="margin-top:12px"><label></label><div style="display:flex;gap:8px">
-          <button class="btn pri" id="btnStartBili">连接 B站</button>
-          <button class="btn" id="btnTestBili">测试连接</button>
-          <button class="btn" id="btnStopBili">断开</button>
-        </div></div>
-        <label class="sw"><input type="checkbox" id="autoConnectBili"><span class="tr"></span><span class="t">上次用这个平台时自动连</span></label>
-      </div>
-
+    <!-- ══════ 视频号接入（独立页面） ══════ -->
+    <div class="pane" id="p18">
       <div class="card">
         <h3>视频号直播<span class="live">需微信扫码</span></h3>
-        <p class="sub">连接后用微信扫码登录，登录成功即可收弹幕。</p>
+        <p class="sub">视频号不用填直播间号：打开后台 → 微信扫码登录 → 开始直播，就能收弹幕。</p>
         <div class="row"><label>当前账号</label><div id="wechatAccount" class="mini">未登录</div></div>
         <div class="row"><label>OBS 方案</label><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <select class="inp" id="wechatObsProfile" style="max-width:280px">
@@ -535,6 +526,25 @@
           <button class="btn" id="btnWechatLogout">退出视频号登录</button>
         </div></div>
         <label class="sw"><input type="checkbox" id="autoConnectWechat"><span class="tr"></span><span class="t">上次用这个平台时自动打开</span></label>
+        <div class="hint" style="margin-top:10px">视频号只做聊天回复；刷抖音 / 点歌台 / 视频点播是抖音专属，这里不涉及。</div>
+      </div>
+    </div>
+
+    <!-- ══════ B站接入（独立页面） ══════ -->
+    <div class="pane" id="p19">
+      <div class="card">
+        <h3>B站直播<span class="live">免登录</span></h3>
+        <p class="sub">填 B站直播间号，免登录收弹幕。</p>
+        <div class="row"><label>B站直播间号</label>
+          <div><input class="inp" id="biliRid" placeholder="例如 31934797"></div></div>
+        <div class="row"><label>状态</label><div id="biliStatus" class="mini">未连接</div></div>
+        <div class="row" style="margin-top:12px"><label></label><div style="display:flex;gap:8px">
+          <button class="btn pri" id="btnStartBili">连接 B站</button>
+          <button class="btn" id="btnTestBili">测试连接</button>
+          <button class="btn" id="btnStopBili">断开</button>
+        </div></div>
+        <label class="sw"><input type="checkbox" id="autoConnectBili"><span class="tr"></span><span class="t">上次用这个平台时自动连</span></label>
+        <div class="hint" style="margin-top:10px">B站只做聊天回复；刷抖音 / 点歌台 / 视频点播是抖音专属，这里不涉及。</div>
       </div>
     </div>
 
@@ -1616,7 +1626,8 @@ $('save').onclick = async function () {
       lines: $('idleLines').value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean)
     },
     song: {
-      enabled: true,
+      // 不能写死 true：改别的设置一保存，就把用户关掉的点歌又打开了
+      enabled: CFG.song ? CFG.song.enabled !== false : true,
       perUserMs: Math.round((Number($('songPerUser').value) || 0) * 1000),
       globalMs: Math.round((Number($('songGlobal').value) || 0) * 1000),
       maxQueue: Math.max(1, Number($('songMaxQueue').value) || 8)
@@ -1710,10 +1721,11 @@ async function startLivePlatform(p, btn) {
   btn.disabled = true; btn.textContent = '连接中…';
   try {
     await api('/api/config', livePlatformFields(p));
-    var body = { action: 'start', type: p };
-    if (p === 'douyin') body.webRid = room;
-    if (p === 'bilibili') body.biliRid = room;
-    var r = await api('/api/source', body);
+    // 一个平台一个接口：抖音 / B站 / 视频号各自独立，互不牵连
+    var r;
+    if (p === 'douyin') r = await api('/api/douyin/connect', { webRid: room });
+    else if (p === 'bilibili') r = await api('/api/bilibili/connect', { biliRid: room });
+    else r = await api('/api/wechat/connect', {});
     if (r && r.ok === false) toast('连接失败：' + (r.error || '未知原因'));
     else toast(p === 'wechat' ? '已打开视频号后台，请扫码登录' : (p === 'bilibili' ? '正在连接 B站弹幕…' : '正在连接抖音…'));
     setTimeout(load, 2500);
@@ -1747,7 +1759,7 @@ async function testLivePlatform(p, btn) {
 }
 async function stopLivePlatform(p) {
   if (ACTIVE_LIVE && ACTIVE_LIVE !== p) { toast('当前连接的是' + ({ douyin: '抖音', bilibili: 'B站', wechat: '视频号' }[ACTIVE_LIVE] || '其他平台')); return; }
-  try { await api('/api/source', { action: 'stop', type: p }); toast('已断开'); load(); }
+  try { await api('/api/source/stop', { type: p }); toast('已断开'); load(); }
   catch (e) { toast('断开失败：' + e.message); }
 }
 $('btnStartDouyin').onclick = function () { startLivePlatform('douyin', this); };
@@ -1790,6 +1802,11 @@ if ($('btnWechatBindObs')) $('btnWechatBindObs').onclick = async function () {
   btn.disabled = false;
 };
 var _oldMock = async function () {
+  // 演示弹幕（彩排）也要走开播前那道门：连了真实平台就不给开，免得直播中被假弹幕搅乱
+  if (ACTIVE_LIVE && ACTIVE_LIVE !== 'mock') {
+    toast('已经连着' + ({ douyin: '抖音', bilibili: 'B站', wechat: '视频号' }[ACTIVE_LIVE] || '平台') + '，先断开再开演示弹幕');
+    return;
+  }
   try { await api('/api/source', { action: 'start', type: 'mock' }); toast('模拟弹幕已开'); load(); }
   catch (e) { toast('启动失败：' + e.message); }
 };
@@ -2752,10 +2769,29 @@ if ($('quickDouyinStop')) $('quickDouyinStop').onclick = async function () {
 refreshDouyinQuick();
 
 /* ─────────── 自动刷新 ─────────── */
+// 用户正在填表时不要自动刷新：load()→fill() 会把还没保存的输入（直播间号、话术、人设…）
+// 覆盖回后端旧值。之前「填个抖音号，两秒就被清空」就是这么来的。
+var formTouchedAt = 0;
+function noteFormTouch(e) {
+  var t = e.target;
+  if (t && t.closest && t.closest('.pane')) formTouchedAt = Date.now();
+}
+document.addEventListener('input', noteFormTouch, true);
+document.addEventListener('change', noteFormTouch, true);
+function editingForm() {
+  var ae = document.activeElement;
+  if (ae && ae.closest && ae.closest('.pane') &&
+      (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT')) return true;
+  // 刚改过就先别刷，给「填完 → 点保存」留出时间
+  return (Date.now() - formTouchedAt) < 30000;
+}
 setInterval(function () {
   if (dyTesting) return;
   var pane = document.querySelector('.pane.on');
-  if (pane && (pane.id === 'p0' || pane.id === 'p3' || pane.id === 'p15')) load();
+  if (pane && (pane.id === 'p0' || pane.id === 'p3' || pane.id === 'p18' || pane.id === 'p19' || pane.id === 'p15')) {
+    if (editingForm()) return;
+    load();
+  }
 }, 2000);
 
 

@@ -82,6 +82,10 @@ if not defined PORT (
   exit /b 1
 )
 
+rem 上次「停止」如果没来得及收尾会留下 stop.flag，supervisor 一起来看到它就退出；
+rem 所以必须在拉起 supervisor 之前清掉，否则浏览器会开到一个已经死掉的页面。
+if exist "%~dp0stop.flag" del /f /q "%~dp0stop.flag"
+
 rem 后台等就绪再开浏览器（无窗口）
 start "" /b wscript //nologo "%~dp0open-browser.vbs" "http://127.0.0.1:!PORT!"
 
@@ -96,8 +100,6 @@ if "%QUIET%"=="0" (
   echo  ==========================================
   echo.
 )
-
-if exist "%~dp0stop.flag" del /f /q "%~dp0stop.flag"
 
 if "%QUIET%"=="1" ( node supervisor.mjs --hidden --port !PORT! ) else ( node supervisor.mjs --port !PORT! )
 

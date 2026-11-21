@@ -703,21 +703,30 @@ function updateDbg(v, W, H, s){
 fit();
 
 // 开局同步一次服务端布局设置；之后靠 SSE 的 config 事件热更新
-fetch('/api/state').then(function(r){ return r.json(); }).then(function(j){
-  var S = j && j.config && j.config.scene;
-  if (S && S.layout) { layoutMode = S.layout; fit(); }
-  if (S) applyBackgrounds(S);
-  if (S && S.viz) vizCfg.enabled = S.viz.enabled !== false;
-  if (j && j.config && j.config.avatar) applyAvatar(j.config.avatar);
-  if (S && S.dj) { djEnabled = S.dj.enabled !== false; }
-  // 商家版画面上不出现点歌/看视频（这两个功能在这个版本里不存在），默认台词也别提唱歌
-  if (j && j.config && j.config.edition === 'basic') {
-    document.documentElement.classList.add('ed-basic');
-    var smSayEl = document.getElementById('smSay');
-    if (smSayEl) smSayEl.textContent = '欢迎来到直播间，随便聊聊～';
-  }
-  if (j && j.songs && j.songs.playing) { songPlaying = true; djShow(true); try { actionStart(); } catch (e) {} }
-}).catch(function(){});
+// 首次可能扑空（OBS 抢在服务之前加载页面 / 服务刚重启），失败就退避重试几次：
+// 拿不到 edition 就不会加 .ed-basic，商家版画面上会冒出「点歌 / 看视频」的默认台词。
+function loadInitialState(tries) {
+  fetch('/api/state').then(function (r) { return r.json(); }).then(function (j) {
+    var S = j && j.config && j.config.scene;
+    if (S && S.layout) { layoutMode = S.layout; fit(); }
+    if (S) applyBackgrounds(S);
+    if (S && S.viz) vizCfg.enabled = S.viz.enabled !== false;
+    if (j && j.config && j.config.avatar) applyAvatar(j.config.avatar);
+    if (S && S.dj) { djEnabled = S.dj.enabled !== false; }
+    // 商家版画面上不出现点歌/看视频（这两个功能在这个版本里不存在），默认台词也别提唱歌
+    if (j && j.config && j.config.edition === 'basic') {
+      document.documentElement.classList.add('ed-basic');
+      var smSayEl = document.getElementById('smSay');
+      if (smSayEl) smSayEl.textContent = '欢迎来到直播间，随便聊聊～';
+    } else {
+      document.documentElement.classList.remove('ed-basic');
+    }
+    if (j && j.songs && j.songs.playing) { songPlaying = true; djShow(true); try { actionStart(); } catch (e) {} }
+  }).catch(function () {
+    if (tries > 0) setTimeout(function () { loadInitialState(tries - 1); }, 1500);
+  });
+}
+loadInitialState(4);
 
 // ── 弹幕池 ──
 var poolEl = document.getElementById('pool');
@@ -1914,6 +1923,9 @@ function speak(text, emotion){
     }
   } else if (d.kind === 'config') {
     var C0 = d.config || {};
+    // 版本标记每次推送都重算：第一次没拿到 edition 时，画面上不能一直挂着点歌 / 看视频这几句台词。
+    // 注意 applyConfig 只推 scene（没有 config 字段），那种事件不能当成「完整版」，否则改个设置就把标记抹了。
+    if (C0.edition) document.documentElement.classList.toggle('ed-basic', C0.edition === 'basic');
     if (C0.avatar) applyAvatar(C0.avatar);
     var S0 = C0.scene || {};
     if (S0.layout) { layoutMode = S0.layout; fit(); }
