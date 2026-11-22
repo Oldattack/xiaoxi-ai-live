@@ -437,7 +437,6 @@
           <div class="li"><b>对齐 OBS</b><button class="btn sm" id="actAlign">一键对齐</button></div>
           <div class="li" data-basic-hide><b>清空点歌台</b><button class="btn sm" id="actClearSong">清空</button></div>
           <div class="li"><b>说出这句话</b><button class="btn sm" id="actSay">试一句</button></div>
-            <div class="li"><b>演示弹幕</b><button class="btn sm" id="mockSwitch">开启</button></div>
             <div class="li" data-basic-hide><b>检查更新</b><button class="btn sm" id="actUpdate">检查</button></div>
         </div>
       </div>
@@ -1801,15 +1800,8 @@ if ($('btnWechatBindObs')) $('btnWechatBindObs').onclick = async function () {
   }
   btn.disabled = false;
 };
-var _oldMock = async function () {
-  // 演示弹幕（彩排）也要走开播前那道门：连了真实平台就不给开，免得直播中被假弹幕搅乱
-  if (ACTIVE_LIVE && ACTIVE_LIVE !== 'mock') {
-    toast('已经连着' + ({ douyin: '抖音', bilibili: 'B站', wechat: '视频号' }[ACTIVE_LIVE] || '平台') + '，先断开再开演示弹幕');
-    return;
-  }
-  try { await api('/api/source', { action: 'start', type: 'mock' }); toast('模拟弹幕已开'); load(); }
-  catch (e) { toast('启动失败：' + e.message); }
-};
+/* 演示弹幕（内部调试用）已从界面移除：它会在本地凭空造假弹幕走真实回复流程，
+   客户会以为真有人在说话。相关函数 mockToggle/paintMock 与 _oldMock 一并删掉。 */
 
 /* ─────────── 画面 ─────────── */
   document.querySelectorAll('[data-layout]').forEach(function (b) {
@@ -2677,7 +2669,6 @@ $('actAlign').onclick = async function () {
   } catch (e) { toast('对齐失败：' + e.message); }
   btn.disabled = false; btn.textContent = '一键对齐';
 };
-$('mockSwitch').onclick = mockToggle;
 $('actClearSong').onclick = async function () {
   try { await api('/api/song/clear', {}); toast('已清空'); load(); }
   catch (e) { toast('清空失败：' + e.message); }
@@ -2897,29 +2888,6 @@ if (glassEl2) glassEl2.onchange = function () {
   saveAppearance();
 };
 try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (THEME === 'auto') applyTheme('auto', false); }); } catch (e) {}
-
-/* ─────────── 演示弹幕开关 ─────────── */
-async function mockToggle() {
-  var btn = $('mockSwitch') || $('btnMock');
-  var cur = ST && ST.sources && ST.sources.mock && ST.sources.mock.running;
-  if (btn) { btn.disabled = true; btn.textContent = '处理中…'; }
-  try {
-    var r = await api('/api/mock', { enabled: !cur });
-    toast(r.enabled ? '演示弹幕已开启：画面里会出现模拟弹幕' : '演示弹幕已关闭');
-    await load();
-  } catch (e) {
-    toast('操作失败：' + e.message);
-  }
-  if (btn) btn.disabled = false;
-  paintMock(ST);
-}
-function paintMock(st) {
-  var on = Boolean(st && st.sources && st.sources.mock && st.sources.mock.running);
-  var b1 = $('mockSwitch');
-  if (b1) b1.textContent = on ? '关闭' : '开启';
-  var b2 = $('btnMock');
-  if (b2) { b2.textContent = on ? '关闭演示弹幕' : '开启演示弹幕'; b2.classList.toggle('pri', on); }
-}
 
 /* ─────────── 试聊 ─────────── */
 var chatBusy = false;
@@ -3183,8 +3151,6 @@ if ($('vidClear')) $('vidClear').onclick = async function () { await api('/api/v
 if ($('vidOpen')) $('vidOpen').onclick = function () { window.open('/?clean=1', '_blank'); };
 loadVideoState();
 vidTimer = setInterval(function () { if (!document.hidden) loadVideoState(); }, 4000);
-
-if ($('btnMock')) $('btnMock').onclick = mockToggle;
 
 /* ─────────── 弹幕刷抖音开关 ─────────── */
 async function loadDouyinEnabled() {
