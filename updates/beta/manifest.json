@@ -1,10 +1,10 @@
 {
-  "version": "2.6.227",
-  "notes": "2.6.227 更新内容：\n- 更新渠道简化：只保留一个更新入口，去掉了「稳定版 / 测试版」两行按钮\n  （稳定版自 2026-11-10 起就没再发布过，清单一直停在 2.5.65，\n   点进去只会显示\"已是最新\"，实际永远收不到更新）\n- 修复一个会让人永久收不到更新的问题：以前在设置页点一次「稳定版 → 更新」，\n  更新通道会被写死成稳定版并存盘，之后所有新版本都收不到，界面还显示\"已经是最新版\"。\n  现在通道固定为测试版，请求里带稳定版也会被忽略\n- 老客户自动修复：配置里已经是稳定版的，启动时自动纠正回测试版并落盘，升级一次即可恢复",
-  "package": "xiaoxi-ai-live-2.6.227.zip",
-  "size": 29459010,
-  "sha256": "1444fc89c0e60c8d09dcd37cced642aac4c775810892bc699dde168b1b4daa2f",
-  "publishedAt": "2026-11-23T12:28:32.500Z",
+  "version": "2.6.228",
+  "notes": "2.6.228 更新内容：\n- 修复新客户点开就报「找不到独立的 node.exe」：以前插件只认 Program Files 里的 Node，\n  客户把 Node 装在别处（用户目录 / nvm / 压根没装但机器上有 DSH）时就起不来。\n  现在按顺序找：LIVE_AGENT_NODE → 程序目录\\runtime\\node.exe → DSH 自带运行时\n  → Program Files / 用户目录 / nvm → PATH\n- 找不到时的提示改成能照着做的：装 Node LTS、或把 node.exe 放进 runtime\\、或设 LIVE_AGENT_NODE；\n  并且会先跑一次 -v，版本低于 18 会直接说「版本太低」，不再起一半才崩\n- 启动.cmd 用同一套查找逻辑（不再只信 where node）；插件代码有变时，\n  下次用「启动.cmd」启动会自动重装插件，不用再手动点「安装到DSH.cmd」",
+  "package": "xiaoxi-ai-live-2.6.228.zip",
+  "size": 29459246,
+  "sha256": "068f7709522bd72812c4c6bb7744bf722680786ee291da02c19d32ba252a6067",
+  "publishedAt": "2026-11-23T17:41:14.407Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -20,8 +20,8 @@
     },
     {
       "path": "启动.cmd",
-      "size": 4773,
-      "sha256": "fc1aaaeb90ea6c7120456c5e92676614cc273062dc05d6c232e232891eec08a7"
+      "size": 5947,
+      "sha256": "1475b15ac1254759a252a3d417d84122d84ce77308e05b9b0faff0047123612d"
     },
     {
       "path": "启动.vbs",
@@ -31,7 +31,7 @@
     {
       "path": "使用说明.md",
       "size": 5057,
-      "sha256": "35dc6102ec58ac489f62f527de08f58a7ad91e657bdd24693395f8818ed2648f"
+      "sha256": "f01a6cb9dac8e0b9e0a94de7868b3129e037b5e95b84c005c7fa36010f1d8322"
     },
     {
       "path": "停止.cmd",
@@ -306,7 +306,7 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "c1f1549bdff64f9806ce37d40c53dfdab9c880a84fa3a06f04aa26b86402323b"
+      "sha256": "7c0d6cf5618323919bea888aab23d688108efee9d4f4a6c566ad40a587ae7f8e"
     },
     {
       "path": "wechat-ocr.ps1",
@@ -315,8 +315,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 474057,
-      "sha256": "731feeeb1bdc8f51031c4b3f92fb16d8f5c99e748f657a17fb5f65b7e72fd492"
+      "size": 477253,
+      "sha256": "1a3c2d84452f44057dfce161860ebe1673cdb3fdc861056096abcaf74e914451"
     }
   ]
 }

@@ -9,7 +9,8 @@
  * 服务本身是零依赖的 xiaoxi-live/server.mjs，这里负责拉起 supervisor.mjs（守护 + 自动重启）。
  */
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, unlinkSync, readdirSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -28,6 +29,57 @@ function agentDir() {
     if (line) return line;
   } catch { /* 没配就用默认 */ }
   return path.join(DIR, '..', 'xiaoxi-live');
+}
+
+/**
+ * 找一台机器上能用的 node.exe。
+ *
+ * 客户机不一定装了 Node，也不一定装在 Program Files（可能走 winget 用户目录、
+ * nvm、便携版，或者只装了 DSH —— DSH 自己带一份 node 运行时）。
+ * 按「环境变量 > 包内 runtime > DSH 自带运行时 > 常见安装位置 > PATH」逐个试。
+ */
+export function findNodeBin() {
+  const trails = [];
+  const env = String(process.env.LIVE_AGENT_NODE || '').trim();
+  if (env) trails.push(env);
+
+  const dir = agentDir();
+  trails.push(path.join(dir, 'runtime', 'node.exe'), path.join(dir, 'node.exe'));
+
+  // DSH 自带的 node 运行时（~/.dsh/dsh-runtimes/<运行时>/dependencies/node/...），取最新的一个
+  const dshHome = String(process.env.DSH_HOME || '').trim() || path.join(os.homedir(), '.dsh');
+  try {
+    const root = path.join(dshHome, 'dsh-runtimes');
+    for (const d of readdirSync(root).sort().reverse()) {
+      trails.push(path.join(root, d, 'dependencies', 'node', 'bin', 'node.exe'));
+      trails.push(path.join(root, d, 'dependencies', 'node', 'node.exe'));
+    }
+  } catch { /* 没装 DSH 运行时 */ }
+
+  const pf = process.env.ProgramFiles || 'C:\\Program Files';
+  const pf86 = process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)';
+  trails.push(path.join(pf, 'nodejs', 'node.exe'));
+  trails.push(path.join(pf86, 'nodejs', 'node.exe'));
+  if (process.env.LOCALAPPDATA) trails.push(path.join(process.env.LOCALAPPDATA, 'Programs', 'nodejs', 'node.exe'));
+  trails.push(path.join(String(process.env.NVM_SYMLINK || ''), 'node.exe'));
+  trails.push(path.join(String(process.env.APPDATA || ''), 'nvm', 'node.exe'));
+
+  // nvm-windows 的版本目录：%APPDATA%\nvm\v22.11.0\node.exe
+  try {
+    const nvm = String(process.env.NVM_HOME || '').trim() || path.join(String(process.env.APPDATA || ''), 'nvm');
+    for (const d of readdirSync(nvm).sort().reverse()) {
+      if (/^v\d/i.test(d)) trails.push(path.join(nvm, d, 'node.exe'));
+    }
+  } catch { /* 没用 nvm */ }
+
+  for (const p of String(process.env.PATH || '').split(path.delimiter)) {
+    if (p) trails.push(path.join(p, 'node.exe'));
+  }
+
+  for (const t of trails) {
+    try { if (t && existsSync(t)) return t; } catch { /* 路径非法就跳过 */ }
+  }
+  return '';
 }
 
 const SERVER = () => path.join(agentDir(), 'supervisor.mjs');   // 守护进程：更新后自动重启
@@ -78,16 +130,22 @@ async function start() {
 
   // 注意：不能用 process.execPath —— 在 DSH 里它是 DSH 自己的 exe，
   // 会把服务当成第二个 DSH 进程跑（实测踩过），还可能被当成主程序误杀。
-  const nodeBin = (() => {
-    const env = String(process.env.LIVE_AGENT_NODE || '').trim();
-    if (env && existsSync(env)) return env;
-    for (const c of ['C:\\Program Files\\nodejs\\node.exe', 'C:\\Program Files (x86)\\nodejs\\node.exe']) {
-      if (existsSync(c)) return c;
-    }
-    return '';
-  })();
+  const nodeBin = findNodeBin();
   if (!nodeBin) {
-    return { ok: false, error: '找不到独立的 node.exe（装 Node.js，或用环境变量 LIVE_AGENT_NODE 指一个）' };
+    return {
+      ok: false,
+      error: '没找到 node.exe：这台机器还没装 Node.js。装个 LTS 版（https://nodejs.org）重开一次就行；'
+        + '也可以把 node.exe 放进程序目录的 runtime\\ 下，或设环境变量 LIVE_AGENT_NODE 指过去'
+    };
+  }
+  const probeVer = spawnSync(nodeBin, ['-v'], { encoding: 'utf8', windowsHide: true, timeout: 5000 });
+  const verStr = String((probeVer.stdout || '').trim() || (probeVer.stderr || '').trim() || '');
+  const major = Number((verStr.match(/^v(\d+)/) || [])[1] || 0);
+  if (!major) {
+    return { ok: false, error: `这个 node 跑不起来：${nodeBin}（${probeVer.error ? probeVer.error.message : '没输出版本号'}）` };
+  }
+  if (major < 18) {
+    return { ok: false, error: `Node 版本太低（${verStr}），需要 v18 以上，去 https://nodejs.org 装个新版` };
   }
 
   const child = spawn(nodeBin, ['supervisor.mjs', '--hidden'], {

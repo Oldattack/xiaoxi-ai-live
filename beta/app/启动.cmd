@@ -15,18 +15,31 @@ if "%QUIET%"=="0" (
   echo.
 )
 
-where node >nul 2>nul
-if errorlevel 1 (
+rem ── 找 node.exe：包内 runtime > DSH 自带运行时 > 常见安装位置（含用户目录 / nvm）> PATH ──
+rem 客户机不一定装了 Node，也可能装在 Program Files 之外；别只信 where node。
+set "NODE_EXE="
+if exist "%~dp0runtime\node.exe" set "NODE_EXE=%~dp0runtime\node.exe"
+if not defined NODE_EXE if exist "%~dp0node.exe" set "NODE_EXE=%~dp0node.exe"
+if not defined NODE_EXE for /d %%D in ("%USERPROFILE%\.dsh\dsh-runtimes\*") do (
+  if not defined NODE_EXE if exist "%%~fD\dependencies\node\bin\node.exe" set "NODE_EXE=%%~fD\dependencies\node\bin\node.exe"
+)
+if not defined NODE_EXE if exist "%ProgramFiles%\nodejs\node.exe" set "NODE_EXE=%ProgramFiles%\nodejs\node.exe"
+if not defined NODE_EXE if exist "%ProgramFiles(x86)%\nodejs\node.exe" set "NODE_EXE=%ProgramFiles(x86)%\nodejs\node.exe"
+if not defined NODE_EXE if exist "%LOCALAPPDATA%\Programs\nodejs\node.exe" set "NODE_EXE=%LOCALAPPDATA%\Programs\nodejs\node.exe"
+if not defined NODE_EXE if exist "%APPDATA%\nvm\node.exe" set "NODE_EXE=%APPDATA%\nvm\node.exe"
+if not defined NODE_EXE for /f "delims=" %%P in ('where node 2^>nul') do if not defined NODE_EXE set "NODE_EXE=%%P"
+
+if not defined NODE_EXE (
   if "%QUIET%"=="1" (
-    echo [%date% %time%] 没找到 Node.js >> "%~dp0launcher.log"
+    echo [%date% %time%] 没找到 node.exe >> "%~dp0launcher.log"
   ) else (
-    echo  [!] 没找到 Node.js，请先装：https://nodejs.org
+    echo  [!] 没找到 node.exe
+    echo      装个 Node.js LTS：https://nodejs.org  （装完重开就行）
     pause
   )
   exit /b 1
 )
-for /f "tokens=*" %%v in ('node -v') do set NODEVER=%%v
-if "%QUIET%"=="0" echo  [OK] Node.js !NODEVER!
+if "%QUIET%"=="0" echo  [OK] !NODE_EXE!
 
 rem DSH 检查（装了就把插件登记好）—— 静默模式下结果写日志
 if "%QUIET%"=="1" (
@@ -101,7 +114,7 @@ if "%QUIET%"=="0" (
   echo.
 )
 
-if "%QUIET%"=="1" ( node supervisor.mjs --hidden --port !PORT! ) else ( node supervisor.mjs --port !PORT! )
+if "%QUIET%"=="1" ( "%NODE_EXE%" supervisor.mjs --hidden --port !PORT! ) else ( "%NODE_EXE%" supervisor.mjs --port !PORT! )
 
 if "%QUIET%"=="0" (
   echo.

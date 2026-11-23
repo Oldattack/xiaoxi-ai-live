@@ -1,6 +1,6 @@
 {
     "name":  "@local/dsh-live-agent",
-    "version":  "1.1.1",
+    "version":  "1.1.2",
     "private":  true,
     "type":  "module",
     "description":  "小汐AI直播平台控制台：把本地直播设置页搬进 DSH，侧栏一键打开。",
