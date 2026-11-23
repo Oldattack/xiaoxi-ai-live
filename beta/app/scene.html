@@ -251,6 +251,27 @@ html,body{height:100%;background:#05060a;overflow:hidden;
 .badge .dot{width:10px;height:10px;border-radius:99px;background:var(--mint);box-shadow:0 0 0 4px rgba(94,230,192,.18)}
 .badge.off .dot{background:#f2566b;box-shadow:0 0 0 4px rgba(242,86,107,.18)}
 
+/* ── AI 生成内容标识（合规，必须持续可见）──
+   z-index 取 9999：高于画面里所有层（人物 7、DJ 台 12、调试框 999），不会被压住。
+   位置放【左下角、统计数字上方】：右下角被调试框（.dbg，约 110px 高，默认显示、
+   只有 ?clean=1 才藏）占着，左下角 .meta 统计在 left:72px;bottom:52px，
+   所以标识放 bottom:96px 正好在它上面，两者不重叠。
+   任何模式都不隐藏，包括陪玩层（companion 会藏一堆 UI，但不藏这个）。
+   也刻意不放进 ?clean=1 的隐藏列表 —— 那是藏调试角标的，这个是法规标识。 */
+.ai-disclosure{
+  position:absolute;left:72px;bottom:96px;z-index:9999;
+  /* 字体跟页面主体一致（微软雅黑等），别落回浏览器默认衬线/等宽字体 —— 那样中文会发虚发怪 */
+  font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:17px;font-weight:500;line-height:1;letter-spacing:.03em;
+  color:#f2f5fb;background:rgba(8,10,18,.72);
+  border:1px solid rgba(255,255,255,.18);border-radius:10px;
+  padding:10px 16px;backdrop-filter:blur(8px);
+  pointer-events:none;user-select:none;white-space:nowrap;
+  text-shadow:0 1px 2px rgba(0,0,0,.55);
+}
+/* 竖屏：统计挪到了 bottom:206px，标识跟着抬到它上面 */
+#stage.v .ai-disclosure{left:40px;bottom:252px;font-size:15px;padding:9px 14px}
+
 .meta{position:absolute;left:72px;bottom:52px;display:flex;gap:26px;font-size:19px;color:#7d89a8;font-variant-numeric:tabular-nums}
 .meta b{color:#c3cbe4;font-weight:600}
 
@@ -395,46 +416,142 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   #stage:not(.dj):not(.video) .emo{display:none !important}
   #stage.dj #stageMenu{opacity:0;transform:translateY(28px);pointer-events:none}
   #stage .songs{display:none !important}
-  .sm-card{position:absolute;border-radius:16px;padding:14px 16px;background:linear-gradient(160deg,rgba(48,28,68,.97),rgba(18,10,30,.98));border:1px solid rgba(255,120,170,.42);box-shadow:0 12px 32px rgba(0,0,0,.45)}
-  .sm-h{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;letter-spacing:.5px;color:#fff}
-  .sm-h .d{width:7px;height:7px;border-radius:50%;background:#ff4d8d;box-shadow:0 0 10px #ff4d8d}
-  .sm-h .tag{margin-left:auto;font-size:9px;color:#ffb3cc;background:rgba(255,45,111,.13);border:1px solid rgba(255,45,111,.28);padding:2px 6px;border-radius:999px}
-  .sm-left{left:24px;top:64px;width:540px;min-height:300px}
+  /* ── 卡片：毛玻璃半透明 ──
+     颜色/模糊/圆角/宽度/间距/位置/字号全部走 CSS 变量，
+     变量由 applyCards() 按设置页里的 cfg.scene.cards 写入（带 clamp 兜底）。
+     这里只给默认值，保证即使一个变量都没写也能正常显示。 */
+  #stage{
+    --card-bg-top:rgba(255,255,255,.10);--card-bg-mid:rgba(255,255,255,.045);--card-bg-low:rgba(255,255,255,.03);
+    --card-blur:22px;--card-radius:18px;--card-w:548px;--card-w-say:658px;--card-gap:28px;--card-top:74px;
+    --fs-h:19px;--fs-nm:17px;--fs-row:16px;--fs-ds:14px;--fs-chat:15px;--fs-say:19px;--fs-tag:11px;--fs-bd:14px;
+    /* 文字颜色：老板可在设置页自定义（花背景上白字看不清就换深色，或反之）
+       四个槽位分别对应：标题 / 名称(点歌、看视频…) / 说明(右侧灰字) / 台词(小汐在说) */
+    --tc-title:#fff;      /* 卡片标题、玩法名称 */
+    --tc-desc:#e3d6f2;    /* 右侧说明、弹幕内容 */
+    --tc-say:#fff;        /* 「小汐在说」的台词 */
+    --tc-muted:#b3a8cc;   /* 空状态、角标等次要文字 */
+    /* 文字阴影：深色文字配浅背景时需要关掉或改浅色 */
+    --tc-shadow:0 1px 3px rgba(0,0,0,.5);
+    /* 让字"跳出来"的三个手段（都可从设置页调）：
+       ① 描边 outiline —— 最有效，花背景上也能压住
+       ② 字重 weight —— 600/700/900
+       ③ 发光 glow —— 一层同色柔光，暗背景上很提气 */
+    --tc-stroke-w:0px;
+    --tc-stroke:#000;
+    --tc-weight:700;
+    --tc-glow:0 0 0 transparent;
+  }
+  .sm-card{position:absolute;border-radius:var(--card-radius);padding:18px 20px;
+    background:linear-gradient(160deg,var(--card-bg-top),var(--card-bg-mid) 55%,var(--card-bg-low));
+    border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(var(--card-blur)) saturate(1.5);-webkit-backdrop-filter:blur(var(--card-blur)) saturate(1.5);
+    box-shadow:0 16px 44px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.22)}
+  .sm-h{display:flex;align-items:center;gap:10px;font-size:var(--fs-h);font-weight:var(--tc-weight);letter-spacing:.5px;color:var(--tc-title);text-shadow:var(--tc-glow);-webkit-text-stroke:var(--tc-stroke-w) var(--tc-stroke);paint-order:stroke fill}
+  .sm-h .d{width:8px;height:8px;border-radius:50%;background:#ff4d8d;box-shadow:0 0 10px #ff4d8d}
+  .sm-h .tag{margin-left:auto;font-size:var(--fs-tag);color:#ffc9dc;background:rgba(255,45,111,.16);border:1px solid rgba(255,45,111,.3);padding:3px 8px;border-radius:999px}
+  .sm-left{left:var(--card-gap);top:var(--card-top);width:var(--card-w);min-height:auto}
   .sm-left .sm-row{padding-left:0}
-  .sm-right{right:24px;top:64px;width:540px;min-height:320px}
-  .sm-chat{left:24px;bottom:56px;width:600px;min-height:330px}
-  .sm-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px}
+  .sm-right{right:var(--card-gap);top:var(--card-top);width:var(--card-w);min-height:auto}
+  .sm-chat{left:var(--card-gap);top:calc(var(--card-top) + 396px);width:var(--card-w);min-height:auto;max-height:520px}
+  .sm-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.10);font-size:var(--fs-row)}
   .sm-row:last-child{border-bottom:0}
-  .sm-row .e{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;background:rgba(255,255,255,.08);flex:none}
-  .sm-row .nm{font-weight:600;white-space:nowrap;color:#fff}
-  .sm-row .ds{font-size:11px;color:#d8c8ea;margin-left:auto;white-space:nowrap}
-  .sm-row .st{font-size:10px;color:#ffb3cc;white-space:nowrap}
-  .sm-q{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:11.5px;color:#fff}
-  .sm-q .n{font-family:Consolas,monospace;color:#ffd166;width:18px}
-  .sm-q .u{margin-left:auto;color:#8d7aa8;font-size:10px}
-  .sm-empty{font-size:12px;color:#a995c2;padding:8px 0}
-  #smChat{max-height:270px;overflow:auto;margin-top:6px}
-  .sm-chat-line{display:flex;gap:8px;font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);line-height:1.45}
+  .sm-row .e{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:calc(var(--fs-row) * .88);background:rgba(255,255,255,.10);flex:none}
+  .sm-row .nm{font-weight:var(--tc-weight);white-space:nowrap;color:var(--tc-title);font-size:var(--fs-nm);flex:none;text-shadow:var(--tc-glow);-webkit-text-stroke:var(--tc-stroke-w) var(--tc-stroke);paint-order:stroke fill}
+  /* 右侧说明：以前是 nowrap，字一长（比如「刷抖音」那条）就把左边的名称挤住、贴在一起。
+     改成可收缩 + 超长省略：min-width:0 让它能被压缩，ellipsis 保证不溢出。 */
+  .sm-row .ds{font-size:var(--fs-ds);color:var(--tc-desc);margin-left:auto;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .sm-row .st{font-size:var(--fs-tag);color:#ffb3cc;white-space:nowrap}
+  .sm-q{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:var(--fs-ds);color:var(--tc-desc)}
+  .sm-q .n{font-family:Consolas,monospace;color:#ffd166;width:20px}
+  .sm-q .u{margin-left:auto;color:#a894c4;font-size:var(--fs-tag)}
+  .sm-empty{font-size:var(--fs-ds);color:#bda9d4;padding:10px 0}
+  #smChat{max-height:330px;overflow:auto;margin-top:8px}
+  .sm-chat-line{display:flex;gap:10px;font-size:var(--fs-chat);padding:8px 0;border-bottom:1px solid rgba(255,255,255,.09);line-height:1.5}
   .sm-chat-line:last-child{border-bottom:0}
-  .sm-chat-line b{color:#ff9ec3;font-weight:600;flex:none;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .sm-chat-line span{color:#e6d9f2;overflow:hidden;text-overflow:ellipsis}
+  .sm-chat-line b{color:#ff9ec3;font-weight:600;flex:none;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sm-chat-line span{color:#ece2f7;overflow:hidden;text-overflow:ellipsis}
   .sm-chat-line.gift b{color:#ffd166}.sm-chat-line.enter b{color:#7fffd4}
-  .sm-gifts{right:24px;top:64px;width:540px;min-height:300px}
-  #smGifts{margin-top:6px;max-height:230px;overflow:auto}
-  .sm-gift-line{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px}
+  .sm-gifts{right:var(--card-gap);top:var(--card-top);width:var(--card-w);min-height:auto}
+  #smGifts{margin-top:8px;max-height:280px;overflow:auto}
+  .sm-gift-line{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.09);font-size:var(--fs-chat)}
   .sm-gift-line:last-child{border-bottom:0}
-  .sm-gift-line b{color:#ffd166;font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .sm-gift-line span{color:#ffb3cc;margin-left:auto;font-size:11px}
-  .sm-say{left:50%;top:50px;transform:translateX(-50%);width:620px;min-height:112px;text-align:left}
-  .sm-say-text{font-size:15px;line-height:1.6;color:#fff;margin-top:8px;min-height:44px}
-  .sm-badges{position:absolute;left:24px;top:14px;display:flex;gap:8px}
-  .sm-bd{font-size:12px;padding:6px 11px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
-  .sm-bd.blue{background:linear-gradient(90deg,#2f7cf6,#49b7ff)}
-  .sm-bd.pink{background:linear-gradient(90deg,#ff4d8d,#ff7a9e)}
-  .sm-bd.gold{background:linear-gradient(90deg,#ffcf5c,#ff9d3c);color:#3a1c00}
+  .sm-gift-line b{color:#ffd166;font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sm-gift-line span{color:#ffb3cc;margin-left:auto;font-size:var(--fs-ds)}
+  .sm-say{left:50%;top:var(--card-top);transform:translateX(-50%);width:var(--card-w-say);min-height:104px;text-align:left;z-index:3}
+  /* 「XX在说」是标签、下面是内容 —— 两者要能一眼分开：
+     标签：小一号 + 拉字距 + 淡色 + 一个脉动的"正在说"绿点
+     内容：加大 + 加粗 + 用 --tc-say 的主色
+     原来标题和正文都是 19px 白字，看着像两段一样的话。 */
+  .sm-say .sm-h{font-size:calc(var(--fs-h) * .78);letter-spacing:2.2px;color:var(--tc-muted);
+    font-weight:600;gap:8px;margin-bottom:8px}
+  .sm-say .sm-h .d{display:none}                 /* 原来那个静止红点，换成下面的脉动点 */
+  .say-live{width:8px;height:8px;border-radius:50%;background:#5ee6c0;flex:none;
+    box-shadow:0 0 0 3px rgba(94,230,192,.20);animation:sayPulse 1.7s ease-in-out infinite}
+  @keyframes sayPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.42;transform:scale(.80)}}
+  .sm-say .sm-h .tag{background:rgba(94,230,192,.14);border-color:rgba(94,230,192,.30);color:#8ee9cd}
+  /* 台词是画面焦点，比标题明显大一档（标题 0.78 倍、正文 1.3 倍 → 约 1.67:1） */
+  .sm-say-text{font-size:calc(var(--fs-say) * 1.3);line-height:1.55;color:var(--tc-say);margin-top:10px;min-height:50px;
+    font-weight:600;text-shadow:var(--tc-glow);-webkit-text-stroke:var(--tc-stroke-w) var(--tc-stroke);paint-order:stroke fill}
+  .sm-badges{position:absolute;left:var(--card-gap);top:18px;display:flex;gap:10px;z-index:4}
+  .sm-bd{font-size:var(--fs-bd);padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.22);white-space:nowrap;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 6px 18px rgba(0,0,0,.35)}
+  .sm-bd.blue{background:linear-gradient(90deg,rgba(47,124,246,.85),rgba(73,183,255,.85))}
+  .sm-bd.pink{background:linear-gradient(90deg,rgba(255,77,141,.85),rgba(255,122,158,.85))}
+  .sm-bd.gold{background:linear-gradient(90deg,rgba(255,207,92,.9),rgba(255,157,60,.9));color:#3a1c00}
   #stage.dj .sm-say{display:none}
+
+  /* ══════════════════════════════════════════════════════════
+     主题 B · Neon Studio（极简式）
+     和卡片式共用同一套 HTML，只换样式 —— 所以内容/逻辑完全一致，
+     切主题不会丢数据。由 applyCards() 按 cfg.scene.cards.theme 加 .theme-x。
+     设计要点：去掉所有卡片底和边框，只用细线分隔；台词居中放大当焦点。
+     ══════════════════════════════════════════════════════════ */
+  #stage.theme-x .sm-card{background:none;border:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0}
+  /* 标题：白字 + 大间距 + 紫色渐变细线在右侧淡出（原来用 #8b8798 灰紫，在深背景上"糊"掉看不见）
+     对比度是这次优化的核心：标题白、说明亮灰、分隔线抬到 11% */
+  #stage.theme-x .sm-h{font-size:calc(var(--fs-h) * .82);letter-spacing:2.4px;text-transform:uppercase;
+    color:var(--tc-title);font-weight:var(--tc-weight);margin-bottom:14px;gap:12px;
+    text-shadow:var(--tc-glow);-webkit-text-stroke:var(--tc-stroke-w) var(--tc-stroke);paint-order:stroke fill}
+  #stage.theme-x .sm-h .d{display:none}
+  #stage.theme-x .sm-h::after{content:"";flex:1;height:1px;
+    background:linear-gradient(90deg,rgba(178,59,255,.55),rgba(255,255,255,.12) 55%,transparent)}
+  #stage.theme-x .sm-h .tag{background:none;border:0;color:var(--tc-muted);font-size:calc(var(--fs-tag) * .95);
+    margin-left:0;padding:0;letter-spacing:1px}
+  /* 行：无边框卡片，只有底部分隔线（线从 5.5% 抬到 11%），行距更大 */
+  #stage.theme-x .sm-row{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.11);gap:14px}
+  #stage.theme-x .sm-row .nm{font-size:calc(var(--fs-nm) * 1.28);letter-spacing:.3px;color:var(--tc-title);text-shadow:var(--tc-glow);-webkit-text-stroke:var(--tc-stroke-w) var(--tc-stroke);paint-order:stroke fill}
+  #stage.theme-x .sm-row .ds{font-size:calc(var(--fs-ds) * 1.15);color:var(--tc-desc)}
+  #stage.theme-x .sm-empty{color:var(--tc-muted);padding:12px 0}
+  #stage.theme-x .sm-chat-line{border-bottom:1px solid rgba(255,255,255,.11);padding:10px 0;
+    font-size:calc(var(--fs-chat) * 1.18)}
+  #stage.theme-x .sm-gift-line{border-bottom:1px solid rgba(255,255,255,.11);padding:10px 0;
+    font-size:calc(var(--fs-chat) * 1.18)}
+  /* 位置：左右两栏更贴边，台词居中放大 */
+  #stage.theme-x .sm-left{left:calc(var(--card-gap) + 34px);top:calc(var(--card-top) + 94px);width:calc(var(--card-w) * .78)}
+  #stage.theme-x .sm-gifts{right:calc(var(--card-gap) + 34px);top:calc(var(--card-top) + 94px);width:calc(var(--card-w) * .73)}
+  #stage.theme-x .sm-chat{left:calc(var(--card-gap) + 34px);top:calc(var(--card-top) + 530px);width:calc(var(--card-w) * .78)}
+  /* 台词放最上面（和顶部胶囊同高起步），压在人物脸上会挡住表情、也不好看。
+     左右两栏跟着下移一点，给台词留出空间。 */
+  #stage.theme-x .sm-say{top:var(--card-top);width:calc(var(--card-w) * 1.5);text-align:center;min-height:auto}
+  #stage.theme-x .sm-say .sm-h{justify-content:center;color:var(--tc-muted);letter-spacing:4px;margin-bottom:10px}
+  #stage.theme-x .sm-say .sm-h::after{display:none}
+  #stage.theme-x .sm-say .sm-h::before{content:"";width:52px;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(178,59,255,.65))}
+  #stage.theme-x .sm-say .sm-h .tag{display:none}
+  #stage.theme-x .sm-say-text{font-size:calc(var(--fs-say) * 1.68);line-height:1.5;font-weight:600;
+    letter-spacing:.4px;text-shadow:var(--tc-glow);-webkit-text-stroke:var(--tc-stroke-w) var(--tc-stroke);paint-order:stroke fill}
+  /* 顶部胶囊：LIVE 用三色渐变带光晕 */
+  #stage.theme-x .sm-badges{left:calc(var(--card-gap) + 34px);top:var(--card-top)}
+  #stage.theme-x .sm-bd{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.13);color:#d8d4e6}
+  #stage.theme-x .sm-bd.blue{background:linear-gradient(96deg,#ff2fa0 0%,#b23bff 52%,#22d3ee 100%);
+    color:#0a0710;font-weight:800;letter-spacing:1.4px;border:0;
+    box-shadow:0 0 26px rgba(255,47,160,.42),0 0 46px rgba(34,211,238,.22)}
+  #stage.theme-x .sm-bd.pink,#stage.theme-x .sm-bd.gold{background:rgba(255,255,255,.055);
+    color:#d8d4e6;border:1px solid rgba(255,255,255,.13)}
   .sm-line{font-size:12px;color:#d8c8ea;line-height:1.7;margin-top:7px}
-  .sm-note{font-size:11px;color:#a995c2;line-height:1.7;margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.08)}
+  /* .sm-note 已删：玩法卡片原来在 3 行说明下面又重复列了一遍同样内容，
+     现在把例子直接写进各行（发「点歌 晴天」），不再需要这块。 */
   /* 商家版没有点歌/看视频：画面上不能出现这两个玩法（由脚本按 /api/state 的 edition 加 .ed-basic） */
   html.ed-basic [data-basic-hide]{display:none !important}
 
@@ -511,12 +628,12 @@ html,body{height:100%;background:#05060a;overflow:hidden;
     </div>
 
     <div id="companionUI">
-      <div class="cp-title">🌱 小汐陪玩中</div>
+      <div class="cp-title">🌱 <span id="cpTitleName">小汐</span>陪玩中</div>
       <div class="cp-chat">
         <div class="cp-h"><i></i>弹幕互动</div>
         <div id="cpChat"><div class="sm-empty">等待弹幕...</div></div>
       </div>
-      <div class="cp-say" id="cpSay"><b>小汐在说</b>我来陪你打这局，缺阳光喊我。</div>
+      <div class="cp-say" id="cpSay"><b><span id="cpSayName">小汐</span>在说</b>我来陪你打这局，缺阳光喊我。</div>
     </div>
 
   <div class="cap" id="cap"><div class="bubble"><span class="who" id="who">小汐</span><span id="say"></span></div></div>
@@ -530,7 +647,7 @@ html,body{height:100%;background:#05060a;overflow:hidden;
         <span class="sm-bd gold">求关注 · 求点赞</span>
       </div>
       <div class="sm-card sm-say">
-        <div class="sm-h"><span class="d"></span>小汐在说<span class="tag">AI 主播</span></div>
+        <div class="sm-h"><span class="d"></span><i class="say-live"></i><span id="smSayTitle">小汐在说</span><span class="tag">AI 主播</span></div>
         <div class="sm-say-text" id="smSay">欢迎来到直播间，想听什么歌？发弹幕告诉我。</div>
       </div>
         <div class="sm-card sm-gifts">
@@ -539,10 +656,10 @@ html,body{height:100%;background:#05060a;overflow:hidden;
       </div>
       <div class="sm-card sm-left">
           <div class="sm-h"><span class="d"></span>玩法<span class="tag">发弹幕参与</span></div>
-          <div class="sm-row" data-basic-hide><span class="nm">点歌</span><span class="ds">发「点歌 歌名」</span></div>
-          <div class="sm-row" data-basic-hide><span class="nm">看视频</span><span class="ds">发「看视频 视频名」</span></div>
+          <div class="sm-row" data-basic-hide><span class="nm">点歌</span><span class="ds">发「点歌 晴天」</span></div>
+          <div class="sm-row" data-basic-hide><span class="nm">看视频</span><span class="ds">发「看视频 猫和老鼠」</span></div>
+          <div class="sm-row" data-basic-hide><span class="nm">刷抖音</span><span class="ds">发「刷抖音」「下一条」「停止刷抖音」</span></div>
           <div class="sm-row"><span class="nm">聊天</span><span class="ds">直接发弹幕</span></div>
-          <div class="sm-note" data-basic-hide>点歌：弹幕「点歌 晴天」<br>看视频：弹幕「看视频 猫和老鼠」<br>聊天：直接发弹幕</div>
         </div>
       <div class="sm-card sm-chat">
         <div class="sm-h"><span class="d"></span>弹幕互动<span class="tag">实时</span></div>
@@ -569,6 +686,11 @@ html,body{height:100%;background:#05060a;overflow:hidden;
   <audio id="sgAudio" preload="auto"></audio>
 
   <div class="badge" id="badge"><span class="dot"></span>AI 主播</div>
+
+  <!-- AI 生成内容标识：法规要求「持续向消费者提示该人物图像由人工智能生成」。
+       固定在右下角、最高层级，任何模式（含 OBS 采集 / 陪玩）都不隐藏、不被遮挡。
+       不要写进 ?clean=1 的隐藏列表里 —— 它是合规标识，不是调试信息。 -->
+  <div class="ai-disclosure" id="aiDisclosure">该人物图像由 AI 生成</div>
 
 
 </div>
@@ -609,6 +731,82 @@ function applyLayout(){
   function applyBackgrounds(scene) {
     BG_VIDEOS = (scene && scene.bgVideos) || {};
     if (scene && scene.bg) applyBg(scene.bg);
+    applyCards(scene && scene.cards);
+  }
+
+  /* ── 信息卡片外观（客户在设置页调，写到 CSS 变量上）──
+     范围都做了 clamp，防止有人填个离谱的值把画面搞坏。 */
+  function applyCards(c) {
+    var stage = document.getElementById('stage');
+    if (!stage) return;
+    c = c || {};
+    var num = function (v, d, lo, hi) {
+      var n = Number(v);
+      if (!isFinite(n)) n = d;
+      return Math.max(lo, Math.min(hi, n));
+    };
+    var opacity = num(c.opacity, 20, 0, 100) / 100;   // 0~1
+    var blur = num(c.blur, 22, 0, 60);
+    var radius = num(c.radius, 18, 0, 40);
+    var scale = num(c.fontScale, 100, 70, 200) / 100;
+    var width = num(c.width, 548, 320, 760);
+    var gap = num(c.gap, 28, 8, 120);
+    var top = num(c.top, 74, 0, 400);
+
+    /* 主题：cards = 卡片式（默认）| x = Neon Studio 极简式。
+       两套共用同一份 HTML，只加/去一个 class，所以切主题不丢内容。 */
+    stage.classList.toggle('theme-x', c.theme === 'x');
+
+    var s = stage.style;
+    /* 卡片底色：用白色低透明度叠加做出玻璃感；opacity=0 时几乎全透，只剩描边和模糊 */
+    s.setProperty('--card-bg-top', 'rgba(255,255,255,' + (opacity * 1.0).toFixed(3) + ')');
+    s.setProperty('--card-bg-mid', 'rgba(255,255,255,' + (opacity * 0.45).toFixed(3) + ')');
+    s.setProperty('--card-bg-low', 'rgba(255,255,255,' + (opacity * 0.30).toFixed(3) + ')');
+    s.setProperty('--card-blur', blur + 'px');
+    s.setProperty('--card-radius', radius + 'px');
+    s.setProperty('--card-w', width + 'px');
+    s.setProperty('--card-w-say', Math.round(width * 1.2) + 'px');
+    s.setProperty('--card-gap', gap + 'px');
+    s.setProperty('--card-top', top + 'px');
+    /* 字号：每个部件都用「基准 × scale」，避免改一个地方漏掉别处 */
+    s.setProperty('--fs-h', (19 * scale).toFixed(1) + 'px');        // 卡片标题
+    s.setProperty('--fs-nm', (17 * scale).toFixed(1) + 'px');       // 玩法名称
+    s.setProperty('--fs-row', (16 * scale).toFixed(1) + 'px');      // 玩法行
+    s.setProperty('--fs-ds', (14 * scale).toFixed(1) + 'px');       // 右侧说明
+    s.setProperty('--fs-chat', (15 * scale).toFixed(1) + 'px');     // 弹幕行
+    s.setProperty('--fs-say', (19 * scale).toFixed(1) + 'px');      // 小汐在说
+    s.setProperty('--fs-tag', (11 * scale).toFixed(1) + 'px');      // 角标小字
+    s.setProperty('--fs-bd', (14 * scale).toFixed(1) + 'px');       // 顶部标签
+    /* 文字颜色：老板在设置页自选。花背景上白字看不清，就换成深色或别的高对比色。
+       只接受 #rgb/#rrggbb，防止有人塞进奇怪的值把样式搞坏。 */
+    var color = function (v, d) {
+      var t = String(v == null ? '' : v).trim();
+      return /^#[0-9a-fA-F]{3}$|^#[0-9a-fA-F]{6}$/.test(t) ? t : d;
+    };
+    s.setProperty('--tc-title', color(c.colorTitle, '#fff'));
+    s.setProperty('--tc-desc', color(c.colorDesc, '#e3d6f2'));
+    s.setProperty('--tc-say', color(c.colorSay, '#fff'));
+    s.setProperty('--tc-muted', color(c.colorMuted, '#b3a8cc'));
+    /* 文字阴影：深色字配浅背景时，黑影会显脏 → 给个「浅色/无阴影」的实现 */
+    var shadowMap = {
+      dark: '0 1px 3px rgba(0,0,0,.5)',                 // 默认：深阴影（浅字用）
+      strong: '0 2px 10px rgba(0,0,0,.85),0 0 3px rgba(0,0,0,.9)',  // 强阴影（花背景用）
+      none: 'none',                                     // 无
+      light: '0 1px 3px rgba(255,255,255,.6)'           // 浅阴影（深字用）
+    };
+    s.setProperty('--tc-shadow', shadowMap[c.textShadow] || shadowMap.dark);
+    /* 让字突出的三件套：
+       描边（最有效，花背景上也能压住）、字重、同色发光 */
+    var strokeW = num(c.strokeWidth, 0, 0, 6);            // px
+    s.setProperty('--tc-stroke-w', (strokeW / 2).toFixed(2) + 'px');  // -webkit-text-stroke 是单边宽度，视觉约等于 2 倍
+    s.setProperty('--tc-stroke', color(c.strokeColor, '#000000'));
+    var w = num(c.fontWeight, 700, 300, 900);
+    s.setProperty('--tc-weight', String(Math.round(w / 100) * 100));
+    /* 发光：用文字颜色本身做柔光，暗背景上很提气；0 = 关闭 */
+    var glow = num(c.glow, 0, 0, 40);
+    s.setProperty('--tc-glow', glow > 0
+      ? ('0 0 ' + Math.round(glow) + 'px ' + color(c.colorSay, '#ffffff') + ', 0 1px 3px rgba(0,0,0,.45)')
+      : shadowMap[c.textShadow] || shadowMap.dark);
   }
 
   function applyBg(bg) {
@@ -712,6 +910,7 @@ function loadInitialState(tries) {
     if (S) applyBackgrounds(S);
     if (S && S.viz) vizCfg.enabled = S.viz.enabled !== false;
     if (j && j.config && j.config.avatar) applyAvatar(j.config.avatar);
+    if (j && j.config && j.config.persona) applyPersonaName(j.config.persona.name);
     if (S && S.dj) { djEnabled = S.dj.enabled !== false; }
     // 商家版画面上不出现点歌/看视频（这两个功能在这个版本里不存在），默认台词也别提唱歌
     if (j && j.config && j.config.edition === 'basic') {
@@ -1310,6 +1509,8 @@ function pushStageChat(kind, user, text){
   }
 }
 function addLine(kind, user, text){
+  /* 「弹幕互动」只放观众的话（弹幕 / 礼物 / 进场）。
+     小汐自己说的走 setSmSay，不再以 [我] 的形式混进来 —— 一句话只在一个地方出现。 */
   var el = document.createElement('div');
   el.className = 'line ' + kind;
   el.innerHTML = '<span class="u"></span><span class="t"></span>';
@@ -1319,6 +1520,24 @@ function addLine(kind, user, text){
   while (poolEl.children.length > (stageEl.classList.contains('v') ? 8 : 10)) poolEl.removeChild(poolEl.firstChild);
   pushStageChat(kind, user, text);
   if (kind === 'gift') pushStageGift(user, text);
+}
+
+/* 「小汐在说」：显示她当前正在说的话。
+   以前这张卡是写死的（永远"欢迎来到直播间，随便聊聊～"），她真正说的话只出现在
+   「弹幕互动」里的 [我] 那一行，所以这句卡看着像摆设。现在改成实时更新。
+   带一个淡入，换句时不生硬。 */
+var smSayTimer = null;
+function setSmSay(text, emotion, user){
+  var el = document.getElementById('smSay');
+  if (!el || !text) return;
+  el.textContent = text;
+  el.style.opacity = '0';
+  el.style.transition = 'opacity .22s ease';
+  requestAnimationFrame(function () { el.style.opacity = '1'; });
+  /* 情绪顺带挂上去，方便以后按情绪换样式 */
+  var stage = document.getElementById('stage');
+  if (stage && emotion) stage.setAttribute('data-say-emotion', emotion);
+  if (user) stage.setAttribute('data-say-user', user);
 }
 
 // ── 出声：用系统自带语音合成（免装引擎，设置里的语速/音调/静音时段立刻生效）──
@@ -1452,10 +1671,39 @@ function speakOut(sp){
   pumpSpeech();
 }
 
+/* 主播名字：跟着「主播人设」里的名字走，客户改名这里全部跟着变。
+   画面里原来写死了 5 处「小汐」，改人设后画面上还叫小汐，对不上。 */
+var PERSONA_NAME = '小汐';
+function applyPersonaName(name) {
+  var n = String(name == null ? '' : name).trim();
+  PERSONA_NAME = n || '小汐';
+  var setTxt = function (id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+  setTxt('who', PERSONA_NAME);                                   // 字幕里的名字
+  setTxt('smSayTitle', PERSONA_NAME + '在说');                    // 卡片标题
+  setTxt('cpTitleName', PERSONA_NAME);                           // 陪玩层标题
+  setTxt('cpSayName', PERSONA_NAME);                             // 陪玩层台词标签
+  /* 注意：#wName 是「进场欢迎里的观众名」，不是主播名 —— 绝对不能在这里动，
+     否则每次配置更新都会把当前进场的观众名错改成占位符。 */
+  var fig = document.getElementById('fig');
+  if (fig) fig.alt = PERSONA_NAME;
+  /* 不动 document.title：原标题「直播场景 · OBS 采集」里的「OBS 采集」是模式提示，
+     改成名字反而丢掉有用信息，而且这个功能不需要它。 */
+  /* 陪玩层台词可能是动态拼的，重拼一次保证标签是新名字 */
+  var cpSay = document.getElementById('cpSay');
+  if (cpSay && cpSay.querySelector('b')) {
+    cpSay.querySelector('b').innerHTML = '<span id="cpSayName">' + PERSONA_NAME + '</span>在说';
+  }
+}
+
 function speak(text, emotion){
-  whoEl.textContent = '小汐';
+  whoEl.textContent = PERSONA_NAME;
   sayEl.textContent = text;
-    var cpSay = document.getElementById('cpSay'); if (cpSay) cpSay.innerHTML = '<b>小汐在说</b>' + String(text || '').replace(/</g, '&lt;');
+    var cpSay = document.getElementById('cpSay');
+    if (cpSay) cpSay.innerHTML = '<b><span id="cpSayName">' + PERSONA_NAME + '</span>在说</b>' + String(text || '').replace(/</g, '&lt;');
+  /* 「小汐在说」卡片也跟着更新。
+     走 speak() 的路径很多（回复、上播台词、点歌提示…），统一在这里同步，
+     免得只有 reply 那条路会更新、其它台词卡片一直是旧内容。 */
+  try { setSmSay(text, emotion); } catch (e) { /* 卡片不在也不影响说话 */ }
   capEl.classList.add('on');
   clearTimeout(capTimer);
   capTimer = setTimeout(function(){ capEl.classList.remove('on'); }, Math.max(6000, text.length * 320));
@@ -1922,14 +2170,20 @@ function speak(text, emotion){
       setEmotion('欢迎');
     }
   } else if (d.kind === 'config') {
+    /* 两种推送形状都要认：
+       ① {kind:'config', config:{...}}  —— 完整配置（如 /api/config 的 publish）
+       ② {kind:'config', scene:{...}}   —— applyConfig() 只推 scene，没有 config 字段
+       以前只读 ①，所以 ② 这种「改了设置立刻生效」的推送在画面上完全没反应
+       （布局、背景、卡片、可视化都收不到）。 */
     var C0 = d.config || {};
+    var S0 = C0.scene || d.scene || {};
     // 版本标记每次推送都重算：第一次没拿到 edition 时，画面上不能一直挂着点歌 / 看视频这几句台词。
     // 注意 applyConfig 只推 scene（没有 config 字段），那种事件不能当成「完整版」，否则改个设置就把标记抹了。
     if (C0.edition) document.documentElement.classList.toggle('ed-basic', C0.edition === 'basic');
     if (C0.avatar) applyAvatar(C0.avatar);
-    var S0 = C0.scene || {};
+    if (C0.persona) applyPersonaName(C0.persona.name);
     if (S0.layout) { layoutMode = S0.layout; fit(); }
-    if (S0.bg || S0.bgVideos) applyBackgrounds(S0);
+    if (S0.bg || S0.bgVideos || S0.cards) applyBackgrounds(S0);
     if (S0.viz) { vizCfg.enabled = S0.viz.enabled !== false; if (!vizCfg.enabled) vizStop(); }
       if (S0.dj) { djEnabled = S0.dj.enabled !== false; djShow(songPlaying); }
   } else if (d.kind === 'song-note') {
@@ -1948,7 +2202,9 @@ function speak(text, emotion){
       if (!d.playing) stopVideo();
       else if (!vidPlaying) playVideo({ url: d.playing.url || ('/media/' + d.playing.file + '?v=' + Date.now()), title: d.playing.title, owner: d.playing.owner, bvid: d.playing.bvid });
     } else if (d.kind === 'reply') {
-      addLine('me', '[我]', d.text);
+      /* 小汐自己说的话只进「小汐在说」这一张卡，不再往「弹幕互动」里塞一条 [我]。
+         原来两边都显示，同一句话在画面上出现两遍。 */
+      setSmSay(d.text, d.emotion, d.user);
       if (replay) return;                       // 回放旧消息：不出声，避免重复说话
       if (alreadySpoken(d.at)) return;          // 同一条只念一次
       speak(d.text, d.emotion);

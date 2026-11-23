@@ -131,6 +131,34 @@
 .pv-box iframe{width:100%;height:100%;border:0;display:block}
 .pv-close{position:absolute;right:10px;top:10px;border:0;border-radius:10px;width:34px;height:34px;font-size:18px;cursor:pointer;background:rgba(255,255,255,.14);color:#fff}
 .pv-close:hover{background:rgba(255,255,255,.26)}
+/* 卡片外观面板按主题显示不同项：
+   分组后结构清楚：① 卡片式专用 ② 布局（通用）③ 文字外观（通用）
+   极简式没有底板，「卡片式专用」整块收起，不再逐行判断。 */
+.x-word{display:none}
+.card-panel.theme-x .card-only{display:none}
+.card-panel.theme-x .sec-card{display:none}
+.card-panel.theme-x .card-word{display:none}
+.card-panel.theme-x .x-word{display:inline}
+/* 分区块标题：一眼看清哪几项属于哪个模式 */
+.sec{border:1px solid var(--line);border-radius:12px;padding:2px 14px 6px;margin:12px 0 4px;background:rgba(127,127,127,.03)}
+.sec-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;font-weight:700;
+  color:var(--ink);letter-spacing:.3px;padding:10px 0 4px}
+.sec-h em{font-style:normal;font-weight:400;font-size:11px;color:var(--ink3,#8a8398)}
+.sec-h::before{content:"";width:3px;height:13px;border-radius:2px;background:var(--mint,#5ee6c0);flex:none}
+.sec .row{padding:8px 0}
+.sec .row:first-of-type{border-top:1px solid var(--line);margin-top:2px;padding-top:11px}
+/* 浮动「看画面」按钮：右下角常驻，任何滚动位置都点得到 */
+.pv-fab{position:fixed;right:22px;bottom:22px;z-index:900;display:flex;align-items:center;gap:8px;
+  border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:11px 18px;cursor:pointer;
+  font-size:14px;font-weight:600;color:#fff;background:rgba(30,18,48,.86);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 10px 30px rgba(0,0,0,.45);transition:transform .12s ease,background .12s ease}
+.pv-fab:hover{background:rgba(52,30,80,.92);transform:translateY(-2px)}
+.pv-fab:active{transform:translateY(0)}
+.pv-fab-dot{width:8px;height:8px;border-radius:50%;background:#5ee6c0;box-shadow:0 0 0 4px rgba(94,230,192,.18)}
+/* 弹窗打开时把浮动按钮藏掉，免得压在画面上 */
+.pv-modal.on ~ .pv-fab{display:none}
+@media (max-width:720px){.pv-fab{right:12px;bottom:12px;padding:10px 14px;font-size:13px}}
   .pv iframe{width:100%;height:100%;border:0;display:block;transform-origin:top left}
   .kv{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;color:var(--ink2)}
   .kv b{color:var(--ink)}
@@ -937,7 +965,122 @@
             </div>
           </div>
         </div>
-        
+
+        <div class="card card-panel" id="cardPanel">
+          <h3>信息卡片外观<span class="live">玩法 / 小汐在说 / 礼物 / 弹幕</span></h3>
+          <p class="sub">画面上那几张半透明卡片的样式。调完点「保存卡片外观」，直播画面会立刻变，不用重开 OBS。</p>
+          <div class="row"><label>整体风格</label><div>
+            <select class="inp" id="cardTheme" style="max-width:340px">
+              <option value="cards">卡片式 —— 有半透明底板，任何背景都清楚</option>
+              <option value="x">极简式 —— 无底板，只适合干净背景</option>
+            </select>
+            <div class="hint" id="cardThemeHint">现在选的是「卡片式」：下面会显示底板相关的三项</div>
+          </div></div>
+
+          <!-- ── 分组 1：只有卡片式才有 ── -->
+          <div class="sec sec-card">
+            <div class="sec-h">卡片式专用<em>极简式没有底板，切过去这几项会自动收起</em></div>
+            <div class="row card-only"><label>底色不透明度</label><div style="display:flex;gap:10px;align-items:center">
+              <input class="inp" id="cardOpacity" type="range" min="0" max="100" step="1" style="flex:1">
+              <b class="mini" id="cardOpacityV" style="width:44px;text-align:right">20%</b>
+            </div><div class="hint">0 = 全透明只剩边框，100 = 几乎不透明</div></div>
+            <div class="row card-only"><label>磨砂强度</label><div style="display:flex;gap:10px;align-items:center">
+              <input class="inp" id="cardBlur" type="range" min="0" max="60" step="1" style="flex:1">
+              <b class="mini" id="cardBlurV" style="width:44px;text-align:right">22px</b>
+            </div><div class="hint">越大越糊，卡片后面的画面会被柔化</div></div>
+            <div class="row card-only"><label>圆角</label><div style="display:flex;gap:10px;align-items:center">
+              <input class="inp" id="cardRadius" type="range" min="0" max="40" step="1" style="flex:1">
+              <b class="mini" id="cardRadiusV" style="width:44px;text-align:right">18px</b>
+            </div></div>
+          </div>
+
+          <!-- ── 分组 2：两套通用 · 布局 ── -->
+          <div class="sec">
+            <div class="sec-h">布局<em>两套风格都生效</em></div>
+            <div class="row"><label>文字大小</label><div style="display:flex;gap:10px;align-items:center">
+              <input class="inp" id="cardFontScale" type="range" min="70" max="200" step="5" style="flex:1">
+              <b class="mini" id="cardFontScaleV" style="width:44px;text-align:right">100%</b>
+            </div><div class="hint">100% 是默认；嫌小就往右拉</div></div>
+            <div class="row"><label><span class="card-word">卡片</span><span class="x-word">区域</span>宽度</label><div style="display:flex;gap:10px;align-items:center">
+              <input class="inp" id="cardWidth" type="range" min="320" max="760" step="4" style="flex:1">
+              <b class="mini" id="cardWidthV" style="width:56px;text-align:right">548px</b>
+            </div></div>
+            <div class="row"><label>离屏幕边缘</label><div style="display:flex;gap:10px;align-items:center">
+              <input class="inp" id="cardGap" type="range" min="8" max="120" step="2" style="flex:1">
+              <b class="mini" id="cardGapV" style="width:44px;text-align:right">28px</b>
+            </div></div>
+            <div class="row"><label>离顶部</label><div style="display:flex;gap:10px;align-items:center">
+              <input class="inp" id="cardTop" type="range" min="0" max="400" step="2" style="flex:1">
+              <b class="mini" id="cardTopV" style="width:44px;text-align:right">74px</b>
+            </div></div>
+          </div>
+
+          <!-- ── 分组 3：两套通用 · 文字外观 ── -->
+          <div class="sec">
+            <div class="sec-h">文字外观<em>两套风格都生效</em></div>
+          <div class="row"><label>标题 / 玩法名</label><div style="display:flex;gap:10px;align-items:center">
+            <input type="color" id="cardColorTitle" style="width:56px;height:32px;border:0;background:none;cursor:pointer">
+            <input class="inp" id="cardColorTitleHex" style="width:110px;font-family:ui-monospace,Consolas,monospace" maxlength="7">
+            <button class="btn sm" data-preset="cardColorTitle" data-val="#ffffff">白</button>
+            <button class="btn sm" data-preset="cardColorTitle" data-val="#1a1420">深</button>
+          </div></div>
+          <div class="row"><label>说明 / 弹幕</label><div style="display:flex;gap:10px;align-items:center">
+            <input type="color" id="cardColorDesc" style="width:56px;height:32px;border:0;background:none;cursor:pointer">
+            <input class="inp" id="cardColorDescHex" style="width:110px;font-family:ui-monospace,Consolas,monospace" maxlength="7">
+            <button class="btn sm" data-preset="cardColorDesc" data-val="#e3d6f2">白</button>
+            <button class="btn sm" data-preset="cardColorDesc" data-val="#2a2233">深</button>
+          </div></div>
+          <div class="row"><label>台词（小汐在说）</label><div style="display:flex;gap:10px;align-items:center">
+            <input type="color" id="cardColorSay" style="width:56px;height:32px;border:0;background:none;cursor:pointer">
+            <input class="inp" id="cardColorSayHex" style="width:110px;font-family:ui-monospace,Consolas,monospace" maxlength="7">
+            <button class="btn sm" data-preset="cardColorSay" data-val="#ffffff">白</button>
+            <button class="btn sm" data-preset="cardColorSay" data-val="#1a1420">深</button>
+          </div></div>
+          <div class="row"><label>次要文字</label><div style="display:flex;gap:10px;align-items:center">
+            <input type="color" id="cardColorMuted" style="width:56px;height:32px;border:0;background:none;cursor:pointer">
+            <input class="inp" id="cardColorMutedHex" style="width:110px;font-family:ui-monospace,Consolas,monospace" maxlength="7">
+          </div></div>
+          <div class="row"><label>文字阴影</label><div>
+            <select class="inp" id="cardTextShadow" style="max-width:260px">
+              <option value="dark">深色阴影（浅色字用，默认）</option>
+              <option value="strong">强阴影（花背景上更清楚）</option>
+              <option value="light">浅色阴影（深色字用）</option>
+              <option value="none">不要阴影</option>
+            </select>
+            <div class="hint">换成深色字之后，这里最好选「不要阴影」或「浅色阴影」</div>
+          </div></div>
+
+          <div class="row" style="margin-top:6px"><label style="font-weight:700;color:var(--ink)">让字更突出</label>
+            <div class="hint" style="margin-top:0">花背景上白字看不清时，最有效的是加描边 —— 字外面包一圈，和背景隔开</div>
+          </div>
+          <div class="row"><label>文字描边</label><div style="display:flex;gap:10px;align-items:center">
+            <input class="inp" id="cardStroke" type="range" min="0" max="6" step="0.5" style="flex:1">
+            <b class="mini" id="cardStrokeV" style="width:44px;text-align:right">0px</b>
+          </div><div class="hint">0 = 关。花背景建议 2~3px，效果最明显</div></div>
+          <div class="row"><label>描边颜色</label><div style="display:flex;gap:10px;align-items:center">
+            <input type="color" id="cardStrokeColor" style="width:56px;height:32px;border:0;background:none;cursor:pointer">
+            <input class="inp" id="cardStrokeColorHex" style="width:110px;font-family:ui-monospace,Consolas,monospace" maxlength="7">
+            <button class="btn sm" data-preset="cardStrokeColor" data-val="#000000">黑边</button>
+            <button class="btn sm" data-preset="cardStrokeColor" data-val="#ffffff">白边</button>
+          </div><div class="hint">白字配黑边最清楚；深色字配白边</div></div>
+          <div class="row"><label>字重</label><div style="display:flex;gap:10px;align-items:center">
+            <input class="inp" id="cardWeight" type="range" min="300" max="900" step="100" style="flex:1">
+            <b class="mini" id="cardWeightV" style="width:44px;text-align:right">700</b>
+          </div><div class="hint">900 最粗最醒目</div></div>
+          <div class="row"><label>发光</label><div style="display:flex;gap:10px;align-items:center">
+            <input class="inp" id="cardGlow" type="range" min="0" max="40" step="1" style="flex:1">
+            <b class="mini" id="cardGlowV" style="width:44px;text-align:right">0px</b>
+          </div><div class="hint">字外面一圈同色柔光。深色背景上 8~16 很好看；花背景建议 0</div></div>
+          <div class="row"><label></label><div><button class="btn" id="cardPresetClear">一键：花背景最清楚</button></div>
+            <div class="hint">自动设成 白字 + 3px 黑边 + 粗体 + 无发光，粉色/亮背景上立刻能看清</div></div>
+          </div><!-- /分组 3 文字外观 -->
+
+          <div class="row" style="margin-top:14px"><label></label><div style="display:flex;gap:8px">
+            <button class="btn pri" id="cardSave">保存卡片外观</button>
+            <button class="btn" id="cardReset">恢复默认</button>
+          </div></div>
+        </div>
+
     </div>
 
     <div class="pane" id="p5">
@@ -1145,6 +1288,14 @@
     <button class="pv-close" id="pvClose" title="关闭">×</button>
   </div>
 </div>
+
+<!-- 浮动「看画面」按钮：调外观类设置（卡片、背景、形象）时要能边改边看。
+     原来设置页右上那个预览面板实际永远不显示（CSS 是 display:none，
+     要 .wrap.side-mode 才出现，而代码里只有 remove('side-mode')、从没 add 过），
+     所以这里给一个任何位置都能点到的入口。 -->
+<button class="pv-fab" id="pvFab" title="打开直播画面预览（快捷键 P）">
+  <span class="pv-fab-dot"></span>看画面
+</button>
 <div id="byeLayer" style="display:none;position:fixed;inset:0;background:rgba(20,10,8,.75);z-index:999;place-items:center">
   <div style="background:#fff;border-radius:20px;padding:36px 44px;text-align:center;max-width:460px">
     <div style="font-size:22px;font-weight:600;color:#2a2333">小汐已经下班了</div>
@@ -1539,6 +1690,7 @@ async function load() {
   try { fill(st); } catch (e) { toast('界面渲染出错：' + e.message); console.error(e); }
   try { applyEdition(ST && ST.config); } catch (e) { console.error(e); }
   try { loadBgVideos(); } catch (e) { console.error(e); }
+  try { loadCards(); } catch (e) { console.error(e); }
   try { refreshQuickControls(); } catch (e) { console.error(e); }
     var djEl = document.getElementById('djOn');
     if (djEl && st && st.config && st.config.scene && st.config.scene.dj) djEl.checked = st.config.scene.dj.enabled !== false;
@@ -2032,6 +2184,139 @@ if ($('btnWechatBindObs')) $('btnWechatBindObs').onclick = async function () {
     }
   };
 
+  /* ─────────── 信息卡片外观 ─────────── */
+  var CARD_DEFAULTS = { theme: 'cards', opacity: 20, blur: 22, radius: 18, fontScale: 100, width: 548, gap: 28, top: 74,
+    colorTitle: '#ffffff', colorDesc: '#e3d6f2', colorSay: '#ffffff', colorMuted: '#b3a8cc', textShadow: 'dark',
+    strokeWidth: 0, strokeColor: '#000000', fontWeight: 700, glow: 0 };
+  var cardState = Object.assign({}, CARD_DEFAULTS);
+  /* 颜色：色板与十六进制输入框双向同步 */
+  var CARD_COLORS = ['Title', 'Desc', 'Say', 'Muted'];
+  function paintCardColors() {
+    CARD_COLORS.forEach(function (k) {
+      var key = 'color' + k;
+      var v = cardState[key] || CARD_DEFAULTS[key];
+      if ($('cardColor' + k)) $('cardColor' + k).value = v;
+      if ($('cardColor' + k + 'Hex')) $('cardColor' + k + 'Hex').value = v;
+    });
+    if ($('cardTextShadow')) $('cardTextShadow').value = cardState.textShadow || 'dark';
+  }
+  function setCardColor(k, v) {
+    v = String(v || '').trim();
+    if (!/^#[0-9a-fA-F]{6}$/.test(v)) return false;
+    cardState['color' + k] = v.toLowerCase();
+    paintCardColors();
+    return true;
+  }
+  CARD_COLORS.forEach(function (k) {
+    if ($('cardColor' + k)) $('cardColor' + k).oninput = function () { setCardColor(k, this.value); };
+    if ($('cardColor' + k + 'Hex')) $('cardColor' + k + 'Hex').oninput = function () {
+      var v = this.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) setCardColor(k, v);
+    };
+  });
+  document.querySelectorAll('[data-preset]').forEach(function (b) {
+    b.onclick = function () {
+      var id = this.getAttribute('data-preset');       // 形如 cardColorTitle
+      setCardColor(id.replace('cardColor', ''), this.getAttribute('data-val'));
+    };
+  });
+  if ($('cardTextShadow')) $('cardTextShadow').onchange = function () { cardState.textShadow = this.value; };
+
+  /* ── 让字突出：描边 / 字重 / 发光 ── */
+  var CARD_NUM = [['cardStroke', 'strokeWidth', 'px'], ['cardWeight', 'fontWeight', ''], ['cardGlow', 'glow', 'px']];
+  function paintCardEmphasis() {
+    CARD_NUM.forEach(function (m) {
+      var el = $(m[0]), lb = $(m[0] + 'V');
+      if (el) el.value = cardState[m[1]];
+      if (lb) lb.textContent = cardState[m[1]] + m[2];
+    });
+    var sc = cardState.strokeColor || '#000000';
+    if ($('cardStrokeColor')) $('cardStrokeColor').value = sc;
+    if ($('cardStrokeColorHex')) $('cardStrokeColorHex').value = sc;
+  }
+  CARD_NUM.forEach(function (m) {
+    var el = $(m[0]);
+    if (!el) return;
+    el.oninput = function () {
+      cardState[m[1]] = Number(this.value);
+      var lb = $(m[0] + 'V');
+      if (lb) lb.textContent = this.value + m[2];
+    };
+  });
+  if ($('cardStrokeColor')) $('cardStrokeColor').oninput = function () { cardState.strokeColor = this.value; paintCardEmphasis(); };
+  if ($('cardStrokeColorHex')) $('cardStrokeColorHex').oninput = function () {
+    if (/^#[0-9a-fA-F]{6}$/.test(this.value.trim())) { cardState.strokeColor = this.value.trim().toLowerCase(); paintCardEmphasis(); }
+  };
+  /* 一键预设：花背景最清楚 */
+  if ($('cardPresetClear')) $('cardPresetClear').onclick = function () {
+    cardState.colorTitle = '#ffffff'; cardState.colorDesc = '#f0e8ff';
+    cardState.colorSay = '#ffffff'; cardState.colorMuted = '#e6ddf5';
+    cardState.strokeWidth = 3; cardState.strokeColor = '#000000';
+    cardState.fontWeight = 900; cardState.glow = 0; cardState.textShadow = 'strong';
+    paintCardColors(); paintCardEmphasis();
+    toast('已设为「花背景最清楚」：白字 + 3px 黑边 + 最粗，点保存生效');
+  };
+  function paintCardPanel() {
+    if ($('cardTheme')) $('cardTheme').value = cardState.theme || 'cards';
+    var map = [['cardOpacity', 'opacity', '%'], ['cardBlur', 'blur', 'px'], ['cardFontScale', 'fontScale', '%'],
+      ['cardWidth', 'width', 'px'], ['cardRadius', 'radius', 'px'], ['cardGap', 'gap', 'px'], ['cardTop', 'top', 'px']];
+    map.forEach(function (m) {
+      var el = $(m[0]), lb = $(m[0] + 'V');
+      if (el) el.value = cardState[m[1]];
+      if (lb) lb.textContent = cardState[m[1]] + m[2];
+    });
+    paintCardThemeRows();
+    paintCardColors();
+    paintCardEmphasis();
+  }
+  /* 极简式没有底板 → 整块「卡片式专用」收起；同时把提示改成当前模式的实际说明 */
+  function paintCardThemeRows() {
+    var panel = $('cardPanel');
+    if (!panel) return;
+    var isX = (cardState.theme || 'cards') === 'x';
+    panel.classList.toggle('theme-x', isX);
+    var hint = $('cardThemeHint');
+    if (hint) {
+      hint.textContent = isX
+        ? '现在选的是「极简式」：无底板、只有细线，下面是「布局」和「文字外观」两组；卡片底色/磨砂/圆角已收起'
+        : '现在选的是「卡片式」：有半透明底板，三组都能调（底色/磨砂/圆角 + 布局 + 文字外观）';
+    }
+  }
+  function loadCards() {
+    var c = (ST && ST.config && ST.config.scene && ST.config.scene.cards) || {};
+    cardState = Object.assign({}, CARD_DEFAULTS, c);
+    paintCardPanel();
+  }
+  // 拖动时实时显示数值；点保存才写进配置（和背景那块一致）
+  if ($('cardTheme')) $('cardTheme').onchange = function () { cardState.theme = this.value; paintCardThemeRows(); };
+  [['cardOpacity', 'opacity', '%'], ['cardBlur', 'blur', 'px'], ['cardFontScale', 'fontScale', '%'],
+   ['cardWidth', 'width', 'px'], ['cardRadius', 'radius', 'px'], ['cardGap', 'gap', 'px'], ['cardTop', 'top', 'px']]
+  .forEach(function (m) {
+    var el = $(m[0]);
+    if (!el) return;
+    el.oninput = function () {
+      cardState[m[1]] = Number(this.value);
+      var lb = $(m[0] + 'V');
+      if (lb) lb.textContent = this.value + m[2];
+    };
+  });
+  if ($('cardSave')) $('cardSave').onclick = async function () {
+    var btn = this;
+    btn.disabled = true; btn.textContent = '保存中…';
+    try {
+      var r = await api('/api/config', { scene: { cards: cardState } });
+      if (!r || !r.ok) throw new Error((r && r.error) || '保存失败');
+      toast('卡片外观已更新');
+      load();
+    } catch (e) { toast('保存失败：' + e.message); }
+    btn.disabled = false; btn.textContent = '保存卡片外观';
+  };
+  if ($('cardReset')) $('cardReset').onclick = function () {
+    cardState = Object.assign({}, CARD_DEFAULTS);
+    paintCardPanel();
+    toast('已恢复默认，记得点保存');
+  };
+
 
   /* ─────────── 背景视频（横屏 / 竖屏分开） ─────────── */
   var bgVideos = { landscape: { video: '', hideAvatar: false }, portrait: { video: '', hideAvatar: false } };
@@ -2292,17 +2577,38 @@ $('ttsOff').onclick = async function () {
     $('voiceTryBtn').onclick = function () { playVoicePreview($('ttsVoice').value.trim()); };
   }
 
-if ($('pvZoom')) {
-  $('pvZoom').onclick = function () {
-    var m = $('pvModal');
-    $('pvBig').src = '/?clean=1&mute=1';
-    applyPreviewAspect(ST && ST.config && ST.config.scene && ST.config.scene.layout);
-    m.classList.add('on');
-  };
+/* 打开/关闭画面预览。浮动按钮和原来那个「放大」共用这一段逻辑。 */
+function openPreview() {
+  var m = $('pvModal');
+  if (!m) return;
+  $('pvBig').src = '/?clean=1&mute=1&t=' + Date.now();   // 带时间戳，保证每次都拿最新画面
+  applyPreviewAspect(ST && ST.config && ST.config.scene && ST.config.scene.layout);
+  m.classList.add('on');
 }
-if ($('pvClose')) $('pvClose').onclick = function () { $('pvModal').classList.remove('on'); $('pvBig').src = 'about:blank'; };
-if ($('pvModal')) $('pvModal').onclick = function (e) { if (e.target === this) { this.classList.remove('on'); $('pvBig').src = 'about:blank'; } };
-document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('pvModal')) { $('pvModal').classList.remove('on'); $('pvBig').src = 'about:blank'; } });
+function closePreview() {
+  var m = $('pvModal');
+  if (!m) return;
+  m.classList.remove('on');
+  $('pvBig').src = 'about:blank';
+}
+
+if ($('pvZoom')) $('pvZoom').onclick = openPreview;
+if ($('pvFab')) $('pvFab').onclick = openPreview;
+if ($('pvClose')) $('pvClose').onclick = closePreview;
+if ($('pvModal')) $('pvModal').onclick = function (e) { if (e.target === this) closePreview(); };
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && $('pvModal')) closePreview();
+  /* 快捷键 P：调外观时手不用离开滑块。
+     输入框里打字不触发，免得打字母 p 就弹窗。 */
+  if ((e.key === 'p' || e.key === 'P') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    var t = e.target || {};
+    var tag = (t.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || t.isContentEditable) return;
+    var m = $('pvModal');
+    if (!m) return;
+    if (m.classList.contains('on')) closePreview(); else openPreview();
+  }
+});
 
 $('ttsVoiceSel').onchange = async function () {
   try { var vi2 = $('ttsVoice'); if (vi2) vi2.value = this.value; await api('/api/tts', { voice: this.value }); toast(this.value ? '音色已切换' : '已恢复默认'); }
