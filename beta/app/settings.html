@@ -1221,10 +1221,8 @@
         <h3>版本与更新<span class="live">自动同步</span></h3>
         <p class="sub">有新版本会在这里提示，点一下就能升级；升级不会覆盖你的配置。</p>
           <div class="row"><label>当前版本</label><div><b id="appVer">—</b></div></div>
-          <div class="row"><label>更新渠道</label><div>
-            <div class="kv"><span>稳定版</span><b id="updStableVer">—</b><button class="btn sm" id="updStableBtn" style="margin-left:8px">更新</button></div>
-            <div class="kv"><span>测试版（默认）</span><b id="updBetaVer">—</b><button class="btn sm" id="updBetaBtn" style="margin-left:8px">更新</button></div>
-
+          <div class="row"><label>最新版本</label><div>
+            <div class="kv"><span id="updChanName">线上版本</span><b id="updBetaVer">—</b><button class="btn sm" id="updBetaBtn" style="margin-left:8px">更新</button></div>
           </div></div>
           <div class="row"><label></label><div style="display:flex;gap:10px;align-items:center">
             <button class="btn" id="updCheck">刷新检查</button>
@@ -2861,7 +2859,7 @@ function uploadAvatar(key, file) {
     else if (p.phase === 'done') { if (bar) bar.style.width = '100%'; if (txt) txt.textContent = '更新完成'; }
     else if (p.phase === 'error') { if (txt) txt.textContent = '失败：' + (p.error || ''); }
   }
-  function chName(ch) { return ch === 'beta' ? '测试版' : '稳定版'; }
+  function chName(ch) { return '线上版本'; }   /* 只剩测试版通道，界面上不再区分渠道 */
   function cmpVer(a, b) {
     function p(v) { return String(v || '0').split(/[.\-+]/).slice(0, 3).map(function (n) { return parseInt(n, 10) || 0; }); }
     var x = p(a), y = p(b);
@@ -2869,7 +2867,8 @@ function uploadAvatar(key, file) {
     return 0;
   }
   function paintUpdRows() {
-    var pairs = [['stable', 'updStableVer', 'updStableBtn'], ['beta', 'updBetaVer', 'updBetaBtn']];
+    /* 只剩一个渠道：stable 行已从界面移除，这里只画 beta（显示成「线上版本」） */
+    var pairs = [['beta', 'updBetaVer', 'updBetaBtn']];
     pairs.forEach(function (p) {
       var info = UPD_INFO[p[0]], el = $(p[1]), btn = $(p[2]);
       if (!el || !btn) return;
@@ -2885,17 +2884,16 @@ function uploadAvatar(key, file) {
     catch (e) { return { ok: false, reason: e.message }; }
   }
   async function checkBothChannels() {
-    $('updState').textContent = '正在检查稳定版和测试版…';
+    /* 只剩测试版通道（稳定版已废弃并删除），不再并行查两个 */
+    $('updState').textContent = '正在检查更新…';
     $('updState').style.color = '';
-    var pair = await Promise.all([peekChannel('stable'), peekChannel('beta')]);
-      UPD_INFO.stable = pair[0];
-      UPD_INFO.beta = pair[1];
+    UPD_INFO.beta = await peekChannel('beta');
     paintUpdRows();
-    var s1 = UPD_INFO.stable, b = UPD_INFO.beta;
-    var txt = '稳定版：' + (s1 && s1.ok ? (s1.hasUpdate ? '有新版 ' + s1.latest : '已最新') : '检查失败')
-      + ' · 测试版：' + (b && b.ok ? (b.hasUpdate ? '有新版 ' + b.latest : '已最新') : '检查失败');
-    $('updState').textContent = txt;
-    $('updState').style.color = ((s1 && s1.hasUpdate) || (b && b.hasUpdate)) ? '#0f7a55' : '';
+    var b = UPD_INFO.beta;
+    $('updState').textContent = b && b.ok
+      ? (b.hasUpdate ? ('有新版 ' + b.latest) : '已是最新')
+      : ('检查失败：' + ((b && b.reason) || '网络问题'));
+    $('updState').style.color = (b && b.hasUpdate) ? '#0f7a55' : '';
   }
   async function loadVersion() {
     try {
@@ -2929,15 +2927,16 @@ function uploadAvatar(key, file) {
       toast('更新失败');
     }
   }
-  ['stable', 'beta'].forEach(function (ch) {
-    var btn = $(ch === 'stable' ? 'updStableBtn' : 'updBetaBtn');
+  /* 只剩一个更新按钮（稳定版已删除）：保留「点两次确认」的防误触 */
+  ['beta'].forEach(function (ch) {
+    var btn = $('updBetaBtn');
     if (!btn) return;
     btn.onclick = function () {
       if (armCh !== ch) {
         armCh = ch;
         clearTimeout(armTimer);
         btn.textContent = '再点一次确认';
-        $('updState').textContent = '再点一次开始更新' + chName(ch) + '（8 秒内有效）';
+        $('updState').textContent = '再点一次开始更新（8 秒内有效）';
         $('updState').style.color = '#c0392b';
         armTimer = setTimeout(function () { armCh = ''; paintUpdRows(); }, 8000);
         return;
