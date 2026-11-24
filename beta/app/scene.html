@@ -1052,7 +1052,15 @@ Object.keys(SPRITE).forEach(function(k){ var u = spriteUrl(SPRITE[k]); if (!isVi
 // 调试钩子：方便外部验证立绘映射（不影响正常逻辑）
 window.__avatarDebug = { spriteUrl: spriteUrl, applyAvatar: applyAvatar, get sources(){ return AVATAR.sources; } };
 
+// 表情的优先级和保持时长：礼物最「硬」，别被后一句「开心」顶掉；
+// 生气/大哭要留够时间让人看见，开心短一点，不然后面的话一直被它压着。
+var EMO_PRI  = { '礼物':5, '生气':4, '跺脚':4, '大哭':4, '难过':3, '伤心':3, '欢迎':2, '开心':1, '平静':0 };
+var EMO_HOLD = { '礼物':8000, '生气':6000, '跺脚':6000, '大哭':6000, '难过':6000, '伤心':6000, '欢迎':4500, '开心':4200, '平静':0 };
+var emoPri = 0, emoUntil = 0;
+
 function backToIdle(){
+  emoPri = 0;
+  emoUntil = 0;
   figEl.dataset.cur = 'idle';
   figEl.dataset.emo = 'idle';
   paintFigure('idle');
@@ -1060,19 +1068,33 @@ function backToIdle(){
 
 function setEmotion(emotion){
   var name = SPRITE[emotion] || 'idle';
+  // 不认识的情绪名别乱切（以前会直接打回常态，等于把刚亮的表情抹掉）
+  if (name === 'idle' && emotion !== '平静') return '';
+  var pri  = EMO_PRI[emotion] != null ? EMO_PRI[emotion] : 1;
+  var hold = EMO_HOLD[emotion] || 4200;
+  var now  = Date.now();
+
+  // 高优先级表情还在展示期：低优先级的请求直接丢掉（礼物不会被一句「开心」打断）
+  if (pri < emoPri && now < emoUntil) return '';
+
   if (figEl.dataset.cur === name) {
-    // 同一个状态重复触发（比如连续有人进场）：重新计时，别被上一次的计时器提前打回常态
+    // 同一个状态重复触发（比如连续有人进场 / 连发礼物）：重新计时，别被上一次的计时器提前打回常态
     if (name !== 'idle') {
+      emoPri = Math.max(emoPri, pri);
+      emoUntil = now + hold;
       clearTimeout(idleTimer);
-      idleTimer = setTimeout(backToIdle, 4200);
+      idleTimer = setTimeout(backToIdle, hold);
     }
-    return;
+    return emotion;
   }
   figEl.dataset.cur = name;
   figEl.dataset.emo = name;
   paintFigure(name);
+  emoPri = pri;
+  emoUntil = now + hold;
   clearTimeout(idleTimer);
-  if (name !== 'idle') idleTimer = setTimeout(backToIdle, 4200);
+  if (name !== 'idle') idleTimer = setTimeout(backToIdle, hold);
+  return emotion;
 }
 
 // ── 欢迎横幅 ──
@@ -1708,8 +1730,10 @@ function speak(text, emotion){
   clearTimeout(capTimer);
   capTimer = setTimeout(function(){ capEl.classList.remove('on'); }, Math.max(6000, text.length * 320));
 
-  emoEl.textContent = emotion || '开心';
-  setEmotion(emotion || '开心');
+  var shown = setEmotion(emotion || '开心');
+  /* 表情可能因为优先级没被切（礼物展示期内来了句「好漂亮」）——
+     气泡文字要跟脸走，否则会写着「开心」脸上却是礼物。 */
+  if (shown) emoEl.textContent = shown;
   emoEl.classList.add('on');
   clearTimeout(emoTimer);
   emoTimer = setTimeout(function(){ emoEl.classList.remove('on'); }, 4000);

@@ -1,10 +1,10 @@
 {
-  "version": "2.6.228",
-  "notes": "2.6.228 更新内容：\n- 修复新客户点开就报「找不到独立的 node.exe」：以前插件只认 Program Files 里的 Node，\n  客户把 Node 装在别处（用户目录 / nvm / 压根没装但机器上有 DSH）时就起不来。\n  现在按顺序找：LIVE_AGENT_NODE → 程序目录\\runtime\\node.exe → DSH 自带运行时\n  → Program Files / 用户目录 / nvm → PATH\n- 找不到时的提示改成能照着做的：装 Node LTS、或把 node.exe 放进 runtime\\、或设 LIVE_AGENT_NODE；\n  并且会先跑一次 -v，版本低于 18 会直接说「版本太低」，不再起一半才崩\n- 启动.cmd 用同一套查找逻辑（不再只信 where node）；插件代码有变时，\n  下次用「启动.cmd」启动会自动重装插件，不用再手动点「安装到DSH.cmd」",
-  "package": "xiaoxi-ai-live-2.6.228.zip",
-  "size": 29459246,
-  "sha256": "068f7709522bd72812c4c6bb7744bf722680786ee291da02c19d32ba252a6067",
-  "publishedAt": "2026-11-23T17:41:14.407Z",
+  "version": "2.6.229",
+  "notes": "2.6.229 更新内容：\n- 主播会看弹幕给表情了：以前只有\"真的让模型回一句\"的时候才可能换表情，而且经常一律回\"开心/平静\"。\n  现在加了一层弹幕情绪识别（生气 / 大哭 / 难过 / 跺脚 / 礼物 / 开心），\n  骂她、逗她、聊伤心事、送礼物，人物会立刻换对应的立绘，不用等模型\n- 表情有了优先级和保持时间：收到礼物能停 8 秒、生气 6 秒，\n  后一句\"你好漂亮\"不会把礼物表情顶掉；气泡文字也跟脸走，不会出现\"脸上礼物、字写开心\"\n- 模型那侧的提示词也调了：emotion 要跟着观众这句话的情绪走，别一律回开心\n- 修新客户点开就报\"找不到 node.exe\"：会依次找 环境变量 / 程序目录 runtime\\ / DSH 自带运行时 /\n  Program Files / 用户目录 / nvm / PATH；版本低于 18 会直接说\"版本太低\"",
+  "package": "xiaoxi-ai-live-2.6.229.zip",
+  "size": 29461429,
+  "sha256": "337ff598c8cd050aa48aefecd84bbaca05d15bb0574b514b999a03618b767e1a",
+  "publishedAt": "2026-11-24T05:20:22.153Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -31,7 +31,7 @@
     {
       "path": "使用说明.md",
       "size": 5057,
-      "sha256": "f01a6cb9dac8e0b9e0a94de7868b3129e037b5e95b84c005c7fa36010f1d8322"
+      "sha256": "1a490e833553e7ec42c5f50b607e62546a091304e09c4d43d3a36839ae5d3726"
     },
     {
       "path": "停止.cmd",
@@ -220,8 +220,8 @@
     },
     {
       "path": "scene.html",
-      "size": 132376,
-      "sha256": "eda5740a0d45b2c2475efe2c73e7ca21d9e47b12516a15e90c762e311e8cbd08"
+      "size": 133712,
+      "sha256": "9b07fccc1905315a583d3951a308ab4a5cec368a7f0699146e111d8e581cfc00"
     },
     {
       "path": "settings.html",
@@ -306,7 +306,7 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "7c0d6cf5618323919bea888aab23d688108efee9d4f4a6c566ad40a587ae7f8e"
+      "sha256": "b56687d26f0fa8afb51f87dce13b254b5a0b22a5f4de879d748a46fad59ce69b"
     },
     {
       "path": "wechat-ocr.ps1",
@@ -315,8 +315,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 477253,
-      "sha256": "1a3c2d84452f44057dfce161860ebe1673cdb3fdc861056096abcaf74e914451"
+      "size": 479796,
+      "sha256": "39ce62bb20137d263d798bd7246adb7993d4e548712abf05efef800ba54fbf9b"
     }
   ]
 }
