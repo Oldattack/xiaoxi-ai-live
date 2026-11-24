@@ -910,6 +910,7 @@ function loadInitialState(tries) {
     if (S) applyBackgrounds(S);
     if (S && S.viz) vizCfg.enabled = S.viz.enabled !== false;
     if (j && j.config && j.config.avatar) applyAvatar(j.config.avatar);
+    if (j && j.config && j.config.emotions) applyEmotionConfig(j.config.emotions);
     if (j && j.config && j.config.persona) applyPersonaName(j.config.persona.name);
     if (S && S.dj) { djEnabled = S.dj.enabled !== false; }
     // 商家版画面上不出现点歌/看视频（这两个功能在这个版本里不存在），默认台词也别提唱歌
@@ -1047,6 +1048,36 @@ var SPRITE = {
   '伤心':'sad', '难过':'sad', '大哭':'sad',
   '礼物':'gift'
 };
+
+// 表情的优先级和保持时长：礼物最「硬」，别被后一句「开心」顶掉；
+// 生气/大哭要留够时间让人看见，开心短一点，不然后面的话一直被它压着。
+var EMO_PRI  = { '礼物':5, '生气':4, '跺脚':4, '大哭':4, '难过':3, '伤心':3, '欢迎':2, '开心':1, '平静':0 };
+var EMO_HOLD = { '礼物':8000, '生气':6000, '跺脚':6000, '大哭':6000, '难过':6000, '伤心':6000, '欢迎':4500, '开心':4200, '平静':0 };
+
+/**
+ * 用服务端下发的表情表覆盖上面这几张默认表。
+ * 这样客户在设置页加一个「害羞」，这里就自动认得 '害羞' →
+ * 立绘取 avatar.sources['害羞']（没传就退回常态图）。
+ */
+function applyEmotionConfig(list){
+  if (!Array.isArray(list) || !list.length) return;
+  list.forEach(function (e) {
+    var name = String(e && e.name || '').trim();
+    if (!name) return;
+    // 客户给这个表情单独传过图/视频 → 优先用它自己的那格；
+    // 否则才用内置图（welcome/angry/sad/gift）。
+    // 不这样的话，「开心」永远借用 welcome，客户给「开心」传的图会完全不生效。
+    var own = AVATAR.sources && AVATAR.sources[name];
+    var key = own ? name : (String(e.sprite || '').trim() || SPRITE[name] || name);
+    SPRITE[name] = key;
+    EMO_PRI[name]  = (e.priority != null ? Number(e.priority) : (EMO_PRI[name] != null ? EMO_PRI[name] : 1));
+    var hold = Number(e.holdMs);
+    EMO_HOLD[name] = (hold > 0 ? hold : (EMO_HOLD[name] || 4200));
+    var u = spriteUrl(key);
+    if (u && !isVideoSrc(u)) { var im = new Image(); im.src = u; }
+  });
+  try { window.__emotionNames = list.map(function (e) { return e.name; }); } catch (e2) { /* ignore */ }
+}
 Object.keys(SPRITE).forEach(function(k){ var u = spriteUrl(SPRITE[k]); if (!isVideoSrc(u)) { var im = new Image(); im.src = u; } });
 
 // 调试钩子：方便外部验证立绘映射（不影响正常逻辑）
@@ -1054,8 +1085,6 @@ window.__avatarDebug = { spriteUrl: spriteUrl, applyAvatar: applyAvatar, get sou
 
 // 表情的优先级和保持时长：礼物最「硬」，别被后一句「开心」顶掉；
 // 生气/大哭要留够时间让人看见，开心短一点，不然后面的话一直被它压着。
-var EMO_PRI  = { '礼物':5, '生气':4, '跺脚':4, '大哭':4, '难过':3, '伤心':3, '欢迎':2, '开心':1, '平静':0 };
-var EMO_HOLD = { '礼物':8000, '生气':6000, '跺脚':6000, '大哭':6000, '难过':6000, '伤心':6000, '欢迎':4500, '开心':4200, '平静':0 };
 var emoPri = 0, emoUntil = 0;
 
 function backToIdle(){
@@ -2205,6 +2234,7 @@ function speak(text, emotion){
     // 注意 applyConfig 只推 scene（没有 config 字段），那种事件不能当成「完整版」，否则改个设置就把标记抹了。
     if (C0.edition) document.documentElement.classList.toggle('ed-basic', C0.edition === 'basic');
     if (C0.avatar) applyAvatar(C0.avatar);
+    if (C0.emotions) applyEmotionConfig(C0.emotions);
     if (C0.persona) applyPersonaName(C0.persona.name);
     if (S0.layout) { layoutMode = S0.layout; fit(); }
     if (S0.bg || S0.bgVideos || S0.cards) applyBackgrounds(S0);
