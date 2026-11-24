@@ -1,10 +1,10 @@
 {
-  "version": "2.6.229",
+  "version": "2.6.230",
   "notes": "2.6.229 更新内容：\n- 主播会看弹幕给表情了：以前只有\"真的让模型回一句\"的时候才可能换表情，而且经常一律回\"开心/平静\"。\n  现在加了一层弹幕情绪识别（生气 / 大哭 / 难过 / 跺脚 / 礼物 / 开心），\n  骂她、逗她、聊伤心事、送礼物，人物会立刻换对应的立绘，不用等模型\n- 表情有了优先级和保持时间：收到礼物能停 8 秒、生气 6 秒，\n  后一句\"你好漂亮\"不会把礼物表情顶掉；气泡文字也跟脸走，不会出现\"脸上礼物、字写开心\"\n- 模型那侧的提示词也调了：emotion 要跟着观众这句话的情绪走，别一律回开心\n- 修新客户点开就报\"找不到 node.exe\"：会依次找 环境变量 / 程序目录 runtime\\ / DSH 自带运行时 /\n  Program Files / 用户目录 / nvm / PATH；版本低于 18 会直接说\"版本太低\"",
-  "package": "xiaoxi-ai-live-2.6.229.zip",
-  "size": 29461429,
-  "sha256": "337ff598c8cd050aa48aefecd84bbaca05d15bb0574b514b999a03618b767e1a",
-  "publishedAt": "2026-11-24T05:20:22.153Z",
+  "package": "xiaoxi-ai-live-2.6.230.zip",
+  "size": 29461324,
+  "sha256": "27db8ef5aa2d53ce05f34048bae82e66c1cbdb10610e67d961b364a6362e2e0f",
+  "publishedAt": "2026-11-24T12:37:48.358Z",
   "minAppVersion": "1.0.0",
   "fileBase": "https://raw.githubusercontent.com/Oldattack/xiaoxi-ai-live/main/beta/app/",
   "files": [
@@ -31,7 +31,7 @@
     {
       "path": "使用说明.md",
       "size": 5057,
-      "sha256": "1a490e833553e7ec42c5f50b607e62546a091304e09c4d43d3a36839ae5d3726"
+      "sha256": "82e839253393c47e05d3d92cfb70ee85e9247aa190fe50bad7153541be7a4c63"
     },
     {
       "path": "停止.cmd",
@@ -65,8 +65,8 @@
     },
     {
       "path": "一句话部署.txt",
-      "size": 3443,
-      "sha256": "91c8bf966187e83cf09542be881ae0e1b804f715247ac9693d9c990f69dcd850"
+      "size": 3489,
+      "sha256": "c6b9d480c03ac0e61801ccb1996d9dd9e2de837acb4016e07fb850f87e4a296c"
     },
     {
       "path": "自检.cmd",
@@ -306,7 +306,7 @@
     {
       "path": "VERSION",
       "size": 8,
-      "sha256": "b56687d26f0fa8afb51f87dce13b254b5a0b22a5f4de879d748a46fad59ce69b"
+      "sha256": "5758a1bb5cfd85907f6d6783e9671f8aa1890fc0f0e149baae0a6f926891540f"
     },
     {
       "path": "wechat-ocr.ps1",
@@ -315,8 +315,8 @@
     },
     {
       "path": "xiaoxi.mjs",
-      "size": 479796,
-      "sha256": "39ce62bb20137d263d798bd7246adb7993d4e548712abf05efef800ba54fbf9b"
+      "size": 477967,
+      "sha256": "18a64b34c90a4f3f2003bb7708ca3b056b2c9dfb325bfe41bb0580bd7b3054f1"
     }
   ]
 }
