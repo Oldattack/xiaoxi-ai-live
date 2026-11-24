@@ -802,12 +802,7 @@
         </div>
       </div>
 
-      <div class="card">
-        <h3>四个状态：欢迎 / 生气 / 伤心 / 收到礼物</h3>
-        <p class="sub">这四个状态会临时盖在常态上，播完自动回到「人物形象」里的常态。每个都可以传图片或视频（视频静音循环）。</p>
-        <p class="hint">图片：PNG / JPG / WebP，≤8MB；视频：MP4 / WebM，≤40MB。</p>
-        <div class="av-grid" id="avSlots"></div>
-      </div>
+      
     </div>
 
     <!-- ══════ 主播人设 ══════ -->
@@ -868,9 +863,11 @@
       </div>
 
       <div class="card">
-        <h3>实际提示词预览</h3>
-        <p class="sub">这是真正拼进模型的内容；保存后生效。改错了点「重新读取」恢复上一次保存。</p>
-        <textarea class="inp" id="personaPromptPreview" rows="12" readonly style="font-family:ui-monospace,Consolas,monospace;font-size:12px"></textarea>
+        <details style="margin-bottom:4px">
+          <summary style="cursor:pointer;font-size:12.5px;color:#6b7280">高级：查看实际提示词（一般不用动）</summary>
+          <p class="sub">这是真正拼进模型的内容；保存后生效。改错了点「重新读取」恢复上一次保存。</p>
+          <textarea class="inp" id="personaPromptPreview" rows="12" readonly style="font-family:ui-monospace,Consolas,monospace;font-size:12px"></textarea>
+        </details>
         <div class="row" style="margin-top:12px"><label></label><div style="display:flex;gap:8px">
           <button class="btn pri" id="personaSave">保存人设</button>
           <button class="btn" id="personaReload">重新读取</button>
@@ -1123,12 +1120,7 @@
         <label class="sw"><input type="checkbox" id="llmEnabled"><span class="tr"></span><span class="t">启用模型</span></label>
         <label class="sw"><input type="checkbox" id="llmFast"><span class="tr"></span><span class="t">快速模式<i>更短的回复、更低的温度</i></span></label>
       </div>
-      <div class="card">
-        <h3>补充人设<span class="live">可留空</span></h3>
-        <p class="sub">完整的身份、性格、背景和话术在左侧「主播人设」里；这里只写额外补充，会拼在人设档案后面。</p>
-          <div class="tpl-grid" id="tplGrid"></div>
-        <textarea class="inp" id="llmPersona" rows="5"></textarea>
-      </div>
+      
       <div class="card">
         <h3>说话风格</h3>
         <div class="row"><label>一次说多长</label><div><input class="inp" id="llmMaxChars" type="number" min="10"><div class="hint">字</div></div></div>
@@ -1217,10 +1209,7 @@
             <button class="btn sm" id="dyLogoutBtn">退出当前抖音</button>
           </div></div>
   
-        </div>
-        <div class="card">
-          <h3>说明</h3>
-          <p class="sub">OBS 未打开时平台会自动启动它；如果 OBS 正在直播，不会强制重启，避免中断直播。</p>
+        <p class="hint" style="margin-top:10px">OBS 未打开时平台会自动启动它；如果 OBS 正在直播，不会强制重启，避免中断直播。</p>
         </div>
       </div>
 
@@ -1424,7 +1413,7 @@ function fill(st) {
     $('llmKey').placeholder = l.apiKey ? ('已保存 ' + l.apiKey + '（留空不改）') : 'sk-…（填了才会真的用模型）';
     $('llmKeyHint').textContent = l.apiKey ? '密钥已保存；想换就直接粘新的' : '没填密钥时，她只能用兜底话术（「这个我想想啊…」这类）';
   }
-  $('llmPersona').value = l.persona || '';
+  if ($('llmPersona')) $('llmPersona').value = l.persona || '';
   $('llmMaxChars').value = l.maxChars || 40;
   if ($('llmEmoji')) $('llmEmoji').value = l.emojiMode || 'none';
   $('llmTemp').value = l.temperature != null ? l.temperature : 0.9;
@@ -1785,7 +1774,7 @@ $('save').onclick = async function () {
       ...($('llmKey') && $('llmKey').value.trim() ? { apiKey: $('llmKey').value.trim() } : {}),
       model: $('llmModel').value.trim(),
       baseUrl: $('llmBase').value.trim(),
-      persona: $('llmPersona').value,
+      ...($('llmPersona') ? { persona: $('llmPersona').value } : {}),
       maxChars: Number($('llmMaxChars').value) || 40,
       emojiMode: ($('llmEmoji') && $('llmEmoji').value) || 'none',
       temperature: Number($('llmTemp').value),
