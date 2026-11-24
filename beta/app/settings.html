@@ -371,6 +371,97 @@
     .three, .two, .tpl-grid { grid-template-columns: 1fr; }
     .home-stats { gap: 18px; }
   }
+
+  /* ── 联动：导航状态点 / 开播前检查 / 悬浮试一句 ── */
+  .nav a { position: relative; }
+  .nav .navdot { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); width: 7px; height: 7px; border-radius: 50%; background: #ddd7e4; }
+  .nav .navdot.ok { background: #2aa877; }
+  .nav .navdot.todo { background: #e2a33c; box-shadow: 0 0 0 3px rgba(226,163,60,.18); }
+
+  .checkband { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 9px 14px; margin: 10px 0 0;
+    border: 1px solid var(--line); border-radius: 12px; background: var(--card); font-size: 12.5px; }
+  .checkband b { font-weight: 600; margin-right: 2px; color: var(--ink2); }
+  .checkband a { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px;
+    border: 1px solid var(--line); cursor: pointer; color: var(--ink2); text-decoration: none; }
+  .checkband a:hover { filter: brightness(.97); }
+  .checkband a.ok { color: #1d8a5f; border-color: #bfe6d5; background: #eefaf4; }
+  .checkband a.todo { color: #a9631a; border-color: #f0d8b0; background: #fdf6ea; }
+  .checkband a i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .checkband .done { color: #1d8a5f; font-weight: 600; }
+
+  #tryFab { position: fixed; right: 132px; bottom: 22px; z-index: 901; display: inline-flex; align-items: center; gap: 7px;
+    padding: 11px 16px; border-radius: 999px; border: 0; cursor: pointer; color: #fff; font-size: 13.5px; font-weight: 600;
+    background: linear-gradient(135deg, #ff8a5c, #e8543f); box-shadow: 0 10px 24px rgba(232,84,63,.34); }
+  @media (max-width: 720px) { #tryFab { right: 12px; bottom: 68px; } }
+  #tryFab:hover { filter: brightness(1.04); }
+  #tryBox { position: fixed; right: 22px; bottom: 82px; z-index: 902; width: 336px; display: none;
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 44px rgba(0,0,0,.16);
+    padding: 12px; }
+  #tryBox.on { display: block; }
+  #tryBox .hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 12.5px; color: var(--ink2); }
+  #tryBox .hd b { font-size: 13px; color: var(--ink); }
+  #tryBox .row2 { display: flex; gap: 6px; }
+  #tryBox .row2 input { flex: 1; }
+  #tryLog { max-height: 210px; overflow: auto; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px; }
+  #tryLog .m { font-size: 12.5px; line-height: 1.6; padding: 6px 9px; border-radius: 9px; }
+  #tryLog .me { background: #f1eef6; align-self: flex-end; max-width: 88%; }
+  #tryLog .her { background: var(--brand-soft, #fdeee8); max-width: 92%; }
+  #tryLog .meta { display: block; margin-top: 2px; font-size: 10.5px; color: var(--ink3); }
+  #tryBox .quick { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  #tryBox .quick button { font-size: 11.5px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink2); cursor: pointer; }
+
+  /* ── 交互特效（全部尊重「减少动态效果」系统设置）── */
+  /* 只有这些需要 overflow:hidden 来裁涟漪；悬浮按钮保持 fixed，别加进来 */
+  .btn, .nav a, .checkband a, .tpl, .av-card, .seg button { position: relative; overflow: hidden; }
+  .pv-fab, #tryFab { position: fixed; overflow: hidden; }
+  .btn:active, .pv-fab:active, #tryFab:active { transform: scale(.96); }
+  .btn, .nav a, .checkband a { transition: transform .12s ease, background .15s ease, border-color .15s ease, color .15s ease; }
+
+  /* 涟漪：点哪儿扩散在哪儿 */
+  .ripple { position: absolute; border-radius: 50%; transform: scale(0); opacity: .55; pointer-events: none;
+    background: currentColor; animation: rip .52s ease-out forwards; }
+  @keyframes rip { to { transform: scale(2.6); opacity: 0; } }
+
+  /* 页面切换：内容轻微上浮淡入 */
+  .pane.on { animation: paneIn .26s cubic-bezier(.22,.8,.32,1); }
+  @keyframes paneIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* 保存成功：卡片边框扫一道绿光 + 右上角打勾 */
+  .card.saved-ok { animation: cardOk 1s ease; }
+  @keyframes cardOk {
+    0%   { box-shadow: 0 0 0 0 rgba(42,168,119,.55); }
+    40%  { box-shadow: 0 0 0 5px rgba(42,168,119,.20); }
+    100% { box-shadow: 0 0 0 0 rgba(42,168,119,0); }
+  }
+  .card .okmark { position: absolute; top: 10px; right: 12px; width: 22px; height: 22px; border-radius: 50%;
+    background: #2aa877; color: #fff; font-size: 13px; display: grid; place-items: center; opacity: 0;
+    transform: scale(.4); transition: opacity .2s ease, transform .26s cubic-bezier(.2,1.4,.4,1); }
+  .card { position: relative; }
+  .card.saved-ok .okmark { opacity: 1; transform: scale(1); }
+
+  /* 导航状态点变化：弹一下 */
+  .navdot.pulse { animation: dotPulse .55s ease; }
+  @keyframes dotPulse { 0% { transform: translateY(-50%) scale(1); } 40% { transform: translateY(-50%) scale(2.1); } 100% { transform: translateY(-50%) scale(1); } }
+
+  /* 检查条 chip 由「待配」变「已配」时闪一下绿 */
+  .checkband a.flash { animation: chipFlash .9s ease; }
+  @keyframes chipFlash { 0% { box-shadow: 0 0 0 0 rgba(42,168,119,.6); } 100% { box-shadow: 0 0 0 12px rgba(42,168,119,0); } }
+
+  /* toast：从下面滑上来 */
+  #toast { transition: opacity .2s ease, transform .26s cubic-bezier(.2,.9,.3,1); transform: translateY(10px); }
+  #toast.on { transform: translateY(0); }
+
+  /* 试一句气泡入场 */
+  #tryLog .m { animation: bubbleIn .22s ease; }
+  @keyframes bubbleIn { from { opacity: 0; transform: translateY(6px) scale(.97); } to { opacity: 1; transform: none; } }
+
+  /* 输入框聚焦时轻微高亮 */
+  .inp:focus, textarea.inp:focus { box-shadow: 0 0 0 3px rgba(232,84,63,.14); border-color: #f0a184; outline: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pane.on, .card.saved-ok, .navdot.pulse, .checkband a.flash, #tryLog .m, .ripple { animation: none !important; }
+    .btn:active, .pv-fab:active, #tryFab:active { transform: none; }
+  }
 </style>
 </head>
 <body>
@@ -389,6 +480,13 @@
   <button class="btn pri" id="save">保存并生效</button>
 </div>
 
+
+<div class="checkband" id="checkBand" style="display:none">
+  <b>开播前检查</b>
+  <span id="checkChips" style="display:flex;gap:8px;flex-wrap:wrap"></span>
+  <span class="grow" style="flex:1"></span>
+  <span id="checkDone" class="done" style="display:none">✓ 都配好了，可以开播</span>
+</div>
 <div class="wrap">
     <div class="nav">
       <div class="grp">日常</div>
@@ -4003,6 +4101,246 @@ if (_pVer) _pVer.onclick = function () { document.querySelector(".nav a[data-p=\
 var _updGo = document.getElementById("updBarGo");
 if (_updGo) _updGo.onclick = function () { document.querySelector(".nav a[data-p=\"p4\"]").click(); };
 
+
+/* ─── 联动：导航状态点 + 开播前检查 + 悬浮试一句 ─── */
+function xiaoxiConfigState() {
+  var c = (typeof CFG !== 'undefined' && CFG) ? CFG : null;
+  if (!c) return null;
+  var key = !!(c.llm && c.llm.apiKey);
+  var rid = !!(c.douyin && String(c.douyin.webRid || '').trim());
+  var gate = !(c.gate && c.gate.enabled === false);
+  var tts = !!(c.tts && c.tts.enabled && (c.tts.provider === 'browser' || c.tts.apiKey || c.tts.token));
+  return { key: key, rid: rid, gate: gate, tts: tts };
+}
+function paintConfigState() {
+  var s = xiaoxiConfigState();
+  if (!s) return;
+  var map = { p5: s.key, p3: s.rid, p1: s.gate, p6: s.tts };
+  Object.keys(map).forEach(function (id) {
+    var a = document.querySelector('.nav a[data-p="' + id + '"]');
+    if (!a) return;
+    var d = a.querySelector('.navdot') || a.appendChild(document.createElement('i'));
+    d.className = 'navdot ' + (map[id] ? 'ok' : 'todo');
+    d.title = map[id] ? '已配置' : '还没配好';
+  });
+  var done = 0, total = 0;
+  var defs = [
+    ['key', '模型 Key', 'p5'],
+    ['rid', '直播间号', 'p3'],
+    ['gate', '自动回复', 'p1'],
+    ['tts', '语音', 'p6'],
+  ];
+  var box = document.getElementById('checkChips');
+  if (box) {
+    box.innerHTML = '';
+    defs.forEach(function (d) {
+      total++;
+      var ok = !!s[d[0]];
+      if (ok) done++;
+      var a = document.createElement('a');
+      a.className = ok ? 'ok' : 'todo';
+      a.innerHTML = '<i></i>' + (ok ? '✓ ' : '! ') + d[1];
+      a.onclick = function () {
+        var nav = document.querySelector('.nav a[data-p="' + d[2] + '"]');
+        if (nav) nav.click();
+      };
+      box.appendChild(a);
+    });
+    var band = document.getElementById('checkBand');
+    if (band) band.style.display = (done === total) ? 'none' : 'flex';
+    var dEl = document.getElementById('checkDone');
+    if (dEl) dEl.style.display = (done === total) ? 'inline' : 'none';
+  }
+}
+
+/* 悬浮试一句 */
+function xiaoxiBindTryBox() {
+  var fab = document.getElementById('tryFab');
+  var box = document.getElementById('tryBox');
+  var log = document.getElementById('tryLog');
+  if (!fab || !box || fab.dataset.bound) return;
+  fab.dataset.bound = '1';
+  var busy = false;
+  function open(on) { box.classList.toggle('on', on); if (on) setTimeout(function () { var i = document.getElementById('tryInput'); if (i) i.focus(); }, 60); }
+  fab.onclick = function () { open(!box.classList.contains('on')); };
+  document.getElementById('tryClose').onclick = function () { open(false); };
+  function add(cls, text, meta) {
+    var d = document.createElement('div');
+    d.className = 'm ' + cls;
+    d.innerHTML = text.replace(/[<>&]/g, function (c) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]; });
+    if (meta) { var m = document.createElement('span'); m.className = 'meta'; m.textContent = meta; d.appendChild(m); }
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+  }
+  async function send(text) {
+    text = String(text || '').trim();
+    if (!text || busy) return;
+    busy = true;
+    var btn = document.getElementById('trySend');
+    if (btn) btn.disabled = true;
+    add('me', text);
+    var i = document.getElementById('tryInput');
+    if (i) i.value = '';
+    var t0 = Date.now();
+    try {
+      var r = await api('/api/test', { text: text, user: '试聊观众' });
+      var ms = Date.now() - t0;
+      if (r && (r.ok === false || r.error)) {
+        var em = String(r.error || '');
+        var tip = /401|api key|invalid/i.test(em) ? '（模型密钥无效或没填 —— 去「AI 大脑」填上再试）' : ('（出错了：' + em.slice(0, 60) + '）');
+        add('her', tip, '失败 · ' + ms + 'ms');
+      } else {
+        var from = r.from === 'rule' ? '固定话术' : (r.from === 'pool' ? '内置话术' : 'AI 生成');
+        var meta = from + ' · ' + ms + 'ms' + (r.emotion ? ' · 表情：' + r.emotion : '');
+        add('her', r.text || '（这次没生成出来）', meta);
+      }
+    } catch (e) {
+      add('her', '（连不上服务）', '失败');
+    }
+    busy = false;
+    if (btn) btn.disabled = false;
+  }
+  var b = document.getElementById('trySend');
+  if (b) b.onclick = function () { send(document.getElementById('tryInput').value); };
+  var inp = document.getElementById('tryInput');
+  if (inp) inp.onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); send(this.value); } };
+  document.querySelectorAll('#tryBox [data-try]').forEach(function (x) {
+    x.onclick = function () { send(x.getAttribute('data-try')); };
+  });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', xiaoxiBindTryBox);
+else xiaoxiBindTryBox();
+setTimeout(xiaoxiBindTryBox, 400);
+
+/* 首次载入 + 每次保存后刷新状态点 */
+setTimeout(paintConfigState, 1200);
+setTimeout(paintConfigState, 4000);
+if (typeof loadPersona === 'function') {
+  var _oldSave = window.__afterSaveHooks || [];
+}
+document.addEventListener('click', function (e) {
+  var t2 = e.target;
+  if (t2 && (t2.id === 'save' || t2.id === 'personaSave' || t2.id === 'emoSave')) setTimeout(paintConfigState, 900);
+}, true);
+
+
+/* ─── 点击特效 & 保存反馈 ─── */
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+
+  // 点击涟漪（按钮/导航/检查条/标签页）
+  document.addEventListener('pointerdown', function (e) {
+    var el = e.target && e.target.closest ? e.target.closest('.btn, .nav a, .checkband a, #tryFab, .pv-fab') : null;
+    if (!el) return;
+    var r = el.getBoundingClientRect();
+    var size = Math.max(r.width, r.height) * 1.1;
+    var d = document.createElement('span');
+    d.className = 'ripple';
+    d.style.width = d.style.height = size + 'px';
+    d.style.left = (e.clientX - r.left - size / 2) + 'px';
+    d.style.top = (e.clientY - r.top - size / 2) + 'px';
+    el.appendChild(d);
+    setTimeout(function () { d.remove(); }, 560);
+  }, { passive: true });
+
+  // 卡片「保存成功」反馈：给按钮所在的卡片闪一下 + 打勾
+  function markCard(el) {
+    var card = el && el.closest ? el.closest('.card') : null;
+    // 保存按钮如果藏在折叠区/说明区里，就闪当前页的第一张卡，保证用户看得见
+    var pane = el && el.closest ? el.closest('.pane') : null;
+    if (!card || card.querySelector('details') || card.offsetHeight < 60) {
+      var first = pane ? pane.querySelector('.card') : null;
+      if (first) card = first;
+    }
+    if (!card) return;
+    if (!card.querySelector('.okmark')) {
+      var m = document.createElement('span');
+      m.className = 'okmark';
+      m.textContent = '✓';
+      card.appendChild(m);
+    }
+    card.classList.remove('saved-ok');
+    void card.offsetWidth;           // 重启动画
+    card.classList.add('saved-ok');
+    clearTimeout(card._okTimer);
+    card._okTimer = setTimeout(function () { card.classList.remove('saved-ok'); }, 1100);
+  }
+  window.__markCardSaved = markCard;
+
+  // 导航状态点变化时弹一下
+  var lastDot = {};
+  var obs = new MutationObserver(function (muts) {
+    muts.forEach(function (m) {
+      var el = m.target;
+      if (!el.classList || !el.classList.contains('navdot')) return;
+      var key = el.parentNode && el.parentNode.getAttribute ? el.parentNode.getAttribute('data-p') : '';
+      var now = el.className;
+      if (lastDot[key] && lastDot[key] !== now) {
+        el.classList.remove('pulse');
+        void el.offsetWidth;
+        el.classList.add('pulse');
+      }
+      lastDot[key] = now;
+    });
+  });
+  document.querySelectorAll('.nav a').forEach(function (a) { obs.observe(a, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); });
+
+  // 检查条 chip 由橙色变绿色时闪一下
+  var lastChip = {};
+  var octx = new MutationObserver(function () {
+    document.querySelectorAll('#checkChips a').forEach(function (a, i) {
+      var cur = a.className;
+      if (lastChip[i] && lastChip[i] !== cur && /ok/.test(cur)) {
+        a.classList.remove('flash');
+        void a.offsetWidth;
+        a.classList.add('flash');
+      }
+      lastChip[i] = cur;
+    });
+  });
+  var chipBox = document.getElementById('checkChips');
+  if (chipBox) octx.observe(chipBox, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+
+  // 顶部那两个全局按钮保存后也给卡片反馈（它们的卡片在各自页里，退回给 toast 就够了）
+})();
+
+
+/* 保存成功 → 卡片闪光（点保存后 0.7 秒看 toast 文案，成功了就闪一下） */
+(function () {
+  if (!window.__markCardSaved) return;
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('button, a.btn') : null;
+    if (!b) return;
+    var txt = (b.textContent || '').trim();
+    if (!/保存|应用|套用/.test(txt)) return;
+    var card = b.closest('.card');
+    setTimeout(function () {
+      var te = document.getElementById('toast');
+      var msg = te ? String(te.textContent || '') : '';
+      if (/已保存|已应用|保存成功|已更新|已还原|已套用|已打开/.test(msg)) {
+        window.__markCardSaved(card || b);
+      }
+    }, 700);
+  }, true);
+})();
+
 </script>
+
+<button id="tryFab" title="用当前人设/表情试一句（不会发到直播间）">💬 试一句</button>
+<div id="tryBox">
+  <div class="hd"><b>试一句</b><span style="cursor:pointer" id="tryClose">✕</span></div>
+  <div class="row2">
+    <input class="inp" id="tryInput" placeholder="像观众那样说一句…">
+    <button class="btn pri" id="trySend">发送</button>
+  </div>
+  <div class="quick">
+    <button data-try="你好呀">你好</button>
+    <button data-try="主播好丑">骂她</button>
+    <button data-try="哈哈太可爱了">夸她</button>
+    <button data-try="今天好累啊">丧一句</button>
+  </div>
+  <div id="tryLog"></div>
+</div>
 </body>
 </html>
