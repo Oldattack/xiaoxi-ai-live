@@ -378,6 +378,9 @@
   .nav .navdot.ok { background: #2aa877; }
   .nav .navdot.todo { background: #e2a33c; box-shadow: 0 0 0 3px rgba(226,163,60,.18); }
 
+  body[data-pane="p0"] .checkband { display: none !important; }   /* 主页有自己的磁贴，这条只在别的页面提醒 */
+  body[data-pane="p0"] #pvFab { display: none !important; }            /* 主页已经有实时预览，右下角再挂一个「看画面」就是重复入口 */
+  body[data-pane="p0"] .hm-tiles { padding-bottom: 12px; }             /* 没了悬浮按钮，底部留白也不用那么多 */
   .checkband { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 9px 14px; margin: 10px 0 0;
     border: 1px solid var(--line); border-radius: 12px; background: var(--card); font-size: 12.5px; }
   .checkband b { font-weight: 600; margin-right: 2px; color: var(--ink2); }
@@ -462,6 +465,60 @@
     .pane.on, .card.saved-ok, .navdot.pulse, .checkband a.flash, #tryLog .m, .ripple { animation: none !important; }
     .btn:active, .pv-fab:active, #tryFab:active { transform: none; }
   }
+
+  /* ── 主页：封面 + 实时画面 + 磁贴 ── */
+  .hm-cover{position:relative;overflow:hidden;border-radius:20px;height:170px;margin-bottom:12px;
+    background:radial-gradient(120% 90% at 76% 16%, #3d2b52 0%, #241a33 46%, #171120 100%);}
+  .hm-halo{position:absolute;right:-8%;top:-40%;width:52%;height:160%;
+    background:radial-gradient(closest-side, rgba(226,96,63,.42), rgba(226,96,63,0) 70%);filter:blur(10px)}
+  .hm-fig{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);height:94%;
+    filter:drop-shadow(0 18px 28px rgba(0,0,0,.45));opacity:1}
+  .hm-top{position:absolute;inset:16px 18px auto 18px;display:flex;align-items:center;gap:9px;z-index:2}
+  .hm-live{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px;color:#fff;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:6px 12px;border-radius:99px;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .hm-live i{width:8px;height:8px;border-radius:50%;background:#4be3a4;box-shadow:0 0 0 0 rgba(75,227,164,.6);animation:hmPulse 2s infinite}
+  .hm-live.idle i{background:#e2a33c;box-shadow:0 0 0 0 rgba(226,163,60,.5);animation:none}
+  @keyframes hmPulse{70%{box-shadow:0 0 0 8px rgba(75,227,164,0)}100%{box-shadow:0 0 0 0 rgba(75,227,164,0)}}
+  .hm-chip{margin-left:auto;font-size:11.5px;color:rgba(255,255,255,.72);background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.16);padding:5px 11px;border-radius:99px}
+  .hm-quote{position:absolute;left:22px;right:22px;bottom:16px;z-index:2;color:#fff;max-width:76%}
+  .hm-quote b{display:block;font-size:18px;line-height:1.36;font-weight:600;letter-spacing:-.3px;text-shadow:0 2px 14px rgba(0,0,0,.55)}
+  .hm-quote span{display:block;margin-top:4px;font-size:12.5px;color:rgba(255,255,255,.66);text-shadow:0 1px 8px rgba(0,0,0,.5)}
+
+  .hm-chips{display:none}   /* 三颗胶囊和下面的磁贴重复，隐藏；状态改用磁贴上的小圆点表示 */
+  .hm-chips .c{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink2);
+    background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:99px}
+  .hm-chips .c i{width:7px;height:7px;border-radius:50%;background:#cfc7d6}
+  .hm-chips .c.on{color:var(--ok);border-color:#cfeade;background:var(--ok-soft)} .hm-chips .c.on i{background:var(--ok)}
+  .hm-chips .c.warm.on{color:var(--warn);border-color:#f2ded1;background:var(--warn-soft)} .hm-chips .c.warm.on i{background:var(--warn)}
+
+  .hm-livewrap{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px 14px;margin-bottom:14px}
+  .hm-livetitle{display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:10px;flex-wrap:wrap}
+  .hm-livetitle b{font-weight:600}
+  .hm-livetitle span{font-size:11.5px;color:var(--ink3)}
+  .hm-liveopen{margin-left:auto;font-size:12px;color:var(--brand);cursor:pointer;text-decoration:none}
+  .hm-frame{position:relative;width:100%;max-width:760px;margin:0 auto;aspect-ratio:16/9;border-radius:12px;overflow:hidden;
+    background:#0d0b13;border:1px solid #1d1826}
+  .hm-frame iframe{position:absolute;inset:6px 0 0 0;width:100%;height:calc(100% - 6px);border:0}
+  @media (max-width:760px){ .hm-cover{height:150px} .hm-quote b{font-size:16px} }
+
+  .hm-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-bottom:56px}
+  .hm-tiles .tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;transition:.18s}
+  .hm-tiles .tile:hover{border-color:#ecd9cf;box-shadow:0 8px 22px rgba(90,60,40,.07)}
+  .hm-tiles .k{font-size:11.5px;color:var(--ink3);letter-spacing:.04em;display:flex;align-items:center;gap:7px}
+  .hm-tiles .tdot{width:7px;height:7px;border-radius:50%;background:#d6cfdd;flex:none}
+  .hm-tiles .tdot.on{background:#22a06b;box-shadow:0 0 0 3px rgba(34,160,107,.15)}
+  .hm-tiles .tdot.warn{background:#e2a33c;box-shadow:0 0 0 3px rgba(226,163,60,.16)}
+  .hm-tiles .v{font-size:16px;font-weight:600;margin-top:6px;letter-spacing:-.2px}
+  .hm-tiles .m{font-size:11.5px;color:var(--ink2);margin-top:3px;line-height:1.5;white-space:normal;word-break:break-word}
+  .hm-tiles .tile-wide{grid-column:span 2}
+  .hm-nums{display:flex;gap:26px;margin-top:8px;flex-wrap:wrap}
+  .hm-nums > div{display:flex;flex-direction:column}
+  .hm-nums b{font-size:24px;line-height:1.1;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+  .hm-nums span{font-size:11.5px;color:var(--ink3);margin-top:2px}
+  .hm-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  @media (max-width:900px){ .hm-tiles{grid-template-columns:1fr 1fr} .hm-tiles .tile-wide{grid-column:span 2} }
 </style>
 </head>
 <body>
@@ -522,17 +579,23 @@
   <div>
     <!-- ══════ 主页 ══════ -->
     <div class="pane on" id="p0">
-      <div class="home-hero">
-        <div class="home-fig"><span class="tag" id="homeState">待命中</span><img src="/sprites_hd/idle.png" alt="小汐"></div>
-        <div class="home-main">
-          <div class="hi" id="homeHi">今天想聊点啥？</div>
-          <div class="hint" id="homeHint">连上直播间后，小汐就会接弹幕、回话。</div>
-          <div class="home-chips">
-            <span class="c" id="cDouyin"><i></i>抖音</span>
-            <span class="c" id="cScene"><i></i>画面</span>
-            <span class="c warm" id="cVoice"><i></i>语音</span>
-          </div>
+      <!-- 封面：立绘 + 渐变 + 光晕 + 信息浮层 -->
+      <div class="hm-cover">
+        <div class="hm-halo"></div>
+        <div class="hm-top">
+          <span class="hm-live"><i></i><span id="homeState">待命中</span></span>
         </div>
+        <div class="hm-quote">
+          <b id="homeHi">今天想聊点啥？</b>
+          <span id="homeHint">连上直播间后，小汐就会接弹幕、回话。</span>
+        </div>
+      </div>
+
+      <!-- 三个状态胶囊 -->
+      <div class="hm-chips">
+        <span class="c" id="cDouyin"><i></i>抖音</span>
+        <span class="c" id="cScene"><i></i>画面</span>
+        <span class="c warm" id="cVoice"><i></i>语音</span>
       </div>
 
       <div class="upd-bar" id="updNotice" style="display:none">
@@ -541,29 +604,42 @@
         <button class="btn sm" id="updBarGo">去更新</button>
       </div>
 
-      <div class="home-stats">
-        <div class="n"><b id="hRecv">0</b><span>收到弹幕</span></div>
-        <div class="n"><b id="hRep">0</b><span>回了她</span></div>
-        <div class="n"><b id="hDrop">0</b><span>跳过</span></div>
-        <div class="n" data-basic-hide><b id="hSong">0</b><span>排队中</span></div>
+      <!-- 实时画面 -->
+      <div class="hm-livewrap">
+        <div class="hm-livetitle">
+          <b id="homeLiveTitle">正在直播的画面</b>
+          <span id="homeLiveStatus">实时 · 和 OBS 里看到的一样</span>
+          <a class="hm-liveopen" id="homeLiveOpen">全屏查看</a>
+        </div>
+        <div class="hm-frame">
+          <iframe id="homeLive" src="/?clean=1&mute=1" scrolling="no" title="直播画面实时预览"></iframe>
+        </div>
       </div>
 
-      <div class="home-two">
-        <div class="soft">
-          <div class="ct">准备情况</div>
-          <div class="li"><b>抖音</b><span id="rDouyin" class="m">检查中…</span></div>
-          <div class="li"><b>直播画面</b><span id="rScene" class="m">检查中…</span></div>
-          <div class="li"><b>声音</b><span id="rVoice" class="m">检查中…</span></div>
-          <div class="li"><b>开播</b><span class="m">去直播伴侣手动点</span></div>
-          <div class="tiny">这里只管小汐自己的功能，不接管开播</div>
+      <!-- 磁贴 -->
+      <div class="hm-tiles">
+        <div class="tile tile-stat"><div class="k"><i class="tdot" id="tdDouyin"></i>抖音直播间</div><div class="v" id="rDouyin">检查中…</div><div class="m" id="rDouyinSub">在「抖音接入」里填直播间号</div></div>
+        <div class="tile tile-stat"><div class="k"><i class="tdot" id="tdVoice"></i>语音</div><div class="v" id="rVoice">检查中…</div><div class="m" id="rVoiceSub">在「声音与说话」里换音色</div></div>
+        <div class="tile tile-stat"><div class="k"><i class="tdot" id="tdScene"></i>直播画面</div><div class="v" id="rScene">检查中…</div><div class="m" id="rSceneSub">OBS 用浏览器源抓 1920×1080</div></div>
+
+        <div class="tile tile-wide">
+          <div class="k">今天的数据</div>
+          <div class="hm-nums">
+            <div><b id="hRecv">0</b><span>收到弹幕</span></div>
+            <div><b id="hRep">0</b><span>回了她</span></div>
+            <div><b id="hDrop">0</b><span>跳过</span></div>
+            <div data-basic-hide><b id="hSong">0</b><span>排队中</span></div>
+          </div>
         </div>
-        <div class="soft">
-          <div class="ct">常用操作</div>
-          <div class="li"><b>打开直播画面</b><button class="btn sm" id="actPreview">打开</button></div>
-          <div class="li"><b>对齐 OBS</b><button class="btn sm" id="actAlign">一键对齐</button></div>
-          <div class="li" data-basic-hide><b>清空点歌台</b><button class="btn sm" id="actClearSong">清空</button></div>
-          <div class="li"><b>说出这句话</b><button class="btn sm" id="actSay">试一句</button></div>
-            <div class="li" data-basic-hide><b>检查更新</b><button class="btn sm" id="actUpdate">检查</button></div>
+
+        <div class="tile">
+          <div class="k">常用操作</div>
+          <div class="hm-acts">
+            <button class="btn sm" id="actAlign">对齐 OBS</button>
+            <button class="btn sm" id="actClearSong" data-basic-hide>清空点歌</button>
+            <button class="btn sm" id="actUpdate" data-basic-hide>检查更新</button>
+          </div>
+          <div class="m" style="margin-top:10px;font-size:11.5px;color:#9a92a6">开播要在「直播伴侣」里手动点开始，这里不管开播</div>
         </div>
       </div>
     </div>
@@ -3209,7 +3285,7 @@ function uploadAvatar(key, file) {
 
 /* ─────────── 主页按钮 ─────────── */
 /* 开/关回复用「弹幕回复 → 让 AI 回话」的专用开关，主页不再放按钮 */
-$('actPreview').onclick = function () { window.open('/?clean=1&mute=1', '_blank'); };
+if ($('actPreview')) $('actPreview').onclick = function () { window.open('/?clean=1&mute=1', '_blank'); };
 $('actAlign').onclick = async function () {
   var btn = this;
   btn.disabled = true; btn.textContent = '对齐中…';
@@ -3231,7 +3307,7 @@ $('actClearSong').onclick = async function () {
   try { await api('/api/song/clear', {}); toast('已清空'); load(); }
   catch (e) { toast('清空失败：' + e.message); }
 };
-$('actSay').onclick = async function () {
+if ($('actSay')) $('actSay').onclick = async function () {
   // 裸 fetch 不看状态码：服务没起来 / 路由报错也照样弹「已发出」，属于骗自己。
   try {
     var r = await fetch('/say?text=' + encodeURIComponent('大家好呀，我是小汐') + '&emotion=' + encodeURIComponent('开心'));
@@ -4323,6 +4399,74 @@ document.addEventListener('click', function (e) {
       }
     }, 700);
   }, true);
+})();
+
+
+/* 主页：立绘跟随人物形象 + 全屏查看 + 简单时长 */
+(function () {
+
+  // 封面左上角状态跟随真实连接：没连抖音就显示「待机中」，避免"接弹幕中"却未连接
+  function syncHomeState() {
+    var dot = document.getElementById('cDouyin');
+    var el = document.getElementById('homeState');
+    if (!dot || !el) return;
+    var on = dot.classList.contains('on');
+    var pill = el.parentNode;
+    var quote = document.getElementById('homeHi');
+    var lt = document.getElementById('homeLiveTitle');
+    var ls = document.getElementById('homeLiveStatus');
+
+    // 记一次应用写的原始文案，连上后恢复
+    if (quote && !window.__homeQuoteOrig) window.__homeQuoteOrig = quote.textContent || '';
+
+    if (on) {
+      if (pill) pill.classList.remove('idle');
+      if (el.textContent !== '在线 · 接弹幕中') el.textContent = '在线 · 接弹幕中';
+      if (quote && window.__homeQuoteOrig && quote.textContent !== window.__homeQuoteOrig) quote.textContent = window.__homeQuoteOrig;
+      if (lt && lt.textContent !== '正在直播的画面') lt.textContent = '正在直播的画面';
+      if (ls && ls.textContent !== '实时 · 和 OBS 里看到的一样') ls.textContent = '实时 · 和 OBS 里看到的一样';
+    } 
+
+    // 磁贴上的小圆点跟着状态走（胶囊隐藏了，状态在这里体现）
+    [['cDouyin','tdDouyin'],['cScene','tdScene'],['cVoice','tdVoice']].forEach(function (pair) {
+      var chip = document.getElementById(pair[0]);
+      var dot = document.getElementById(pair[1]);
+      if (!chip || !dot) return;
+      var on = chip.classList.contains('on');
+      dot.className = 'tdot' + (on ? ' on' : ' warn');
+    });
+
+    if (!on) {
+      if (pill) pill.classList.add('idle');
+      if (el.textContent.indexOf('待机') < 0) el.textContent = '待机中 · 还没连直播间';
+      if (quote && quote.textContent !== '先连上直播间，她就能开始接弹幕') quote.textContent = '先连上直播间，她就能开始接弹幕';
+      if (lt && lt.textContent !== '画面预览') lt.textContent = '画面预览';
+      if (ls && ls.textContent !== '还没开播 · 这里是效果预览') ls.textContent = '还没开播 · 这里是效果预览';
+    }
+  }
+  window.__syncHomeState = syncHomeState;
+  setTimeout(syncHomeState, 600);
+  setTimeout(syncHomeState, 2500);
+  setInterval(syncHomeState, 1000);
+
+  var lo = document.getElementById('homeLiveOpen');
+  if (lo) lo.onclick = function () {
+    var f = document.getElementById('homeLive');
+    if (f && f.requestFullscreen) { try { f.requestFullscreen(); return; } catch (e) { } }
+    window.open('/?clean=1', '_blank');
+  };
+})();
+
+
+/* 记录当前在哪一页（给「主页不显示检查条」用） */
+(function () {
+  function markPane(id) { document.body.setAttribute('data-pane', id || ''); }
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('.nav a[data-p]') : null;
+    if (a) markPane(a.getAttribute('data-p'));
+  }, true);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { markPane('p0'); });
+  else markPane('p0');
 })();
 
 </script>
