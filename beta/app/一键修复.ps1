@@ -34,9 +34,10 @@ function Info($t) { Say ('  · ' + $t) ('Gray') }
 
 # ─────────── 定位安装目录 ───────────
 function Find-InstallDir {
-  $here = Split-Path -Parent $MyInvocation.MyCommand.Path
+  $here = $PSScriptRoot
+  if (-not $here) { try { $here = Split-Path -Parent $MyInvocation.MyCommand.Path } catch { } }
   $cands = @()
-  if ($here) { $cands += (Split-Path -Parent $here); $cands += $here }
+  if ($here) { $cands += $here; $cands += (Split-Path -Parent $here) }
   $cands += @('D:\xiaoxi-ai-live', 'C:\xiaoxi-ai-live', 'E:\xiaoxi-ai-live')
   if ($env:XIAOXI_HOME) { $cands = @($env:XIAOXI_HOME) + $cands }
   foreach ($c in $cands) {

@@ -21,10 +21,10 @@ function Add($t) { [void]$lines.Add([string]$t); Write-Host $t }
 # ── 找安装目录：脚本所在目录 → 常见位置 → 进程命令行 ──
 function Find-InstallDir {
   $cands = @()
-  $here = Split-Path -Parent $MyInvocation.MyCommand.Path
+  $here = $PSScriptRoot
   if ($here) {
-    $cands += (Split-Path -Parent $here)      # 客服助手/ 的上一层
     $cands += $here
+    $cands += (Split-Path -Parent $here)
   }
   $cands += @('D:\xiaoxi-ai-live', 'C:\xiaoxi-ai-live', 'E:\xiaoxi-ai-live')
   foreach ($c in $cands) {
@@ -197,7 +197,7 @@ try {
 } catch { }
 
 # ── 写文件 ──
-$outDir = if ($inst) { $inst } else { (Split-Path -Parent $MyInvocation.MyCommand.Path) }
+$outDir = if ($inst) { $inst } else { $PSScriptRoot }
 $outFile = Join-Path $outDir ('诊断报告-' + (Get-Date -Format 'MMdd-HHmm') + '.txt')
 try {
   $head = @(
