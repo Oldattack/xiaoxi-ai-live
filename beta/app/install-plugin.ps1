@@ -8,6 +8,18 @@ param(
 $ErrorActionPreference = 'Stop'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
+# 安全闸：如果目标就是操作员真实的 DSH，而当前又跑在自检/临时目录里（例如 D:\preflight-12345\xiaoxi-ai-live），
+# 一律不装。否则会把真实 DSH 的 agent-path.txt 指到一个跑完就删的目录，
+# 之后 DSH 打开就报「找不到 ...\supervisor.mjs」。
+# 注意：打包自检用 -DshHome 或 DSH_HOME 指向假目录，不属于「真实 DSH」，照常放行。
+$realDsh = Join-Path $env:USERPROFILE ".dsh"
+$isRealDsh = ($DshHome.TrimEnd('\') -eq $realDsh.TrimEnd('\'))
+if ($isRealDsh -and ($here -match '\\preflight-\d+\\' -or $here -match '\\Temp\\' -or $here -match '\\rel-tmp\\')) {
+  Write-Host "[!] 当前是临时/自检目录，跳过装插件（避免污染真实 DSH）：$here"
+  Write-Host '    要装插件请把整包解压到 D:\xiaoxi-ai-live 后双击「安装到DSH.cmd」'
+  exit 0
+}
+
 if ($PluginDir) { $pluginSrc = $PluginDir }
 elseif (Test-Path (Join-Path $here 'plugin')) { $pluginSrc = Join-Path $here 'plugin' }
 else { $pluginSrc = Join-Path $here '..\live-agent-plugin' }
