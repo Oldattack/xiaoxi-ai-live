@@ -461,10 +461,7 @@
   /* 输入框聚焦时轻微高亮 */
   .inp:focus, textarea.inp:focus { box-shadow: 0 0 0 3px rgba(232,84,63,.14); border-color: #f0a184; outline: none; }
 
-  @media (prefers-reduced-motion: reduce) {
-    .pane.on, .card.saved-ok, .navdot.pulse, .checkband a.flash, #tryLog .m, .ripple { animation: none !important; }
-    .btn:active, .pv-fab:active, #tryFab:active { transform: none; }
-  }
+  /* 点击效果始终生效：不再因系统「减少动画」而禁用涟漪/按压缩放 */
 
   /* ── 主页：封面 + 实时画面 + 磁贴 ── */
   .hm-cover{position:relative;overflow:hidden;border-radius:20px;height:170px;margin-bottom:12px;
@@ -562,6 +559,7 @@
       <a data-p="p5">AI 大脑</a>
       <div class="grp">画面</div>
       <a data-p="p9">直播画面</a>
+      <a data-p="p20">场景3d 测试版</a>
       <a data-p="p12">界面外观</a>
       <a data-p="p15">快捷控制</a>
       <div class="grp">内容</div>
@@ -1282,6 +1280,26 @@
 
     </div>
 
+    <!-- ══════ 场景3d 测试版 ══════ -->
+    <div class="pane" id="p20">
+      <div class="card">
+        <h3>场景3d <span class="live">测试版</span></h3>
+        <p class="sub">用 3D 房间 + 3D 人物代替 2D 立绘。还在测试，随时可能调整。</p>
+        <div class="row"><label>开启 3D 场景</label><div>
+          <label class="sw"><input type="checkbox" id="scene3dEnabled"><span class="tr"></span><span class="t">开启</span></label>
+          <div class="hint" id="scene3dState">—</div>
+        </div></div>
+      </div>
+
+      <div class="card">
+        <h3>预览</h3>
+        <div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#0a0810;border:1px solid var(--line)">
+          <iframe id="scene3dPreview" src="http://127.0.0.1:8895/room-img3d.html" style="width:100%;height:100%;border:0;display:block" allow="autoplay"></iframe>
+        </div>
+        <div class="hint" style="margin-top:8px">3D 场景预览（读 http://127.0.0.1:8895 的本地服务）。黑屏 = 3D 服务没开。</div>
+      </div>
+    </div>
+
     <div class="pane" id="p5">
       <div class="card">
         <h3>用哪个模型</h3>
@@ -1892,6 +1910,8 @@ async function load() {
   try { refreshQuickControls(); } catch (e) { console.error(e); }
     var djEl = document.getElementById('djOn');
     if (djEl && st && st.config && st.config.scene && st.config.scene.dj) djEl.checked = st.config.scene.dj.enabled !== false;
+    var s3dEl = document.getElementById('scene3dEnabled');
+    if (s3dEl && st && st.config && st.config.scene3d) s3dEl.checked = st.config.scene3d.enabled === true;
   if (!window.APPEARANCE_APPLIED && st && st.config && st.config.appearance) {
     window.APPEARANCE_APPLIED = true;
     var ap = st.config.appearance;
@@ -1921,6 +1941,16 @@ function parseRules(text) {
     try {
       await api('/api/config', { scene: { dj: { enabled: this.checked } } });
       toast(this.checked ? 'DJ 台已打开' : 'DJ 台已关闭');
+    } catch (e) { toast('切换失败：' + e.message); }
+  };
+
+  var s3dEl2 = document.getElementById('scene3dEnabled');
+  if (s3dEl2) s3dEl2.onchange = async function () {
+    try {
+      await api('/api/config', { scene3d: { enabled: this.checked } });
+      var st2 = document.getElementById('scene3dState');
+      if (st2) st2.textContent = this.checked ? '已开启（测试版，效果后续接入）' : '已关闭';
+      toast(this.checked ? '场景3d 已开启（测试版）' : '场景3d 已关闭');
     } catch (e) { toast('切换失败：' + e.message); }
   };
 
@@ -4302,8 +4332,7 @@ document.addEventListener('click', function (e) {
 
 /* ─── 点击特效 & 保存反馈 ─── */
 (function () {
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce) return;
+  // 点击效果始终生效（不再因系统「减少动画」而关闭）
 
   // 点击涟漪（按钮/导航/检查条/标签页）
   document.addEventListener('pointerdown', function (e) {

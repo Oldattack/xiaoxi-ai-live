@@ -93,6 +93,9 @@
     "obsScale": 1,
     "bgVideos": {}
   },
+  "scene3d": {
+    "enabled": false
+  },
   "quick": {
     "enabled": true,
     "ruleCooldownMs": 60000,
